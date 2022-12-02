@@ -1,4 +1,5 @@
 import { Document } from 'mongoose';
+import { User } from '../users/user.interface';
 
 export interface Job extends Document {
     id: string;
@@ -13,6 +14,7 @@ export interface Job extends Document {
     salary: string;
     experience: string;
     employmentType: string;
+    user: User;
     createdAt?: string;
     updatedAt?: string;
 }

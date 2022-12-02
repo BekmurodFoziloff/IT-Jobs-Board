@@ -4,6 +4,8 @@ import dtoValidationMiddleware from '../middlewares/dtoValidation.middleware';
 import CreateJobDto from './dto/createJob.dto';
 import UpdateJobDto from './dto/updateJob.dto';
 import JobNotFoundException from '../exceptions/JobNotFoundException';
+import authMiddleware from '../middlewares/auth.middleware';
+import RequestWithUser from '../interfaces/requestWithUser.interface';
 
 export class JobsController {
     public path = '/job';
@@ -16,11 +18,15 @@ export class JobsController {
     public setRoutes() {
         this.router.route(this.path)
             .get(this.findAllJobs)
-            .post(dtoValidationMiddleware(CreateJobDto), this.createJob);
+        this.router.route(`/my${this.path}/new`)
+            .post(authMiddleware, dtoValidationMiddleware(CreateJobDto), this.createJob);
         this.router.route(`${this.path}/:id`)
             .get(this.findJobById)
-            .delete(this.deleteJob)
-            .put(dtoValidationMiddleware(UpdateJobDto, true), this.updateJob);
+        this.router.route(`/my${this.path}/:id/edit`)
+            .put(authMiddleware, dtoValidationMiddleware(UpdateJobDto, true), this.updateJob);
+        this.router.route(`/my${this.path}/:id/delete`)
+            .delete(authMiddleware, this.deleteJob)
+            
     }
 
     private findJobById = async (req: Request, res: Response, next: NextFunction) => {
@@ -39,7 +45,10 @@ export class JobsController {
 
     private createJob = async (req: Request, res: Response) => {
         const jobData: CreateJobDto = req.body;
-        const newJobResult = await this.jobsService.createJob(jobData);
+        const newJobResult = await this.jobsService.createJob(
+            jobData,
+            (req as RequestWithUser).user
+        );
         res.send(newJobResult);
     }
 
