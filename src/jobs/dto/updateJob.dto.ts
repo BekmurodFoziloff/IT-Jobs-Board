@@ -1,79 +1,125 @@
-import { IsString, IsNumber, IsNotEmpty, IsOptional } from 'class-validator';
+import { IsString, IsNumber, IsNotEmpty, IsOptional, Max, Min, IsArray, IsEmail, IsUrl, IsDateString } from 'class-validator';
 import { Trim } from 'class-sanitizer';
+import { IsFutureDate } from '../../utils/validators/IsFutureDate.validate';
 
 export class UpdateJobDto {
     @IsString()
     @IsNotEmpty()
     id: string;
 
-    @IsOptional()
     @IsString()
     @Trim()
     @IsNotEmpty()
     title: string;
 
-    @IsOptional()
     @IsString()
     @Trim()
     @IsNotEmpty()
     description: string;
 
-    @IsOptional()
     @IsString()
     @Trim()
     @IsNotEmpty()
     tasks: string;
 
-    @IsOptional()
     @IsString()
     @Trim()
     @IsNotEmpty()
     schedule: string;
 
-    @IsOptional()
+    @IsArray()
+    @IsNotEmpty()
+    employmentTypes: Array<string>;
+
+    @IsArray()
+    @IsNotEmpty()
+    workStyles: Array<string>;
+
     @IsNumber()
-    @IsNotEmpty()
-    minAge: string;
-
     @IsOptional()
-    @IsNumber()
-    @IsNotEmpty()
-    maxAge: string;
-
-    @IsOptional()
-    @IsString()
-    @Trim()
-    @IsNotEmpty()
-    additationRequirements: string;
-
-    @IsOptional()
-    @IsString()
-    @Trim()
-    @IsNotEmpty()
-    workStyle: string;
-
-    @IsOptional()
-    @IsNumber()
-    @IsNotEmpty()
     minSalary: number;
 
-    @IsOptional()
     @IsNumber()
-    @IsNotEmpty()
+    @IsOptional()
     maxSalary: number;
 
-    @IsOptional()
-    @IsString()
-    @Trim()
+    @IsArray()
     @IsNotEmpty()
-    experience: string;
+    specializationCategories: Array<string>;
 
+    @IsDateString()
+    @IsFutureDate()
     @IsOptional()
-    @IsString()
-    @Trim()
-    @IsNotEmpty()
-    employmentType: string;
-
+    toDate: Date;
 }
 
 export default UpdateJobDto;
+
+export class UpdateJobRequirementsDto {
+    @IsNumber()
+    @IsOptional()
+    @Min(16)
+    minAge: number;
+
+    @IsNumber()
+    @IsOptional()
+    @Max(99)
+    maxAge: number;
+
+    @IsString()
+    @IsNotEmpty()
+    workExperience: string;
+
+    @IsString()
+    @Trim()
+    @IsOptional()
+    additationRequirements: string;
+
+    @IsArray()
+    @IsOptional()
+    requiredSkills: Array<string>;
+}
+
+export class UpdateGeneralInformationAboutTheEmployerDto {
+    @IsString()
+    @Trim()
+    @IsNotEmpty()
+    companyName: string;
+
+    @IsString()
+    @Trim()
+    @IsNotEmpty()
+    legalForm: string;
+
+    @IsUrl()
+    @IsString()
+    @Trim()
+    @IsOptional()
+    companyWebsite: string;
+
+    @IsString()
+    @Trim()
+    @IsNotEmpty()
+    companyContactPerson: string;
+
+    @IsEmail()
+    @IsString()
+    @Trim()
+    @IsNotEmpty()
+    companyContactEmail: string;
+
+    @IsString()
+    @Trim()
+    @IsNotEmpty()
+    companyContactPhoneNumber: string;
+
+    @IsString()
+    @Trim()
+    @IsOptional()
+    companyContactAddress: string;
+
+    @IsString()
+    @Trim()
+    @IsOptional()
+    comments: string;
+}

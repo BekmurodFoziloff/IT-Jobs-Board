@@ -1,5 +1,6 @@
-import { IsString, IsNumber, IsNotEmpty, IsOptional } from 'class-validator';
+import { IsString, IsNumber, IsNotEmpty, IsOptional, IsArray, IsDateString } from 'class-validator';
 import { Trim } from 'class-sanitizer';
+import { IsFutureDate } from '../../utils/validators/IsFutureDate.validate';
 
 export class CreateJobDto {
     @IsString()
@@ -22,23 +23,13 @@ export class CreateJobDto {
     @IsNotEmpty()
     schedule: string;
 
-    @IsNumber()
-    @IsOptional()
-    minAge: number;
-
-    @IsNumber()
-    @IsOptional()
-    maxAge: number;
-
-    @IsString()
-    @Trim()
-    @IsOptional()
-    additationRequirements: string;
-
-    @IsString()
-    @Trim()
+    @IsArray()
     @IsNotEmpty()
-    workStyle: string;
+    employmentTypes: Array<string>;
+
+    @IsArray()
+    @IsNotEmpty()
+    workStyles: Array<string>;
 
     @IsNumber()
     @IsOptional()
@@ -48,16 +39,15 @@ export class CreateJobDto {
     @IsOptional()
     maxSalary: number;
 
-    @IsString()
-    @Trim()
+    @IsArray()
     @IsNotEmpty()
-    experience: string;
+    specializationCategories: Array<string>;
 
-    @IsString()
-    @Trim()
+    @IsDateString()
+    @IsFutureDate()
+    @IsOptional()
     @IsNotEmpty()
-    employmentType: string;
-
+    toDate: Date;
 }
 
 export default CreateJobDto;

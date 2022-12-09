@@ -2,7 +2,7 @@ import { Router, Request, Response, NextFunction } from 'express';
 import { JobsService } from './jobs.service';
 import dtoValidationMiddleware from '../middlewares/dtoValidation.middleware';
 import CreateJobDto from './dto/createJob.dto';
-import UpdateJobDto from './dto/updateJob.dto';
+import UpdateJobDto, { UpdateGeneralInformationAboutTheEmployerDto, UpdateJobRequirementsDto } from './dto/updateJob.dto';
 import JobNotFoundException from '../exceptions/JobNotFoundException';
 import authMiddleware from '../middlewares/auth.middleware';
 import RequestWithUser from '../interfaces/requestWithUser.interface';
@@ -17,16 +17,19 @@ export class JobsController {
 
     public setRoutes() {
         this.router.route(this.path)
-            .get(this.findAllJobs)
+            .get(this.findAllJobs);
         this.router.route(`/my${this.path}/new`)
             .post(authMiddleware, dtoValidationMiddleware(CreateJobDto), this.createJob);
         this.router.route(`${this.path}/:id`)
-            .get(this.findJobById)
+            .get(this.findJobById);
         this.router.route(`/my${this.path}/:id/edit`)
             .put(authMiddleware, dtoValidationMiddleware(UpdateJobDto, true), this.updateJob);
+        this.router.route(`/my${this.path}/requirements/:id/edit`)
+            .put(authMiddleware, dtoValidationMiddleware(UpdateJobRequirementsDto, true), this.updateJobRequirements);
+        this.router.route(`/my${this.path}/employer/:id/edit`)
+            .put(authMiddleware, dtoValidationMiddleware(UpdateGeneralInformationAboutTheEmployerDto, true), this.updateJobGeneralInformationAboutTheEmployer);
         this.router.route(`/my${this.path}/:id/delete`)
-            .delete(authMiddleware, this.deleteJob)
-            
+            .delete(authMiddleware, this.deleteJob);   
     }
 
     private findJobById = async (req: Request, res: Response, next: NextFunction) => {
@@ -65,6 +68,34 @@ export class JobsController {
         const jobData: UpdateJobDto = req.body;
         const { id } = req.params;
         await this.jobsService.updateJob(
+            id,
+            jobData
+        );
+        const updateJobResult = await this.jobsService.findJobById(id);
+        if (updateJobResult) {
+            return res.send(updateJobResult);
+        }
+        next(new JobNotFoundException(id));
+    }
+
+    private updateJobRequirements = async (req: Request, res: Response, next: NextFunction) => {
+        const jobData: UpdateJobRequirementsDto = req.body;
+        const { id } = req.params;
+        await this.jobsService.updateJobRequirements(
+            id,
+            jobData
+        );
+        const updateJobResult = await this.jobsService.findJobById(id);
+        if (updateJobResult) {
+            return res.send(updateJobResult);
+        }
+        next(new JobNotFoundException(id));
+    }
+    
+    private updateJobGeneralInformationAboutTheEmployer = async (req: Request, res: Response, next: NextFunction) => {
+        const jobData: UpdateGeneralInformationAboutTheEmployerDto = req.body;
+        const { id } = req.params;
+        await this.jobsService.updateJobGeneralInformationAboutTheEmployer(
             id,
             jobData
         );
