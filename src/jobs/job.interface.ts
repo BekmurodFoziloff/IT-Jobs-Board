@@ -43,4 +43,5 @@ export interface Job extends Document {
     updatedAt?: string;
     jobRequirements: JobRequirements;
     generalInformationAboutTheEmployer: GeneralInformationAboutTheEmployer;
+    condition: string;
 }

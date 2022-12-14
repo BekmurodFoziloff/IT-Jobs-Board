@@ -29,7 +29,11 @@ export class JobsController {
         this.router.route(`/my${this.path}/employer/:id/edit`)
             .put(authMiddleware, dtoValidationMiddleware(UpdateGeneralInformationAboutTheEmployerDto, true), this.updateJobGeneralInformationAboutTheEmployer);
         this.router.route(`/my${this.path}/:id/delete`)
-            .delete(authMiddleware, this.deleteJob);   
+            .delete(authMiddleware, this.deleteJob);
+        this.router.route(`/my${this.path}/:id/publish`)
+            .put(this.publish);
+        this.router.route(`/my${this.path}/:id/publish-cancel`)
+            .put(this.publishCancel);
     }
 
     private findJobById = async (req: Request, res: Response, next: NextFunction) => {
@@ -42,7 +46,8 @@ export class JobsController {
     }
 
     private findAllJobs = async (req: Request, res: Response) => {
-        const jobs = await this.jobsService.findAllJobs();
+        const { query } = req;
+        const jobs = await this.jobsService.findAllJobs(query);
         res.send(jobs);
     }
 
@@ -71,7 +76,7 @@ export class JobsController {
             id,
             jobData
         );
-        const updateJobResult = await this.jobsService.findJobById(id);
+        const updateJobResult = await this.jobsService.findJobByIdForUpdate(id);
         if (updateJobResult) {
             return res.send(updateJobResult);
         }
@@ -85,13 +90,13 @@ export class JobsController {
             id,
             jobData
         );
-        const updateJobResult = await this.jobsService.findJobById(id);
+        const updateJobResult = await this.jobsService.findJobByIdForUpdate(id);
         if (updateJobResult) {
             return res.send(updateJobResult);
         }
         next(new JobNotFoundException(id));
     }
-    
+
     private updateJobGeneralInformationAboutTheEmployer = async (req: Request, res: Response, next: NextFunction) => {
         const jobData: UpdateGeneralInformationAboutTheEmployerDto = req.body;
         const { id } = req.params;
@@ -99,9 +104,29 @@ export class JobsController {
             id,
             jobData
         );
-        const updateJobResult = await this.jobsService.findJobById(id);
+        const updateJobResult = await this.jobsService.findJobByIdForUpdate(id);
         if (updateJobResult) {
             return res.send(updateJobResult);
+        }
+        next(new JobNotFoundException(id));
+    }
+
+    private publish = async (req: Request, res: Response, next: NextFunction) => {
+        const { id } = req.params;
+        await this.jobsService.publish(id);
+        const publishJobResult = await this.jobsService.findJobByIdForUpdate(id);
+        if (publishJobResult) {
+            return res.send(publishJobResult);
+        }
+        next(new JobNotFoundException(id));
+    }
+
+    private publishCancel = async (req: Request, res: Response, next: NextFunction) => {
+        const { id } = req.params;
+        await this.jobsService.publishCancel(id);
+        const publishCancelJobResult = await this.jobsService.findJobByIdForUpdate(id);
+        if (publishCancelJobResult) {
+            return res.send(publishCancelJobResult);
         }
         next(new JobNotFoundException(id));
     }

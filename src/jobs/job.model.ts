@@ -1,4 +1,5 @@
 import { Schema, model } from 'mongoose';
+import { Conditions } from '../utils/condition.enum';
 import { Job } from './job.interface';
 
 const JobRequirementsSchema = new Schema({
@@ -114,6 +115,12 @@ const JobSchema = new Schema(
         },
         jobRequirements: JobRequirementsSchema,
         generalInformationAboutTheEmployer: GeneralInformationAboutTheEmployerSchema,
+        condition: {
+            type: String,
+            enum: Conditions,
+            required: true,
+            default: Conditions.PRIVATE
+        },
         createdAt: {
             type: String
         },
