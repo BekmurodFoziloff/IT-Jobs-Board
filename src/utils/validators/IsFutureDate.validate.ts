@@ -16,7 +16,8 @@ export class IsUniqueNameConstraint implements ValidatorConstraintInterface {
     }
 
     defaultMessage(validationArguments?: ValidationArguments | undefined): string {
-        return 'toDate with date $value must be future';
+        const propertyName = validationArguments?.property
+        return `${propertyName} with date $value must be future`;
     }
 }
 

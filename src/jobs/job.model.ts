@@ -1,5 +1,5 @@
 import { Schema, model } from 'mongoose';
-import { Conditions } from '../utils/condition.enum';
+import { Conditions } from '../utils/enums/condition.enum';
 import { Job } from './job.interface';
 
 const JobRequirementsSchema = new Schema({

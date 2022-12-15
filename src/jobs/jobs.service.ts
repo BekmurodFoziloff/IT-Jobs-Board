@@ -4,7 +4,7 @@ import UpdateJobDto, { UpdateGeneralInformationAboutTheEmployerDto, UpdateJobReq
 import { Job } from './job.interface';
 import moment from 'moment';
 import { User } from '../users/user.interface';
-import { Conditions } from '../utils/condition.enum';
+import { Conditions } from '../utils/enums/condition.enum';
 import JobFilterQuery from '../interfaces/jobFilterQuery.interface';
 
 export class JobsService {
