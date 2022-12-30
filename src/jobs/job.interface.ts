@@ -8,6 +8,7 @@ import { WorkStyle } from '../workStyles/workStyle.interface';
 import { LegalForm } from '../legalForms/legalForm.interface';
 
 interface JobRequirements extends Document {
+    id: string;
     minAge: number;
     maxAge: number;
     workExperience: WorkExperience;
@@ -16,6 +17,7 @@ interface JobRequirements extends Document {
 }
 
 interface GeneralInformationAboutTheEmployer extends Document {
+    id: string;
     companyName: string;
     legalForm: LegalForm;
     companyWebsite: string;
@@ -36,6 +38,7 @@ export interface Job extends Document {
     workStyles: WorkStyle[];
     minSalary: number;
     maxSalary: number;
+    currency: string;
     specializationCategories: SpecializationCategory[];
     toDate: Date;
     owner: User;

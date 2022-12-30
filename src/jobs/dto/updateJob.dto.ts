@@ -4,122 +4,149 @@ import { IsFutureDate } from '../../utils/validators/IsFutureDate.validate';
 
 export class UpdateJobDto {
     @IsString()
-    @IsNotEmpty()
+    @IsOptional()
     id: string;
 
+    @IsOptional()
     @IsString()
     @Trim()
     @IsNotEmpty()
     title: string;
 
+    @IsOptional()
     @IsString()
     @Trim()
     @IsNotEmpty()
     description: string;
 
+    @IsOptional()
     @IsString()
     @Trim()
     @IsNotEmpty()
     tasks: string;
 
+    @IsOptional()
     @IsString()
     @Trim()
     @IsNotEmpty()
     schedule: string;
 
+    @IsOptional()
     @IsArray()
     @IsNotEmpty()
     employmentTypes: Array<string>;
 
+    @IsOptional()
     @IsArray()
     @IsNotEmpty()
     workStyles: Array<string>;
 
-    @IsNumber()
     @IsOptional()
+    @IsNumber()
     minSalary: number;
 
-    @IsNumber()
     @IsOptional()
+    @IsNumber()
     maxSalary: number;
 
+    @IsOptional()
+    @IsString()
+    @Trim()
+    @IsNotEmpty()
+    currency: string;
+
+    @IsOptional()
     @IsArray()
     @IsNotEmpty()
     specializationCategories: Array<string>;
 
+    @IsOptional()
     @IsDateString()
     @IsFutureDate()
-    @IsOptional()
     toDate: Date;
 }
 
 export default UpdateJobDto;
 
 export class UpdateJobRequirementsDto {
-    @IsNumber()
+    @IsString()
     @IsOptional()
+    id: string;
+
+    @IsOptional()
+    @IsNumber()
     @Min(16)
     minAge: number;
 
-    @IsNumber()
     @IsOptional()
+    @IsNumber()
     @Max(99)
     maxAge: number;
 
+    @IsOptional()
     @IsString()
     @IsNotEmpty()
     workExperience: string;
 
+    @IsOptional()
     @IsString()
     @Trim()
-    @IsOptional()
     additationRequirements: string;
 
-    @IsArray()
     @IsOptional()
+    @IsArray()
     requiredSkills: Array<string>;
 }
 
 export class UpdateGeneralInformationAboutTheEmployerDto {
     @IsString()
+    @IsOptional()
+    id: string;
+    
+    @IsOptional()
+    @IsString()
     @Trim()
     @IsNotEmpty()
     companyName: string;
 
+    @IsOptional()
     @IsString()
     @Trim()
     @IsNotEmpty()
     legalForm: string;
 
+    @IsOptional()
     @IsUrl()
     @IsString()
     @Trim()
-    @IsOptional()
     companyWebsite: string;
 
+    @IsOptional()
     @IsString()
     @Trim()
     @IsNotEmpty()
     companyContactPerson: string;
 
+    @IsOptional()
     @IsEmail()
     @IsString()
     @Trim()
     @IsNotEmpty()
     companyContactEmail: string;
 
+    @IsOptional()
     @IsString()
     @Trim()
     @IsNotEmpty()
     companyContactPhoneNumber: string;
 
+    @IsOptional()
     @IsString()
     @Trim()
-    @IsOptional()
     companyContactAddress: string;
 
+    @IsOptional()
     @IsString()
     @Trim()
-    @IsOptional()
     comments: string;
 }

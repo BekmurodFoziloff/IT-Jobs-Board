@@ -12,13 +12,11 @@ export class RegisterDto {
     @IsString()
     @IsAlpha()
     @Trim()
-    @IsNotEmpty()
     firstName: string;
 
     @IsString()
     @IsAlpha()
     @Trim()
-    @IsNotEmpty()
     lastName: string;
 
     @IsString()

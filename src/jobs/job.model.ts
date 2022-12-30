@@ -4,12 +4,10 @@ import { Job } from './job.interface';
 
 const JobRequirementsSchema = new Schema({
     minAge: {
-        type: Number,
-        min: 16
+        type: Number
     },
     maxAge: {
-        type: Number,
-        max: 99
+        type: Number
     },
     workExperience: {
         type: Schema.Types.ObjectId,
@@ -98,6 +96,10 @@ const JobSchema = new Schema(
         maxSalary: {
             type: Number
         },
+        currency: {
+            type: String,
+            required: true
+        },
         specializationCategories: [
             {
                 type: Schema.Types.ObjectId,
@@ -130,7 +132,7 @@ const JobSchema = new Schema(
     }
 );
 
-JobSchema.pre('validate', function(next) {
+JobSchema.pre('validate', function (next) {
     if (new Date(`${this.toDate}`).getTime() > new Date().getTime()) {
         next();
     }

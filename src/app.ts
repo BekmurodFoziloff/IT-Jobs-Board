@@ -21,6 +21,8 @@ import { WorkStylesController } from './workStyles/workStyles.controller';
 import { WorkStylesService } from './workStyles/workStyles.service';
 import { WorkExperiencesController } from './workExperiences/workExperiences.controller';
 import { WorkExperiencesService } from './workExperiences/workExperiences.service';
+import { RegionsController } from './regions/regions.controller';
+import { RegionsService } from './regions/regions.service';
 import errorHandler from './middlewares/errorHandler.middleware';
 
 class App {
@@ -49,12 +51,12 @@ class App {
         mongoose.Promise = global.Promise;
         const MONGO_URI = process.env.MONGO_URI as string;
         mongoose.connect(MONGO_URI)
-        .then(() => {
-            console.log('Database connected successfully');
-        })
-        .catch((error) => {
-            console.log(error);
-        });
+            .then(() => {
+                console.log('Database connected successfully');
+            })
+            .catch((error) => {
+                console.log(error);
+            });
         mongoose.set('toJSON', {
             virtuals: true,
             transform: (doc: any, converted: any) => {
@@ -71,26 +73,29 @@ class App {
         const authenticationController = new AuthenticationController(new AuthenticationService(), new UsersService());
         this.app.use('/api/v1', authenticationController.router);
 
-        const usersController = new UsersController(new JobsService());
+        const usersController = new UsersController(new UsersService(), new JobsService());
         this.app.use('/api/v1', usersController.router);
 
         const specializationCategoriesController = new SpecializationCategoriesController(new SpecializationCategoriesService());
         this.app.use('/api/v1', specializationCategoriesController.router);
-        
+
         const employmentTypesController = new EmploymentTypesController(new EmploymentTypesService());
         this.app.use('/api/v1', employmentTypesController.router);
-        
+
         const legalFormsController = new LegalFormsController(new LegalFormsService());
         this.app.use('/api/v1', legalFormsController.router);
-        
+
         const requiredSkillsController = new RequiredSkillsController(new RequiredSkillsService());
         this.app.use('/api/v1', requiredSkillsController.router);
-        
+
         const workExperiencesController = new WorkExperiencesController(new WorkExperiencesService());
         this.app.use('/api/v1', workExperiencesController.router);
-        
+
         const workStylesController = new WorkStylesController(new WorkStylesService());
         this.app.use('/api/v1', workStylesController.router);
+
+        const regionsController = new RegionsController(new RegionsService());
+        this.app.use('/api/v1', regionsController.router);
     }
 
     private setErrorHandlingMiddleware() {

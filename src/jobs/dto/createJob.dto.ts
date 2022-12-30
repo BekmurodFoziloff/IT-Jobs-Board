@@ -1,4 +1,4 @@
-import { IsString, IsNumber, IsNotEmpty, IsOptional, IsArray, IsDateString } from 'class-validator';
+import { IsString, IsNumber, IsNotEmpty, IsArray, IsDateString } from 'class-validator';
 import { Trim } from 'class-sanitizer';
 import { IsFutureDate } from '../../utils/validators/IsFutureDate.validate';
 
@@ -32,12 +32,15 @@ export class CreateJobDto {
     workStyles: Array<string>;
 
     @IsNumber()
-    @IsOptional()
-    minSalary: number;
+     IsArraynSalary: number;
 
     @IsNumber()
-    @IsOptional()
-    maxSalary: number;
+     IsArrayxSalary: number;
+
+    @IsString()
+    @Trim()
+    @IsNotEmpty()
+    currency: string;
 
     @IsArray()
     @IsNotEmpty()
@@ -45,7 +48,7 @@ export class CreateJobDto {
 
     @IsDateString()
     @IsFutureDate()
-    @IsOptional()
+    @IsArray()
     @IsNotEmpty()
     toDate: Date;
 }
