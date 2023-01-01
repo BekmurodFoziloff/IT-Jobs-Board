@@ -18,6 +18,8 @@ export class JobsController {
     public setRoutes() {
         this.router.route(this.path)
             .get(this.findAllJobs);
+        this.router.route(`/my${this.path}/list`)
+            .get(authMiddleware, this.getAllJobsOfUser);
         this.router.route(`/my${this.path}/new`)
             .post(authMiddleware, dtoValidationMiddleware(CreateJobDto), this.createJob);
         this.router.route(`${this.path}/:id`)
@@ -129,5 +131,11 @@ export class JobsController {
             return res.send(publishCancelJobResult);
         }
         next(new JobNotFoundException(id));
+    }
+
+    private getAllJobsOfUser = async (req: Request, res: Response) => {
+        const userId = (req as RequestWithUser).user.id;
+        const jobs = await this.jobsService.getAllJobsOfUser(userId);
+        return res.send(jobs);
     }
 }

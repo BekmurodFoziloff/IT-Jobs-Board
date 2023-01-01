@@ -10,12 +10,12 @@ export class LegalFormsService {
 
     public async findLegalFormById(id: string): Promise<LegalForm | null> {
         return await this.legalFormModel.findById(id)
-            .populate('owner', '-password -createdAt');
+            .populate('owner', '-password');
     }
 
     public async findAllLegalForms(): Promise<LegalForm[]> {
         return await this.legalFormModel.find({})
-            .populate('owner', '-password -createdAt');
+            .populate('owner', '-password');
     }
 
     public async createLegalForm(legalForm: CreateLegalFormDto, owner: User): Promise<LegalForm> {
@@ -25,13 +25,13 @@ export class LegalFormsService {
             createdAt: moment().locale('uz-latn').format('LLLL')
         });
         await newLegalForm.save();
-        await newLegalForm.populate('owner', '-password -createdAt');
+        await newLegalForm.populate('owner', '-password');
         return newLegalForm;
     }
 
     public async deleteLegalForm(id: string): Promise<LegalForm | null> {
         return await this.legalFormModel.findByIdAndDelete(id)
-            .populate('owner', '-password -createdAt');
+            .populate('owner', '-password');
     }
 
     public async updateLegalForm(id: string, legalForm: UpdateLegalFormDto): Promise<LegalForm | null> {
@@ -42,7 +42,7 @@ export class LegalFormsService {
                 updatedAt: moment().locale('uz-latn').format('LLLL')
             }
         )
-            .populate('owner', '-password -createdAt');
+            .populate('owner', '-password');
     }
 
     public async findLegalFormByName(name: string): Promise<LegalForm | null> {

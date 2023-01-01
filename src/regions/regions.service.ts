@@ -10,12 +10,12 @@ export class RegionsService {
 
     public async findRegionById(id: string): Promise<Region | null> {
         return await this.regionModel.findById(id)
-            .populate('owner', '-password -createdAt');
+            .populate('owner', '-password');
     }
 
     public async findAllRegions(): Promise<Region[]> {
         return await this.regionModel.find({})
-            .populate('owner', '-password -createdAt');
+            .populate('owner', '-password');
     }
 
     public async createRegion(region: CreateRegionDto, owner: User): Promise<Region> {
@@ -25,13 +25,13 @@ export class RegionsService {
             createdAt: moment().locale('uz-latn').format('LLLL')
         });
         await newRegion.save();
-        await newRegion.populate('owner', '-password -createdAt');
+        await newRegion.populate('owner', '-password');
         return newRegion;
     }
 
     public async deleteRegion(id: string): Promise<Region | null> {
         return await this.regionModel.findByIdAndDelete(id)
-            .populate('owner', '-password -createdAt');
+            .populate('owner', '-password');
     }
 
     public async updateRegion(id: string, region: UpdateRegionDto): Promise<Region | null> {
@@ -42,7 +42,7 @@ export class RegionsService {
                 updatedAt: moment().locale('uz-latn').format('LLLL')
             }
         )
-            .populate('owner', '-password -createdAt');
+            .populate('owner', '-password');
     }
 
     public async findRegionByName(name: string): Promise<Region | null> {

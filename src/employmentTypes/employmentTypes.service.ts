@@ -10,12 +10,12 @@ export class EmploymentTypesService {
 
     public async findEmploymentTypeById(id: string): Promise<EmploymentType | null> {
         return await this.employmentTypeModel.findById(id)
-            .populate('owner', '-password -createdAt');
+            .populate('owner', '-password');
     }
 
     public async findAllEmploymentTypes(): Promise<EmploymentType[]> {
         return await this.employmentTypeModel.find({})
-            .populate('owner', '-password -createdAt');
+            .populate('owner', '-password');
     }
 
     public async createEmploymentType(employmentType: CreateEmploymentTypeDto, owner: User): Promise<EmploymentType> {
@@ -25,13 +25,13 @@ export class EmploymentTypesService {
             createdAt: moment().locale('uz-latn').format('LLLL')
         });
         await newEmploymentType.save();
-        await newEmploymentType.populate('owner', '-password -createdAt');
+        await newEmploymentType.populate('owner', '-password');
         return newEmploymentType;
     }
 
     public async deleteEmploymentType(id: string): Promise<EmploymentType | null> {
         return await this.employmentTypeModel.findByIdAndDelete(id)
-            .populate('owner', '-password -createdAt');
+            .populate('owner', '-password');
     }
 
     public async updateEmploymentType(id: string, employmentType: UpdateEmploymentTypeDto): Promise<EmploymentType | null> {
@@ -42,7 +42,7 @@ export class EmploymentTypesService {
                 updatedAt: moment().locale('uz-latn').format('LLLL')
             }
         )
-            .populate('owner', '-password -createdAt');
+            .populate('owner', '-password');
     }
 
     public async findEmploymentTypeByName(name: string): Promise<EmploymentType | null> {

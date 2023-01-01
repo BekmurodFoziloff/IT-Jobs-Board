@@ -1,7 +1,5 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import NotAuthorizedException from '../exceptions/NotAuthorizedException';
-import RequestWithUser from '../interfaces/requestWithUser.interface';
-import { JobsService } from '../jobs/jobs.service';
 import authMiddleware from '../middlewares/auth.middleware';
 import {
     UpdateUserProfileDto,
@@ -17,49 +15,45 @@ import EducationOfUserNotFoundException from '../exceptions/EducationOfUserNotFo
 import AchievementOfUserNotFoundException from '../exceptions/AchievementOfUserNotFoundException';
 import PortfolioOfUserNotFoundException from '../exceptions/PortfolioOfUserNotFoundException';
 import ProfessionalNotFoundException from '../exceptions/ProfessionalNotFoundException';
+import dtoValidationMiddleware from '../middlewares/dtoValidation.middleware';
 
 export class UsersController {
     public path = '/my';
     public router = Router();
 
-    constructor(
-        private usersService: UsersService,
-        private jobsService: JobsService
-    ) {
+    constructor(private usersService: UsersService) {
         this.setRoutes();
     }
 
     public setRoutes() {
-        this.router.route(`${this.path}/job/list`)
-            .get(authMiddleware, this.getAllJobsOfUser);
         this.router.route(`${this.path}/profile/:id/edit`)
-            .put(authMiddleware, this.updateUserProfile);
+            .put(authMiddleware, dtoValidationMiddleware(UpdateUserProfileDto, true), this.updateUserProfile);
         this.router.route(`${this.path}/profile/contacts/:id/edit`)
-            .put(authMiddleware, this.updateUserContacts);
+            .put(authMiddleware, dtoValidationMiddleware(UpdateUserProfileDto, true), this.updateUserContacts);
         this.router.route(`${this.path}/profile/:id/work/new`)
-            .put(authMiddleware, this.updateUserCreateWorkExperience);
+            .put(authMiddleware, dtoValidationMiddleware(UpdateUserWorkExperienceDto, true), this.updateUserCreateWorkExperience);
         this.router.route(`${this.path}/profile/work/:id/edit`)
-            .put(authMiddleware, this.updateUserUpdateWorkExperience);
+            .put(authMiddleware, dtoValidationMiddleware(UpdateUserWorkExperienceDto, true), this.updateUserUpdateWorkExperience);
         this.router.route(`${this.path}/profile/work/:id/delete`)
-            .put(authMiddleware, this.updateUserDeleteWorkExperience);
+            .put(authMiddleware, dtoValidationMiddleware(UpdateUserWorkExperienceDto, true), this.updateUserDeleteWorkExperience);
         this.router.route(`${this.path}/profile/:id/education/new`)
-            .put(authMiddleware, this.updateUserCreateEducation);
+            .put(authMiddleware, dtoValidationMiddleware(UpdateUserEducationDto, true), this.updateUserCreateEducation);
         this.router.route(`${this.path}/profile/education/:id/edit`)
-            .put(authMiddleware, this.updateUserUpdateEducation);
+            .put(authMiddleware, dtoValidationMiddleware(UpdateUserEducationDto, true), this.updateUserUpdateEducation);
         this.router.route(`${this.path}/profile/education/:id/delete`)
-            .put(authMiddleware, this.updateUserDeleteEducation);
+            .put(authMiddleware, dtoValidationMiddleware(UpdateUserEducationDto, true), this.updateUserDeleteEducation);
         this.router.route(`${this.path}/profile/:id/achievement/new`)
-            .put(authMiddleware, this.updateUserCreateAchievement);
+            .put(authMiddleware, dtoValidationMiddleware(UpdateUserAchievementDto, true), this.updateUserCreateAchievement);
         this.router.route(`${this.path}/profile/achievement/:id/edit`)
-            .put(authMiddleware, this.updateUserUpdateAchievement);
+            .put(authMiddleware, dtoValidationMiddleware(UpdateUserAchievementDto, true), this.updateUserUpdateAchievement);
         this.router.route(`${this.path}/profile/achievement/:id/delete`)
-            .put(authMiddleware, this.updateUserDeleteAchievement);
+            .put(authMiddleware, dtoValidationMiddleware(UpdateUserAchievementDto, true), this.updateUserDeleteAchievement);
         this.router.route(`${this.path}/profile/:id/portfolio/new`)
-            .put(authMiddleware, this.updateUserCreateGeneralInformationAboutTheProject);
+            .put(authMiddleware, dtoValidationMiddleware(UpdateUserGeneralInformationAboutTheProjectDto, true), this.updateUserCreateGeneralInformationAboutTheProject);
         this.router.route(`${this.path}/profile/portfolio/:id/edit`)
-            .put(authMiddleware, this.updateUserUpdateGeneralInformationAboutTheProject);
+            .put(authMiddleware, dtoValidationMiddleware(UpdateUserGeneralInformationAboutTheProjectDto, true), this.updateUserUpdateGeneralInformationAboutTheProject);
         this.router.route(`${this.path}/profile/portfolio/:id/delete`)
-            .put(authMiddleware, this.updateUserDeleteGeneralInformationAboutTheProject);
+            .put(authMiddleware, dtoValidationMiddleware(UpdateUserGeneralInformationAboutTheProjectDto, true), this.updateUserDeleteGeneralInformationAboutTheProject);
         this.router.route(`${this.path}/profile/:id/publish`)
             .put(authMiddleware, this.publish);
         this.router.route(`${this.path}/profile/:id/publish-cancel`)
@@ -287,15 +281,6 @@ export class UsersController {
         const publishCancelUserResult = await this.usersService.getUserById(id);
         if (publishCancelUserResult) {
             return res.send(publishCancelUserResult);
-        }
-        next(new NotAuthorizedException());
-    }
-
-    private getAllJobsOfUser = async (req: Request, res: Response, next: NextFunction) => {
-        const userId = (req as RequestWithUser).user.id;
-        const jobs = await this.jobsService.getAllJobsOfUser(userId);
-        if (jobs) {
-            return res.send(jobs);
         }
         next(new NotAuthorizedException());
     }

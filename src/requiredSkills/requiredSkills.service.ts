@@ -10,12 +10,12 @@ export class RequiredSkillsService {
 
     public async findRequiredSkillById(id: string): Promise<RequiredSkill | null> {
         return await this.requiredSkillModel.findById(id)
-            .populate('owner', '-password -createdAt');
+            .populate('owner', '-password');
     }
 
     public async findAllRequiredSkills(): Promise<RequiredSkill[]> {
         return await this.requiredSkillModel.find({})
-            .populate('owner', '-password -createdAt');
+            .populate('owner', '-password');
     }
 
     public async createRequiredSkill(requiredSkill: CreateRequiredSkillDto, owner: User): Promise<RequiredSkill> {
@@ -25,13 +25,13 @@ export class RequiredSkillsService {
             createdAt: moment().locale('uz-latn').format('LLLL')
         });
         await newRequiredSkill.save();
-        await newRequiredSkill.populate('owner', '-password -createdAt');
+        await newRequiredSkill.populate('owner', '-password');
         return newRequiredSkill;
     }
 
     public async deleteRequiredSkill(id: string): Promise<RequiredSkill | null> {
         return await this.requiredSkillModel.findByIdAndDelete(id)
-            .populate('owner', '-password -createdAt');
+            .populate('owner', '-password');
     }
 
     public async updateRequiredSkill(id: string, requiredSkill: UpdateRequiredSkillDto): Promise<RequiredSkill | null> {
@@ -42,7 +42,7 @@ export class RequiredSkillsService {
                 updatedAt: moment().locale('uz-latn').format('LLLL')
             }
         )
-            .populate('owner', '-password -createdAt');
+            .populate('owner', '-password');
     }
 
     public async findRequiredSkillByName(name: string): Promise<RequiredSkill | null> {

@@ -10,12 +10,12 @@ export class SpecializationCategoriesService {
 
     public async findSpecializationCategoryById(id: string): Promise<SpecializationCategory | null> {
         return await this.specializationCategoryModel.findById(id)
-            .populate('owner', '-password -createdAt');
+            .populate('owner', '-password');
     }
 
     public async findAllSpecializationCategories(): Promise<SpecializationCategory[]> {
         return await this.specializationCategoryModel.find({})
-            .populate('owner', '-password -createdAt');
+            .populate('owner', '-password');
     }
 
     public async createSpecializationCategory(specializationCategory: CreateSpecializationCategoryDto, owner: User): Promise<SpecializationCategory> {
@@ -25,13 +25,13 @@ export class SpecializationCategoriesService {
             createdAt: moment().locale('uz-latn').format('LLLL')
         });
         await newSpecializationCategory.save();
-        await newSpecializationCategory.populate('owner', '-password -createdAt');
+        await newSpecializationCategory.populate('owner', '-password');
         return newSpecializationCategory;
     }
 
     public async deleteSpecializationCategory(id: string): Promise<SpecializationCategory | null> {
         return await this.specializationCategoryModel.findByIdAndDelete(id)
-            .populate('owner', '-password -createdAt');
+            .populate('owner', '-password');
     }
 
     public async updateSpecializationCategory(id: string, specializationCategory: UpdateSpecializationCategoryDto): Promise<SpecializationCategory | null> {
@@ -42,7 +42,7 @@ export class SpecializationCategoriesService {
                 updatedAt: moment().locale('uz-latn').format('LLLL')
             }
         )
-            .populate('owner', '-password -createdAt');
+            .populate('owner', '-password');
     }
 
     public async findSpecializationCategoryByName(name: string): Promise<SpecializationCategory | null> {

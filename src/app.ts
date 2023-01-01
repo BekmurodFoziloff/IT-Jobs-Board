@@ -23,6 +23,14 @@ import { WorkExperiencesController } from './workExperiences/workExperiences.con
 import { WorkExperiencesService } from './workExperiences/workExperiences.service';
 import { RegionsController } from './regions/regions.controller';
 import { RegionsService } from './regions/regions.service';
+import { CompaniesController } from './companies/companies.controller';
+import { CompaniesService } from './companies/companies.service';
+import { SpecializationsController } from './specializations/specializations.controller';
+import { SpecializationsService } from './specializations/specializations.service';
+import { IndustriesController } from './industries/industries.controller';
+import { IndustriesService } from './industries/industries.service';
+import { SpecializationsBPOController } from './specializationsBPO/specializationsBPO.controller';
+import { SpecializationsBPOService } from './specializationsBPO/specializationsBPO.service';
 import errorHandler from './middlewares/errorHandler.middleware';
 
 class App {
@@ -73,7 +81,7 @@ class App {
         const authenticationController = new AuthenticationController(new AuthenticationService(), new UsersService());
         this.app.use('/api/v1', authenticationController.router);
 
-        const usersController = new UsersController(new UsersService(), new JobsService());
+        const usersController = new UsersController(new UsersService());
         this.app.use('/api/v1', usersController.router);
 
         const specializationCategoriesController = new SpecializationCategoriesController(new SpecializationCategoriesService());
@@ -96,6 +104,18 @@ class App {
 
         const regionsController = new RegionsController(new RegionsService());
         this.app.use('/api/v1', regionsController.router);
+
+        const companiesController = new CompaniesController(new CompaniesService());
+        this.app.use('/api/v1', companiesController.router);
+
+        const specializationsController = new SpecializationsController(new SpecializationsService());
+        this.app.use('/api/v1', specializationsController.router);
+
+        const industriesController = new IndustriesController(new IndustriesService());
+        this.app.use('/api/v1', industriesController.router);
+
+        const specializationsBPOController = new SpecializationsBPOController(new SpecializationsBPOService());
+        this.app.use('/api/v1', specializationsBPOController.router);
     }
 
     private setErrorHandlingMiddleware() {

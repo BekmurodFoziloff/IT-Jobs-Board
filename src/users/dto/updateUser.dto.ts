@@ -5,274 +5,273 @@ export class UpdateUserProfileDto {
     @IsOptional()
     @IsString()
     @Trim()
-    photo: string
+    photo: string;
     
     @IsOptional()
     @IsString()
     @IsAlpha()
     @Trim()
     @IsNotEmpty()
-    firstName: string
+    firstName: string;
     
     @IsOptional()
     @IsString()
     @IsAlpha()
     @Trim()
-    middleName: string
+    middleName: string;
     
     @IsOptional()
     @IsString()
     @IsAlpha()
     @Trim()
     @IsNotEmpty()
-    lastName: string
+    lastName: string;
     
     @IsOptional()
     @IsString()
     @Trim()
     @IsNotEmpty()
-    gender: string
+    gender: string;
     
     @IsOptional()
     @IsDateString()
     @Trim()
     @IsNotEmpty()
-    birthDate: Date
+    birthDate: Date;
     
     @IsOptional()
     @IsString()
     @Trim()
     @IsNotEmpty()
-    position: string
+    position: string;
     
     @IsOptional()
     @IsString()
     @Trim()
     @IsNotEmpty()
-    region: string
+    region: string;
     
     @IsOptional()
     @IsString()
     @Trim()
-    aboutMe: string
+    aboutMe: string;
     
     @IsOptional()
     @IsArray()
-    skills: Array<string>
+    skills: Array<string>;
     
     @IsOptional()
     @IsArray()
     @IsNotEmpty()
-    specializationCategories: Array<string>
+    specializationCategories: Array<string>;
 }
 
 export class UpdateUserContactsDto {
     @IsString()
     @IsOptional()
-    id: string
+    id: string;
     
     @IsOptional()
     @IsString()
     @Trim()
     @IsUrl()
-    website: string
+    website: string;
     
     @IsOptional()
     @IsString()
     @Trim()
     @IsEmail()
-    email: string
+    email: string;
     
     @IsOptional()
     @IsString()
     @Trim()
-    phone: string
+    phone: string;
     
     @IsOptional()
     @IsString()
     @Trim()
-    additionalPhone: string
-    
-    @IsOptional()
-    @IsString()
-    @Trim()
-    @IsUrl()
-    facebook: string
+    additionalPhone: string;
     
     @IsOptional()
     @IsString()
     @Trim()
     @IsUrl()
-    twitter: string
+    facebook: string;
     
     @IsOptional()
     @IsString()
     @Trim()
     @IsUrl()
-    linkedLn: string
+    twitter: string;
+    
+    @IsOptional()
+    @IsString()
+    @Trim()
+    @IsUrl()
+    linkedLn: string;
 }
 
 export class UpdateUserWorkExperienceDto {
     @IsString()
     @IsOptional()
-    id: string
+    id: string;
     
     @IsOptional()
     @IsString()
     @Trim()
     @IsNotEmpty()
-    title: string
+    title: string;
     
     @IsOptional()
     @IsArray()
     @IsNotEmpty()
-    employmentTypes: Array<string>
+    employmentTypes: Array<string>;
     
     @IsOptional()
     @IsString()
     @Trim()
-    company: string
+    company: string;
     
     @IsOptional()
     @IsString()
     @Trim()
     @IsNotEmpty()
-    startDateMonth: string
+    startDateMonth: string;
     
     @IsOptional()
     @IsNumber()
     @IsNotEmpty()
-    startDateYear: number
+    startDateYear: number;
 
     @IsString()
     @Trim()
-    endDateMonth: string
+    endDateMonth: string;
     
     @IsOptional()
     @IsNumber()
-    endDateYear: number
+    endDateYear: number;
 }
 
 export class UpdateUserEducationDto {
     @IsString()
     @IsOptional()
-    id: string
+    id: string;
     
     @IsOptional()
     @IsString()
     @Trim()
     @IsNotEmpty()
-    school: string
+    school: string;
     
     @IsOptional()
     @IsString()
     @Trim()
-    dagree: string
+    dagree: string;
     
     @IsOptional()
     @IsString()
     @Trim()
-    fieldOfStudy: string
+    fieldOfStudy: string;
     
     @IsOptional()
     @IsString()
     @Trim()
     @IsNotEmpty()
-    startDateMonth: string
+    startDateMonth: string;
     
     @IsOptional()
     @IsNumber()
     @IsNotEmpty()
-    startDateYear: number
+    startDateYear: number;
 
     @IsString()
     @Trim()
-    endDateMonth: string
+    endDateMonth: string;
     
     @IsOptional()
     @IsNumber()
-    endDateYear: number
+    endDateYear: number;
     
     @IsOptional()
     @IsString()
     @Trim()
-    comments: string
+    comments: string;
 }
 
 export class UpdateUserAchievementDto {
     @IsString()
     @IsOptional()
-    id: string
+    id: string;
     
     @IsOptional()
     @IsString()
     @Trim()
     @IsNotEmpty()
-    title: string
+    title: string;
     
     @IsOptional()
     @IsString()
     @Trim()
-    issuedBy: string
+    issuedBy: string;
     
     @IsOptional()
     @IsDateString()
     @Trim()
-    issuedDate: Date
+    issuedDate: Date;
     
     @IsOptional()
     @IsString()
     @Trim()
-    description: string
+    description: string;
 }
 
 export class UpdateUserGeneralInformationAboutTheProjectDto {
     @IsString()
     @IsOptional()
-    id: string
+    id: string;
     
     @IsOptional()
     @IsString()
     @Trim()
     @IsNotEmpty()
-    title: string
+    title: string;
     
     @IsOptional()
     @IsString()
     @Trim()
     @IsNotEmpty()
-    description: string
+    description: string;
     
     @IsOptional()
     @IsString()
     @Trim()
-    customer: string
+    customer: string;
     
     @IsOptional()
     @IsDateString()
     @Trim()
-    completionDate: Date
+    completionDate: Date;
     
     @IsOptional()
     @IsString()
     @Trim()
     @IsUrl()
-    link: string
+    link: string;
     
     @IsOptional()
     @IsString()
     @Trim()
     @IsNotEmpty()
-    image: string
+    image: string;
     
     @IsOptional()
     @IsString()
     @Trim()
-    image1: string
+    image1: string;
     
     @IsOptional()
     @IsString()
     @Trim()
-    image2: string
-    
+    image2: string;  
 }

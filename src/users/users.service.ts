@@ -335,7 +335,7 @@ export class UsersService {
     }
 
     public async getUserByGeneralInformationAboutTheProject(id: string): Promise<User | null> {
-        return await this.userModel.findOne({ 'postfolios': { $elemMatch: { '_id': id } } })
+        return await this.userModel.findOne({ 'portfolios': { $elemMatch: { '_id': id } } })
             .populate('profile.region', '-owner')
             .populate('profile.skills', '-owner')
             .populate('profile.specializationCategories', '-owner')
@@ -344,7 +344,7 @@ export class UsersService {
 
     public async updateUserUpdateGeneralInformationAboutTheProject(id: string, portfolio: UpdateUserGeneralInformationAboutTheProjectDto): Promise<User | null> {
         return await this.userModel.findOneAndUpdate(
-            { 'postfolios': { $elemMatch: { '_id': id } } },
+            { 'portfolios': { $elemMatch: { '_id': id } } },
             {
                 $set: {
                     'portfolios.$[element]': {
@@ -371,7 +371,7 @@ export class UsersService {
 
     public async updateUserDeleteGeneralInformationAboutTheProject(id: string): Promise<User | null> {
         return await this.userModel.findOneAndUpdate(
-            { 'postfolios': { $elemMatch: { '_id': id } } },
+            { 'portfolios': { $elemMatch: { '_id': id } } },
             {
                 $pull: {
                     'portfolios': {
