@@ -39,6 +39,7 @@ interface ContactInformation extends Document {
     customerAddress: string;
     customerPhoneNumber: string;
     customerAddPhoneNumber: string;
+    contactPerson: string;
     personEmail: string;
     personAddress: string;
     personPhoneNumber: string;
@@ -53,6 +54,6 @@ export interface Order extends Document {
     contact: ContactInformation;
     owner: User;
     condition: string;
-    created?: string;
-    updated?: string;
+    createdAt?: string;
+    updatedAt?: string;
 }
