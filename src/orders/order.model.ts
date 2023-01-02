@@ -2,49 +2,6 @@ import { Schema, model } from 'mongoose';
 import { Order } from './order.interface';
 import { Conditions } from '../utils/enums/condition.enum';
 
-const GeneralInformationAboutTheCustomerSchema = new Schema(
-    {
-        customer: {
-            type: String,
-            required: true
-        },
-        customerType: {
-            type: String,
-            required: true
-        },
-        applicationsOpen: {
-            type: Date,
-            required: true
-        },
-        applicationsClose: {
-            type: Date,
-            required: true
-        },
-        minBudget: {
-            type: Number
-        },
-        maxBudget: {
-            type: Number
-        },
-        currency: {
-            type: String,
-            required: true
-        },
-        negotiable: {
-            type: String
-        },
-        filingConditions: {
-            type: String,
-            required: true
-        },
-        specializations: {
-            type: Schema.Types.ObjectId,
-            ref: 'Specialization',
-            required: true
-        }
-    }
-);
-
 const GeneralInformationAboutTheProjectSchema = new Schema(
     {
         title: {
@@ -126,7 +83,44 @@ const ContactInformationSchema = new Schema(
 
 const OrderSchema = new Schema(
     {
-        customer: GeneralInformationAboutTheCustomerSchema,
+        customer: {
+            type: String,
+            required: true
+        },
+        customerType: {
+            type: String,
+            required: true
+        },
+        applicationsOpen: {
+            type: Date,
+            required: true
+        },
+        applicationsClose: {
+            type: Date,
+            required: true
+        },
+        minBudget: {
+            type: Number
+        },
+        maxBudget: {
+            type: Number
+        },
+        currency: {
+            type: String,
+            required: true
+        },
+        negotiable: {
+            type: String
+        },
+        filingConditions: {
+            type: String,
+            required: true
+        },
+        specializations: {
+            type: Schema.Types.ObjectId,
+            ref: 'Specialization',
+            required: true
+        },
         project: GeneralInformationAboutTheProjectSchema,
         requirement: GeneralRequirementsToTheExecutorSchema,
         contact: ContactInformationSchema,

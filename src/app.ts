@@ -31,8 +31,8 @@ import { IndustriesController } from './industries/industries.controller';
 import { IndustriesService } from './industries/industries.service';
 import { SpecializationsBPOController } from './specializationsBPO/specializationsBPO.controller';
 import { SpecializationsBPOService } from './specializationsBPO/specializationsBPO.service';
-import { JobApplicationsController } from './jobApplication/jobApplications.controller';
-import { JobApplicationsService } from './jobApplication/jobApplications.service';
+import { JobApplicationsController } from './jobApplications/jobApplications.controller';
+import { JobApplicationsService } from './jobApplications/jobApplications.service';
 import errorHandler from './middlewares/errorHandler.middleware';
 
 class App {
