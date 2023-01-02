@@ -34,9 +34,6 @@ const JobApplicationSchema = new Schema(
         },
         createdAt: {
             type: String
-        },
-        updatedAt: {
-            type: String
         }
     }
 );

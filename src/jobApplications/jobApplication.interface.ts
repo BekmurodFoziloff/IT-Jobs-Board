@@ -11,5 +11,4 @@ export interface JobApplication extends Document {
     gender: string;
     jobOwner: string;
     createdAt?: string;
-    updatedAt?: string;
 }

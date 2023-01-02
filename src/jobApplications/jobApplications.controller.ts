@@ -27,7 +27,7 @@ export class JobApplicationsController {
         this.router.route(`/my/residents${this.path}/list/:id/delete`)
             .delete(authMiddleware, this.deleteJobApplication);
         this.router.route(`/my/residents${this.path}/list/delete-all`)
-            .delete(authMiddleware, this.deleteAllJobsApllicationsOfUser);
+            .delete(authMiddleware, this.deleteAllJobsApllications);
     }
 
     private createJobApplication = async (req: Request, res: Response, next: NextFunction) => {
@@ -44,8 +44,8 @@ export class JobApplicationsController {
     private getAllJobsApllicationsOfUser = async (req: Request, res: Response) => {
         const jobOwnerId = (req as RequestWithUser).user.id;
         const { query } = req;
-        const jobs = await this.jobApplicationsService.getAllJobApllicationsOfUser(jobOwnerId, query);
-        return res.send(jobs);
+        const jobApplications = await this.jobApplicationsService.getAllJobApllicationsOfUser(jobOwnerId, query);
+        return res.send(jobApplications);
     }
 
     private deleteJobApplication = async (req: Request, res: Response, next: NextFunction) => {
@@ -57,9 +57,9 @@ export class JobApplicationsController {
         next(new JobApplicationNotFoundException(id));
     }
 
-    private deleteAllJobsApllicationsOfUser = async (req: Request, res: Response) => {
+    private deleteAllJobsApllications = async (req: Request, res: Response) => {
         const jobOwnerId = (req as RequestWithUser).user.id;
-        const deleteJobApplicationsResult = await this.jobApplicationsService.deleteAllJobApplications(jobOwnerId);
-        return res.send(deleteJobApplicationsResult);
+        const deleteAllJobApplicationsResult = await this.jobApplicationsService.deleteAllJobApplications(jobOwnerId);
+        return res.send(deleteAllJobApplicationsResult);
     }
 }
