@@ -9,7 +9,7 @@ import {
 @ValidatorConstraint({ async: true })
 export class IsUniqueNameConstraint implements ValidatorConstraintInterface {
     validate(toDate: Date, args: ValidationArguments) {
-        if (new Date(`${toDate}`).toLocaleDateString() > new Date().toLocaleDateString()) {
+        if (new Date(`${toDate}`).getTime() > new Date().getTime()) {
             return true;
         }
         return false;

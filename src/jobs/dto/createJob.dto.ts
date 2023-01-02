@@ -32,10 +32,10 @@ export class CreateJobDto {
     workStyles: Array<string>;
 
     @IsNumber()
-     IsArraynSalary: number;
+    minSalary: number;
 
     @IsNumber()
-     IsArrayxSalary: number;
+    maxSalary: number;
 
     @IsString()
     @Trim()
@@ -48,7 +48,6 @@ export class CreateJobDto {
 
     @IsDateString()
     @IsFutureDate()
-    @IsArray()
     @IsNotEmpty()
     toDate: Date;
 }

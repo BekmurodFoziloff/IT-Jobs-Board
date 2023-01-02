@@ -44,7 +44,7 @@ export class CompaniesController {
         this.router.route(`/my${this.path}/:id/team/new`)
             .put(authMiddleware, dtoValidationMiddleware(UpdateCompanyTeamDto, true), this.updateCompanyCreateTeam);
         this.router.route(`/my${this.path}/team/:id/edit`)
-            .put(authMiddleware, dtoValidationMiddleware(UpdateCompanyTeamDto, true), this.updateUserUpdateTeam);
+            .put(authMiddleware, dtoValidationMiddleware(UpdateCompanyTeamDto, true), this.updateCompanyUpdateTeam);
         this.router.route(`/my${this.path}/team/:id/delete`)
             .put(authMiddleware, dtoValidationMiddleware(UpdateCompanyTeamDto, true), this.updateCompanyDeleteTeam);
         this.router.route(`/my${this.path}/:id/publish`)
@@ -180,7 +180,7 @@ export class CompaniesController {
         next(new NotAuthorizedException());
     }
 
-    private updateUserUpdateTeam = async (req: Request, res: Response, next: NextFunction) => {
+    private updateCompanyUpdateTeam = async (req: Request, res: Response, next: NextFunction) => {
         const companyTeam: UpdateCompanyTeamDto = req.body;
         const { id } = req.params;
         await this.companiesService.updateCompanyUpdateTeam(

@@ -31,6 +31,8 @@ import { IndustriesController } from './industries/industries.controller';
 import { IndustriesService } from './industries/industries.service';
 import { SpecializationsBPOController } from './specializationsBPO/specializationsBPO.controller';
 import { SpecializationsBPOService } from './specializationsBPO/specializationsBPO.service';
+import { JobApplicationsController } from './jobApplication/jobApplications.controller';
+import { JobApplicationsService } from './jobApplication/jobApplications.service';
 import errorHandler from './middlewares/errorHandler.middleware';
 
 class App {
@@ -116,6 +118,9 @@ class App {
 
         const specializationsBPOController = new SpecializationsBPOController(new SpecializationsBPOService());
         this.app.use('/api/v1', specializationsBPOController.router);
+
+        const jobApplicationsController = new JobApplicationsController(new JobApplicationsService(), new JobsService());
+        this.app.use('/api/v1', jobApplicationsController.router);
     }
 
     private setErrorHandlingMiddleware() {
