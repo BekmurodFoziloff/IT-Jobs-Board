@@ -1,6 +1,6 @@
 import { IsString, IsNumber, IsNotEmpty, IsArray, IsDateString } from 'class-validator';
 import { Trim } from 'class-sanitizer';
-import { IsFutureDate } from '../../utils/validators/IsFutureDate.validate';
+import { IsFutureDate } from '../../utils/validators/IsFutureDate.validator';
 
 export class CreateJobDto {
     @IsString()

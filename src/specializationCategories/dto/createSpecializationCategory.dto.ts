@@ -1,6 +1,6 @@
 import { IsString, IsNotEmpty } from 'class-validator';
 import { Trim } from 'class-sanitizer';
-import { IsUniqueName } from '../../utils/validators/IsUniqueNameSpecializationCategory.validate';
+import { IsUniqueName } from '../../utils/validators/IsUniqueNameSpecializationCategory.validator';
 
 export class CreateSpecializationCategoryDto {
     @IsString()

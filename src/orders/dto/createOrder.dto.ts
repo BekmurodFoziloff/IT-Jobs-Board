@@ -1,7 +1,7 @@
 import { IsArray, IsDateString, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 import { Trim } from 'class-sanitizer';
-import { IsFutureDate } from '../../utils/validators/IsFutureDate.validate';
-import { IsEndDateGreatThanStartDate } from '../../utils/validators/IsEndDateGreatThanStartDate.validate';
+import { IsFutureDate } from '../../utils/validators/IsFutureDate.validator';
+import { IsEndDateGreatThanStartDate } from '../../utils/validators/IsEndDateGreatThanStartDate.validator';
 
 export class CreateOrderDto {
     @IsString()

@@ -1,6 +1,6 @@
 import { IsString, IsNotEmpty, IsOptional, IsArray, IsUrl, IsEmail, IsBoolean, IsNumber } from 'class-validator';
 import { Trim } from 'class-sanitizer';
-import { IsUniqueName } from '../../utils/validators/IsUniqueNameCompany.validate';
+import { IsUniqueName } from '../../utils/validators/IsUniqueNameCompany.validator';
 
 export class UpdateCompanyDto {
     @IsString()

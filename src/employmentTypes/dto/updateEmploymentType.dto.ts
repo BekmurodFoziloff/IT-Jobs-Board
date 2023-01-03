@@ -1,6 +1,6 @@
 import { IsString, IsNotEmpty, IsOptional } from 'class-validator';
 import { Trim } from 'class-sanitizer';
-import { IsUniqueName } from '../../utils/validators/IsUniqueNameEmploymentType.validate';
+import { IsUniqueName } from '../../utils/validators/IsUniqueNameEmploymentType.validator';
 
 export class UpdateEmploymentTypeDto {
     @IsString()
