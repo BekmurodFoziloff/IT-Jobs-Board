@@ -66,17 +66,17 @@ export class UsersController {
 
     private findUserById = async (req: Request, res: Response, next: NextFunction) => {
         const { id } = req.params;
-        const job = await this.usersService.findUserById(id);
-        if (job) {
-            return res.send(job);
+        const user = await this.usersService.findUserById(id);
+        if (user) {
+            return res.send(user);
         }
         next(new ProfessionalNotFoundException(id));
     }
 
     private findAllUsers = async (req: Request, res: Response) => {
         const { query } = req;
-        const jobs = await this.usersService.findAllUsers(query);
-        res.send(jobs);
+        const users = await this.usersService.findAllUsers(query);
+        res.send(users);
     }
 
     private updateUserProfile = async (req: Request, res: Response) => {

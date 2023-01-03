@@ -2,7 +2,13 @@ import { Router, Request, Response, NextFunction } from 'express';
 import { CompaniesService } from './companies.service';
 import dtoValidationMiddleware from '../middlewares/dtoValidation.middleware';
 import { CreateCompanyDto } from './dto/createCompany.dto';
-import { UpdateCompanyContactsDto, UpdateCompanyDto, UpdateBusinessProcessOutsourcingDto, UpdateCompanyGeneralInformationAboutTheProjectDto, UpdateCompanyTeamDto } from './dto/updateCompany.dto';
+import {
+    UpdateCompanyContactsDto,
+    UpdateCompanyDto,
+    UpdateBusinessProcessOutsourcingDto,
+    UpdateCompanyGeneralInformationAboutTheProjectDto,
+    UpdateCompanyTeamDto
+} from './dto/updateCompany.dto';
 import CompanyNotFoundException from '../exceptions/CompanyNotFoundException';
 import authMiddleware from '../middlewares/auth.middleware';
 import RequestWithUser from '../interfaces/requestWithUser.interface';
@@ -48,9 +54,9 @@ export class CompaniesController {
         this.router.route(`/my${this.path}/team/:id/delete`)
             .put(authMiddleware, dtoValidationMiddleware(UpdateCompanyTeamDto, true), this.updateCompanyDeleteTeam);
         this.router.route(`/my${this.path}/:id/publish`)
-            .put(this.publish);
+            .put(authMiddleware, this.publish);
         this.router.route(`/my${this.path}/:id/publish-cancel`)
-            .put(this.publishCancel);
+            .put(authMiddleware, this.publishCancel);
     }
 
     private findCompanyById = async (req: Request, res: Response, next: NextFunction) => {
@@ -228,7 +234,7 @@ export class CompaniesController {
 
     private getAllCompaniesOfUser = async (req: Request, res: Response) => {
         const userId = (req as RequestWithUser).user.id;
-        const jobs = await this.companiesService.getAllCompaniesOfUser(userId);
-        return res.send(jobs);
+        const companies = await this.companiesService.getAllCompaniesOfUser(userId);
+        return res.send(companies);
     }
 }

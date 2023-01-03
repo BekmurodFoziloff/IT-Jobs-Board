@@ -1,5 +1,7 @@
 import { IsArray, IsDateString, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 import { Trim } from 'class-sanitizer';
+import { IsFutureDate } from '../../utils/validators/IsFutureDate.validate';
+import { IsEndDateGreatThanStartDate } from '../../utils/validators/IsEndDateGreatThanStartDate.validate';
 
 export class UpdateOrderDto {
     @IsString()
@@ -20,11 +22,14 @@ export class UpdateOrderDto {
 
     @IsDateString()
     @IsNotEmpty()
+    @IsFutureDate()
     @IsOptional()
     applicationsOpen: Date;
 
     @IsDateString()
     @IsNotEmpty()
+    @IsFutureDate()
+    @IsEndDateGreatThanStartDate('applicationsOpen')
     @IsOptional()
     applicationsClose: Date;
 
@@ -60,7 +65,7 @@ export class UpdateOrderDto {
 
 export default UpdateOrderDto;
 
-export class UpdateGeneralInformationAboutTheProjecttDto {
+export class UpdateGeneralInformationAboutTheProjectDto {
     @IsString()
     @IsOptional()
     id: string;
@@ -80,6 +85,7 @@ export class UpdateGeneralInformationAboutTheProjecttDto {
     @IsString()
     @Trim()
     @IsNotEmpty()
+    @IsFutureDate()
     @IsOptional()
     deadline: Date;
 

@@ -1,6 +1,10 @@
 import JobModel from './job.model';
 import CreateJobDto from './dto/createJob.dto';
-import UpdateJobDto, { UpdateGeneralInformationAboutTheEmployerDto, UpdateJobRequirementsDto } from './dto/updateJob.dto';
+import {
+    UpdateJobDto,
+    UpdateGeneralInformationAboutTheEmployerDto,
+    UpdateJobRequirementsDto
+} from './dto/updateJob.dto';
 import { Job } from './job.interface';
 import moment from 'moment';
 import { User } from '../users/user.interface';
@@ -26,11 +30,11 @@ export class JobsService {
         const query: JobFilterQuery = {};
         if (queryObj.employmentTypes && queryObj.employmentTypes.length > 0) {
             query['employmentTypes'] = { $in: queryObj.employmentTypes }
-        } else  if (queryObj.workExperience) {
+        } else if (queryObj.workExperience) {
             query['jobRequirements.workExperience'] = { $in: queryObj.workExperience }
-        } else  if (queryObj.specializationCategories && queryObj.specializationCategories.length > 0) {
+        } else if (queryObj.specializationCategories && queryObj.specializationCategories.length > 0) {
             query['specializationCategories'] = { $in: queryObj.specializationCategories }
-        } else  if (queryObj.requiredSkills && queryObj.requiredSkills.length > 0) {
+        } else if (queryObj.requiredSkills && queryObj.requiredSkills.length > 0) {
             query['jobRequirements.requiredSkills'] = { $in: queryObj.requiredSkills }
         }
         return await this.jobModel.find(query)

@@ -33,6 +33,8 @@ import { SpecializationsBPOController } from './specializationsBPO/specializatio
 import { SpecializationsBPOService } from './specializationsBPO/specializationsBPO.service';
 import { JobApplicationsController } from './jobApplications/jobApplications.controller';
 import { JobApplicationsService } from './jobApplications/jobApplications.service';
+import { OrdersController } from './orders/orders.controller';
+import { OrdersService } from './orders/orders.service';
 import errorHandler from './middlewares/errorHandler.middleware';
 
 class App {
@@ -121,6 +123,9 @@ class App {
 
         const jobApplicationsController = new JobApplicationsController(new JobApplicationsService(), new JobsService());
         this.app.use('/api/v1', jobApplicationsController.router);
+
+        const ordersController = new OrdersController(new OrdersService());
+        this.app.use('/api/v1', ordersController.router);
     }
 
     private setErrorHandlingMiddleware() {

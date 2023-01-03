@@ -24,7 +24,7 @@ const GeneralInformationAboutTheProjectSchema = new Schema(
             required: true
         }
     }
-)
+);
 
 const GeneralRequirementsToTheExecutorSchema = new Schema(
     {
@@ -38,7 +38,7 @@ const GeneralRequirementsToTheExecutorSchema = new Schema(
             type: String
         }
     }
-)
+);
 
 const ContactInformationSchema = new Schema(
     {
@@ -116,11 +116,13 @@ const OrderSchema = new Schema(
             type: String,
             required: true
         },
-        specializations: {
-            type: Schema.Types.ObjectId,
-            ref: 'Specialization',
-            required: true
-        },
+        specializations: [
+            {
+                type: Schema.Types.ObjectId,
+                ref: 'Specialization',
+                required: true
+            }
+        ],
         project: GeneralInformationAboutTheProjectSchema,
         requirement: GeneralRequirementsToTheExecutorSchema,
         contact: ContactInformationSchema,
@@ -141,8 +143,27 @@ const OrderSchema = new Schema(
         updatedAt: {
             type: String
         }
+    },
+    {
+        toJSON: { virtuals: true }
     }
 );
+
+OrderSchema.virtual('status').get(function () {
+    if (new Date(`${this.applicationsClose}`).getTime() > new Date().getTime()) {
+        return 'open';
+    } else if (new Date(`${this.applicationsClose}`).getTime() < new Date().getTime()) {
+        return 'closed';
+    }
+})
+
+OrderSchema.virtual('archived').get(function () {
+    if (new Date(`${this.applicationsClose}`).getTime() > new Date().getTime()) {
+        return false;
+    } else if (new Date(`${this.applicationsClose}`).getTime() < new Date().getTime()) {
+        return true;
+    }
+})
 
 const OrderModel = model<Order>('Order', OrderSchema);
 

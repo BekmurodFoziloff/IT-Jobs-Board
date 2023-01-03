@@ -7,9 +7,9 @@ import {
 } from 'class-validator';
 
 @ValidatorConstraint({ async: true })
-export class IsUniqueNameConstraint implements ValidatorConstraintInterface {
-    validate(toDate: Date, args: ValidationArguments) {
-        if (new Date(`${toDate}`).getTime() > new Date().getTime()) {
+export class IsFutureDateConstraint implements ValidatorConstraintInterface {
+    validate(value: Date, args: ValidationArguments) {
+        if (new Date(`${value}`).getTime() > new Date().getTime()) {
             return true;
         }
         return false;
@@ -28,7 +28,7 @@ export function IsFutureDate(validationOptions?: ValidationOptions) {
             propertyName: propertyName,
             options: validationOptions,
             constraints: [],
-            validator: IsUniqueNameConstraint
+            validator: IsFutureDateConstraint
         });
     };
 }

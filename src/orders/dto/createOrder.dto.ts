@@ -1,5 +1,7 @@
 import { IsArray, IsDateString, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 import { Trim } from 'class-sanitizer';
+import { IsFutureDate } from '../../utils/validators/IsFutureDate.validate';
+import { IsEndDateGreatThanStartDate } from '../../utils/validators/IsEndDateGreatThanStartDate.validate';
 
 export class CreateOrderDto {
     @IsString()
@@ -13,10 +15,13 @@ export class CreateOrderDto {
     customerType: string;
 
     @IsDateString()
+    @IsFutureDate()
     @IsNotEmpty()
     applicationsOpen: Date;
 
     @IsDateString()
+    @IsFutureDate()
+    @IsEndDateGreatThanStartDate('applicationsOpen')
     @IsNotEmpty()
     applicationsClose: Date;
 

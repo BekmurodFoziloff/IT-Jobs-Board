@@ -2,7 +2,11 @@ import { Router, Request, Response, NextFunction } from 'express';
 import { JobsService } from './jobs.service';
 import dtoValidationMiddleware from '../middlewares/dtoValidation.middleware';
 import CreateJobDto from './dto/createJob.dto';
-import UpdateJobDto, { UpdateGeneralInformationAboutTheEmployerDto, UpdateJobRequirementsDto } from './dto/updateJob.dto';
+import {
+    UpdateJobDto,
+    UpdateGeneralInformationAboutTheEmployerDto,
+    UpdateJobRequirementsDto
+} from './dto/updateJob.dto';
 import JobNotFoundException from '../exceptions/JobNotFoundException';
 import authMiddleware from '../middlewares/auth.middleware';
 import RequestWithUser from '../interfaces/requestWithUser.interface';
@@ -33,9 +37,9 @@ export class JobsController {
         this.router.route(`/my${this.path}/:id/delete`)
             .delete(authMiddleware, this.deleteJob);
         this.router.route(`/my${this.path}/:id/publish`)
-            .put(this.publish);
+            .put(authMiddleware, this.publish);
         this.router.route(`/my${this.path}/:id/publish-cancel`)
-            .put(this.publishCancel);
+            .put(authMiddleware, this.publishCancel);
     }
 
     private findJobById = async (req: Request, res: Response, next: NextFunction) => {

@@ -3,12 +3,12 @@ interface UserFilterQuery {
         specializationCategories?: {
             $in: Array<string>;
         };
-        region: {
+        region?: {
             $in: Array<string>;
-        },
-        skills: {
+        };
+        skills?: {
             $in: Array<string>;
-        }
+        };
     };
 }
 

@@ -50,5 +50,5 @@ export interface Order extends Document {
     owner: User;
     condition: string;
     createdAt?: string;
-    updatedAt   ?   :       s   t   r   i   n   g   ;   
+    updatedAt?: string   
     }                                                       
