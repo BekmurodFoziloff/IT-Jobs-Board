@@ -26,6 +26,8 @@ export class UsersController {
     }
 
     public setRoutes() {
+        this.router.route(`${this.path}/profile/:id/delete`)
+            .put(authMiddleware, this.deleteUser);
         this.router.route(`${this.path}/profile/:id/edit`)
             .put(authMiddleware, dtoValidationMiddleware(UpdateUserProfileDto, true), this.updateUserProfile);
         this.router.route(`${this.path}/profile/contacts/:id/edit`)
@@ -77,6 +79,12 @@ export class UsersController {
         const { query } = req;
         const users = await this.usersService.findAllUsers(query);
         res.send(users);
+    }
+
+    private deleteUser = async (req: Request, res: Response) => {
+        const { id } = req.params;
+        const deleteUserResult = await this.usersService.deleteUser(id);
+        res.send(deleteUserResult);
     }
 
     private updateUserProfile = async (req: Request, res: Response) => {
