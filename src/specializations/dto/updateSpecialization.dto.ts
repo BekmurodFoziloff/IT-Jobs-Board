@@ -4,7 +4,7 @@ import { IsUniqueName } from '../../utils/validators/IsUniqueNameSpecialization.
 
 export class UpdateSpecializationDto {
     @IsString()
-    @IsNotEmpty()
+    @IsOptional()
     id: string;
 
     @IsOptional()

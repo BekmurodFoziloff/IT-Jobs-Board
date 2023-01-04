@@ -15,8 +15,8 @@ import { EmploymentTypesController } from './employmentTypes/employmentType.cont
 import { EmploymentTypesService } from './employmentTypes/employmentTypes.service';
 import { LegalFormsController } from './legalForms/legalForms.controller';
 import { LegalFormsService } from './legalForms/legalForms.service';
-import { RequiredSkillsController } from './requiredSkills/requiredSkills.controller';
-import { RequiredSkillsService } from './requiredSkills/requiredSkills.service';
+import { SkillsController } from './skills/skills.controller';
+import { SkillsService } from './skills/skills.service';
 import { WorkStylesController } from './workStyles/workStyles.controller';
 import { WorkStylesService } from './workStyles/workStyles.service';
 import { WorkExperiencesController } from './workExperiences/workExperiences.controller';
@@ -97,8 +97,8 @@ class App {
         const legalFormsController = new LegalFormsController(new LegalFormsService());
         this.app.use('/api/v1', legalFormsController.router);
 
-        const requiredSkillsController = new RequiredSkillsController(new RequiredSkillsService());
-        this.app.use('/api/v1', requiredSkillsController.router);
+        const skillsController = new SkillsController(new SkillsService());
+        this.app.use('/api/v1', skillsController.router);
 
         const workExperiencesController = new WorkExperiencesController(new WorkExperiencesService());
         this.app.use('/api/v1', workExperiencesController.router);

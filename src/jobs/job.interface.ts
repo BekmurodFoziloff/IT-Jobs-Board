@@ -1,7 +1,7 @@
 import { Document } from 'mongoose';
 import { User } from '../users/user.interface';
 import { SpecializationCategory } from '../specializationCategories/specializationCategory.interface';
-import { RequiredSkill } from '../requiredSkills/requiredSkill.interface';
+import { Skill } from '../skills/skill.interface';
 import { WorkExperience } from '../workExperiences/workExperience.interface';
 import { EmploymentType } from '../employmentTypes/employmentType.interface';
 import { WorkStyle } from '../workStyles/workStyle.interface';
@@ -13,7 +13,7 @@ interface JobRequirements extends Document {
     maxAge: number;
     workExperience: WorkExperience;
     additationRequirements: string;
-    requiredSkills: RequiredSkill[];
+    skills: Skill[];
 }
 
 interface GeneralInformationAboutTheEmployer extends Document {

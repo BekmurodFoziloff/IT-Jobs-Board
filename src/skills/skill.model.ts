@@ -1,7 +1,7 @@
 import { Schema, model } from 'mongoose';
-import { RequiredSkill } from './requiredSkill.interface';
+import { Skill } from './skill.interface';
 
-const RequiredSkillSchema = new Schema(
+const SkillSchema = new Schema(
     {
         name: {
             type: String,
@@ -22,6 +22,6 @@ const RequiredSkillSchema = new Schema(
     }
 );
 
-const RequiredSkillModel = model<RequiredSkill>('RequiredSkill', RequiredSkillSchema);
+const SkillModel = model<Skill>('Skill', SkillSchema);
 
-export default RequiredSkillModel;
+export default SkillModel;

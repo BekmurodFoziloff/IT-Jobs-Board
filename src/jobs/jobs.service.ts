@@ -22,7 +22,7 @@ export class JobsService {
             .populate('specializationCategories', '-owner')
             .populate('workStyles', '-owner')
             .populate('jobRequirements.workExperience', '-owner')
-            .populate('jobRequirements.requiredSkills', '-owner')
+            .populate('jobRequirements.skills', '-owner')
             .populate('generalInformationAboutTheEmployer.legalForm', '-owner');
     }
 
@@ -34,8 +34,8 @@ export class JobsService {
             query['jobRequirements.workExperience'] = { $in: queryObj.workExperience }
         } else if (queryObj.specializationCategories && queryObj.specializationCategories.length > 0) {
             query['specializationCategories'] = { $in: queryObj.specializationCategories }
-        } else if (queryObj.requiredSkills && queryObj.requiredSkills.length > 0) {
-            query['jobRequirements.requiredSkills'] = { $in: queryObj.requiredSkills }
+        } else if (queryObj.skills && queryObj.skills.length > 0) {
+            query['jobRequirements.skills'] = { $in: queryObj.skills }
         }
         return await this.jobModel.find(query)
             .where('condition').equals(Conditions.PUBLIC)
@@ -44,7 +44,7 @@ export class JobsService {
             .populate('specializationCategories', '-owner')
             .populate('workStyles', '-owner')
             .populate('jobRequirements.workExperience', '-owner')
-            .populate('jobRequirements.requiredSkills', '-owner')
+            .populate('jobRequirements.skills', '-owner')
             .populate('generalInformationAboutTheEmployer.legalForm', '-owner');
     }
 
@@ -66,7 +66,7 @@ export class JobsService {
             .populate('specializationCategories', '-owner')
             .populate('workStyles', '-owner')
             .populate('jobRequirements.workExperience', '-owner')
-            .populate('jobRequirements.requiredSkills', '-owner')
+            .populate('jobRequirements.skills', '-owner')
             .populate('generalInformationAboutTheEmployer.legalForm', '-owner');
     }
 
@@ -83,7 +83,7 @@ export class JobsService {
             .populate('specializationCategories', '-owner')
             .populate('workStyles', '-owner')
             .populate('jobRequirements.workExperience', '-owner')
-            .populate('jobRequirements.requiredSkills', '-owner')
+            .populate('jobRequirements.skills', '-owner')
             .populate('generalInformationAboutTheEmployer.legalForm', '-owner');
     }
 
@@ -105,7 +105,7 @@ export class JobsService {
             .populate('specializationCategories', '-owner')
             .populate('workStyles', '-owner')
             .populate('jobRequirements.workExperience', '-owner')
-            .populate('jobRequirements.requiredSkills', '-owner')
+            .populate('jobRequirements.skills', '-owner')
             .populate('generalInformationAboutTheEmployer.legalForm', '-owner');
     }
 
@@ -127,7 +127,7 @@ export class JobsService {
             .populate('specializationCategories', '-owner')
             .populate('workStyles', '-owner')
             .populate('jobRequirements.workExperience', '-owner')
-            .populate('jobRequirements.requiredSkills', '-owner')
+            .populate('jobRequirements.skills', '-owner')
             .populate('generalInformationAboutTheEmployer.legalForm', '-owner');
     }
 
@@ -138,7 +138,7 @@ export class JobsService {
             .populate('specializationCategories', '-owner')
             .populate('workStyles', '-owner')
             .populate('jobRequirements.workExperience', '-owner')
-            .populate('jobRequirements.requiredSkills', '-owner')
+            .populate('jobRequirements.skills', '-owner')
             .populate('generalInformationAboutTheEmployer.legalForm', '-owner');
     }
 
@@ -149,7 +149,7 @@ export class JobsService {
             .populate('specializationCategories', '-owner')
             .populate('workStyles', '-owner')
             .populate('jobRequirements.workExperience', '-owner')
-            .populate('jobRequirements.requiredSkills', '-owner')
+            .populate('jobRequirements.skills', '-owner')
             .populate('generalInformationAboutTheEmployer.legalForm', '-owner');
     }
 
@@ -167,7 +167,7 @@ export class JobsService {
             .populate('specializationCategories', '-owner')
             .populate('workStyles', '-owner')
             .populate('jobRequirements.workExperience', '-owner')
-            .populate('jobRequirements.requiredSkills', '-owner')
+            .populate('jobRequirements.skills', '-owner')
             .populate('generalInformationAboutTheEmployer.legalForm', '-owner');
     }
 
@@ -185,7 +185,7 @@ export class JobsService {
             .populate('specializationCategories', '-owner')
             .populate('workStyles', '-owner')
             .populate('jobRequirements.workExperience', '-owner')
-            .populate('jobRequirements.requiredSkills', '-owner')
+            .populate('jobRequirements.skills', '-owner')
             .populate('generalInformationAboutTheEmployer.legalForm', '-owner');
     }
 }

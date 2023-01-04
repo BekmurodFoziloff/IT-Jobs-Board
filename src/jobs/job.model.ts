@@ -17,10 +17,10 @@ const JobRequirementsSchema = new Schema({
     additationRequirements: {
         type: String
     },
-    requiredSkills: [
+    skills: [
         {
             type: Schema.Types.ObjectId,
-            ref: 'RequiredSkill'
+            ref: 'Skill'
         }
     ]
 });

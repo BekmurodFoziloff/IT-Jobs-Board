@@ -4,7 +4,7 @@ import { IsUniqueName } from '../../utils/validators/IsUniqueNameIndustry.valida
 
 export class UpdateIndustryDto {
     @IsString()
-    @IsNotEmpty()
+    @IsOptional()
     id: string;
 
     @IsOptional()

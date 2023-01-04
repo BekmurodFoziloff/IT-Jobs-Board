@@ -95,7 +95,7 @@ export class UpdateJobRequirementsDto {
 
     @IsOptional()
     @IsArray()
-    requiredSkills: Array<string>;
+    skills: Array<string>;
 }
 
 export class UpdateGeneralInformationAboutTheEmployerDto {

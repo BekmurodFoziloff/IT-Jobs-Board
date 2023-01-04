@@ -1,8 +1,8 @@
 import { IsString, IsNotEmpty, IsOptional } from 'class-validator';
 import { Trim } from 'class-sanitizer';
-import { IsUniqueName } from '../../utils/validators/IsUniqueNameRequiredSkill.validator';
+import { IsUniqueName } from '../../utils/validators/IsUniqueNameSkill.validator';
 
-export class UpdateRequiredSkillDto {
+export class UpdateSkillDto {
     @IsString()
     @IsOptional()
     id: string;

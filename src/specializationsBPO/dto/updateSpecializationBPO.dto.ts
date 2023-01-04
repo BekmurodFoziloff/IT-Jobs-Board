@@ -4,7 +4,7 @@ import { IsUniqueName } from '../../utils/validators/IsUniqueNameSpecializationB
 
 export class UpdateSpecializationBPODto {
     @IsString()
-    @IsNotEmpty()
+    @IsOptional()
     id: string;
 
     @IsOptional()

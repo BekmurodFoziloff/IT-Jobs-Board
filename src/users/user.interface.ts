@@ -1,7 +1,7 @@
 import { Document } from 'mongoose';
 import { EmploymentType } from '../employmentTypes/employmentType.interface';
 import { Region } from '../regions/region.interface';
-import { RequiredSkill } from '../requiredSkills/requiredSkill.interface';
+import { Skill } from '../skills/skill.interface';
 import { SpecializationCategory } from '../specializationCategories/specializationCategory.interface';
 
 interface GeneralInformationUser extends Document {
@@ -15,7 +15,7 @@ interface GeneralInformationUser extends Document {
     position: string;
     region: Region;
     aboutMe: string;
-    skills: RequiredSkill[];
+    skills: Skill[];
     specializationCategories: SpecializationCategory[];
 }
 

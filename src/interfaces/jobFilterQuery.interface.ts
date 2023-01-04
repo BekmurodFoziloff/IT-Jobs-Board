@@ -6,7 +6,7 @@ interface JobFilterQuery {
         workExperience?: {
             $in: string;
         };
-        requiredSkills?: {
+        skills?: {
             $in: Array<string>;
         };
     };

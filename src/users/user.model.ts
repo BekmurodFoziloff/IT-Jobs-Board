@@ -42,7 +42,7 @@ const GeneralInformationUserSchema = new Schema(
         skills: [
             {
                 type: Schema.Types.ObjectId,
-                ref: 'RequiredSkill'
+                ref: 'Skill'
             }
         ],
         specializationCategories: [
