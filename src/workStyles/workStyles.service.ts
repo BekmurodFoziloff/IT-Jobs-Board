@@ -40,7 +40,8 @@ export class WorkStylesService {
             {
                 ...workStyle,
                 updatedAt: moment().locale('uz-latn').format('LLLL')
-            }
+            },
+            { returnDocument: 'after' }
         )
             .populate('owner', 'email firstName lastName id');
     }

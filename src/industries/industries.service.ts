@@ -40,7 +40,8 @@ export class IndustriesService {
             {
                 ...industry,
                 updatedAt: moment().locale('uz-latn').format('LLLL')
-            }
+            },
+            { returnDocument: 'after' }
         )
             .populate('owner', 'email firstName lastName id');
     }

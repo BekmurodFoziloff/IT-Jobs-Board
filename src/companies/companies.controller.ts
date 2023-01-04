@@ -3,18 +3,18 @@ import { CompaniesService } from './companies.service';
 import dtoValidationMiddleware from '../middlewares/dtoValidation.middleware';
 import { CreateCompanyDto } from './dto/createCompany.dto';
 import {
-    UpdateCompanyContactsDto,
+    UpdateContactsDto,
     UpdateCompanyDto,
-    UpdateBusinessProcessOutsourcingDto,
-    UpdateCompanyGeneralInformationAboutTheProjectDto,
+    UpdateBPODto,
+    UpdateCompanyPortfolioDto,
     UpdateCompanyTeamDto
 } from './dto/updateCompany.dto';
 import CompanyNotFoundException from '../exceptions/CompanyNotFoundException';
 import authMiddleware from '../middlewares/auth.middleware';
 import RequestWithUser from '../interfaces/requestWithUser.interface';
-import NotAuthorizedException from '../exceptions/NotAuthorizedException';
 import PortfolioOfCompanyNotFoundException from '../exceptions/PortfolioOfCompanyNotFoundException';
 import TeamOfTeamNotFoundException from '../exceptions/TeamOfCompanyNotFoundException';
+import { isOwnerCompany, isOwnerPortfolio, isOwnerTeam } from '../middlewares/isOwnerCompany.middleware';
 
 export class CompaniesController {
     public path = '/company';
@@ -34,29 +34,29 @@ export class CompaniesController {
         this.router.route(`${this.path}/:id`)
             .get(this.findCompanyById);
         this.router.route(`/my${this.path}/:id/edit`)
-            .put(authMiddleware, dtoValidationMiddleware(UpdateCompanyDto, true), this.updateCompany);
+            .put(authMiddleware, isOwnerCompany, dtoValidationMiddleware(UpdateCompanyDto, true), this.updateCompany);
         this.router.route(`/my${this.path}/:id/delete`)
-            .delete(authMiddleware, this.deleteCompany);
+            .delete(authMiddleware, isOwnerCompany, this.deleteCompany);
         this.router.route(`/my${this.path}/contacts/:id/edit`)
-            .put(authMiddleware, dtoValidationMiddleware(UpdateCompanyContactsDto, true), this.updateCompanyContacts);
+            .put(authMiddleware, isOwnerCompany, dtoValidationMiddleware(UpdateContactsDto, true), this.updateContacts);
         this.router.route(`/my${this.path}/bpo/:id/edit`)
-            .put(authMiddleware, dtoValidationMiddleware(UpdateBusinessProcessOutsourcingDto, true), this.updateCompanyBusinessProcessOutsourcing);
+            .put(authMiddleware, isOwnerCompany, dtoValidationMiddleware(UpdateBPODto, true), this.updateBPO);
         this.router.route(`/my${this.path}/:id/portfolio/new`)
-            .put(authMiddleware, dtoValidationMiddleware(UpdateCompanyGeneralInformationAboutTheProjectDto, true), this.updateCompanyCreateGeneralInformationAboutTheProject);
+            .put(authMiddleware, isOwnerPortfolio, dtoValidationMiddleware(UpdateCompanyPortfolioDto, true), this.updateCompanyCreatePortfolio);
         this.router.route(`/my${this.path}/portfolio/:id/edit`)
-            .put(authMiddleware, dtoValidationMiddleware(UpdateCompanyGeneralInformationAboutTheProjectDto, true), this.updateCompanyUpdateGeneralInformationAboutTheProject);
+            .put(authMiddleware, isOwnerPortfolio, dtoValidationMiddleware(UpdateCompanyPortfolioDto, true), this.updateCompanyUpdatePortfolio);
         this.router.route(`/my${this.path}/portfolio/:id/delete`)
-            .put(authMiddleware, dtoValidationMiddleware(UpdateCompanyGeneralInformationAboutTheProjectDto, true), this.updateCompanyDeleteGeneralInformationAboutTheProject);
+            .put(authMiddleware, isOwnerPortfolio, dtoValidationMiddleware(UpdateCompanyPortfolioDto, true), this.updateCompanyDeletePortfolio);
         this.router.route(`/my${this.path}/:id/team/new`)
-            .put(authMiddleware, dtoValidationMiddleware(UpdateCompanyTeamDto, true), this.updateCompanyCreateTeam);
+            .put(authMiddleware, isOwnerTeam, dtoValidationMiddleware(UpdateCompanyTeamDto, true), this.updateCompanyCreateTeam);
         this.router.route(`/my${this.path}/team/:id/edit`)
-            .put(authMiddleware, dtoValidationMiddleware(UpdateCompanyTeamDto, true), this.updateCompanyUpdateTeam);
+            .put(authMiddleware, isOwnerTeam, dtoValidationMiddleware(UpdateCompanyTeamDto, true), this.updateCompanyUpdateTeam);
         this.router.route(`/my${this.path}/team/:id/delete`)
-            .put(authMiddleware, dtoValidationMiddleware(UpdateCompanyTeamDto, true), this.updateCompanyDeleteTeam);
+            .put(authMiddleware, isOwnerTeam, dtoValidationMiddleware(UpdateCompanyTeamDto, true), this.updateCompanyDeleteTeam);
         this.router.route(`/my${this.path}/:id/publish`)
-            .put(authMiddleware, this.publish);
+            .put(authMiddleware, isOwnerCompany, this.publish);
         this.router.route(`/my${this.path}/:id/publish-cancel`)
-            .put(authMiddleware, this.publishCancel);
+            .put(authMiddleware, isOwnerCompany, this.publishCancel);
     }
 
     private findCompanyById = async (req: Request, res: Response, next: NextFunction) => {
@@ -95,79 +95,73 @@ export class CompaniesController {
     private updateCompany = async (req: Request, res: Response, next: NextFunction) => {
         const companyData: UpdateCompanyDto = req.body;
         const { id } = req.params;
-        await this.companiesService.updateCompany(
+        const updateCompanyResult = await this.companiesService.updateCompany(
             id,
             companyData
         );
-        const updateCompanyResult = await this.companiesService.findCompanyById(id);
         if (updateCompanyResult) {
             return res.send(updateCompanyResult);
         }
         next(new CompanyNotFoundException(id));
     }
 
-    private updateCompanyContacts = async (req: Request, res: Response) => {
-        const companyContactsData: UpdateCompanyContactsDto = req.body;
+    private updateContacts = async (req: Request, res: Response, next: NextFunction) => {
+        const companyContactsData: UpdateContactsDto = req.body;
         const { id } = req.params;
-        await this.companiesService.updateCompanyContacts(
+        const updateCompanyResult = await this.companiesService.updateContacts(
             id,
             companyContactsData
         );
-        const updateCompanyContactsResult = await this.companiesService.findCompanyByIdForUpdate(id);
-        if (updateCompanyContactsResult) {
-            return res.send(updateCompanyContactsResult);
+        if (updateCompanyResult) {
+            return res.send(updateCompanyResult);
         }
+        next(new CompanyNotFoundException(id));
     }
 
-    private updateCompanyBusinessProcessOutsourcing = async (req: Request, res: Response) => {
-        const companyBusinessProcessOutsourcingData: UpdateBusinessProcessOutsourcingDto = req.body;
+    private updateBPO = async (req: Request, res: Response, next: NextFunction) => {
+        const companyBPOData: UpdateBPODto = req.body;
         const { id } = req.params;
-        await this.companiesService.updateCompanyBusinessProcessOutsourcing(
+        const updateCompanyResult = await this.companiesService.updateBPO(
             id,
-            companyBusinessProcessOutsourcingData
+            companyBPOData
         );
-        const updateCompanyBusinessProcessOutsourcingResult = await this.companiesService.findCompanyByIdForUpdate(id);
-        if (updateCompanyBusinessProcessOutsourcingResult) {
-            return res.send(updateCompanyBusinessProcessOutsourcingResult);
+        if (updateCompanyResult) {
+            return res.send(updateCompanyResult);
         }
+        next(new CompanyNotFoundException(id));
     }
 
-    private updateCompanyCreateGeneralInformationAboutTheProject = async (req: Request, res: Response, next: NextFunction) => {
-        const companyGeneralInformationAboutTheProject: UpdateCompanyGeneralInformationAboutTheProjectDto = req.body;
+    private updateCompanyCreatePortfolio = async (req: Request, res: Response, next: NextFunction) => {
+        const companyPortfolio: UpdateCompanyPortfolioDto = req.body;
         const { id } = req.params;
-        await this.companiesService.updateCompanyCreateGeneralInformationAboutTheProject(
+        const updateCompanyResult = await this.companiesService.updateCompanyCreatePortfolio(
             id,
-            companyGeneralInformationAboutTheProject
+            companyPortfolio
         );
-        const companyNewGeneralInformationAboutTheProjectResult = await this.companiesService.findCompanyByIdForUpdate(id);
-        if (companyNewGeneralInformationAboutTheProjectResult) {
-            return res.send(companyNewGeneralInformationAboutTheProjectResult);
+        if (updateCompanyResult) {
+            return res.send(updateCompanyResult);
         }
-        next(new NotAuthorizedException());
+        next(new CompanyNotFoundException(id));
     }
 
-    private updateCompanyUpdateGeneralInformationAboutTheProject = async (req: Request, res: Response, next: NextFunction) => {
-        const companyGeneralInformationAboutTheProject: UpdateCompanyGeneralInformationAboutTheProjectDto = req.body;
+    private updateCompanyUpdatePortfolio = async (req: Request, res: Response, next: NextFunction) => {
+        const companyPortfolio: UpdateCompanyPortfolioDto = req.body;
         const { id } = req.params;
-        await this.companiesService.updateCompanyUpdateGeneralInformationAboutTheProject(
+        const updateCompanyResult = await this.companiesService.updateCompanyUpdatePortfolio(
             id,
-            companyGeneralInformationAboutTheProject
+            companyPortfolio
         );
-        const companyUpdateGeneralInformationAboutTheProjectResult = await this.companiesService.getCompanyByGeneralInformationAboutTheProject(id);
-        if (companyUpdateGeneralInformationAboutTheProjectResult) {
-            return res.send(companyUpdateGeneralInformationAboutTheProjectResult);
+        if (updateCompanyResult) {
+            return res.send(updateCompanyResult);
         }
         next(new PortfolioOfCompanyNotFoundException(id));
     }
 
-    private updateCompanyDeleteGeneralInformationAboutTheProject = async (req: Request, res: Response, next: NextFunction) => {
+    private updateCompanyDeletePortfolio = async (req: Request, res: Response, next: NextFunction) => {
         const { id } = req.params;
-        await this.companiesService.updateCompanyDeleteGeneralInformationAboutTheProject(
-            id
-        );
-        const companyUpdateGeneralInformationAboutTheProjectResult = await this.companiesService.getCompanyByGeneralInformationAboutTheProject(id);
-        if (companyUpdateGeneralInformationAboutTheProjectResult) {
-            return res.send(companyUpdateGeneralInformationAboutTheProjectResult);
+        const updateCompanyResult = await this.companiesService.updateCompanyDeletePortfolio(id);
+        if (updateCompanyResult) {
+            return res.send(updateCompanyResult);
         }
         next(new PortfolioOfCompanyNotFoundException(id));
     }
@@ -175,47 +169,43 @@ export class CompaniesController {
     private updateCompanyCreateTeam = async (req: Request, res: Response, next: NextFunction) => {
         const companyTeam: UpdateCompanyTeamDto = req.body;
         const { id } = req.params;
-        await this.companiesService.updateCompanyCreateTeam(
+        const updateCompanyResult = await this.companiesService.updateCompanyCreateTeam(
             id,
             companyTeam
         );
-        const companyNewTeamResult = await this.companiesService.getCompanyByTeam(id);
-        if (companyNewTeamResult) {
-            return res.send(companyNewTeamResult);
+        if (updateCompanyResult) {
+            return res.send(updateCompanyResult);
         }
-        next(new NotAuthorizedException());
+        next(new CompanyNotFoundException(id));
     }
 
     private updateCompanyUpdateTeam = async (req: Request, res: Response, next: NextFunction) => {
         const companyTeam: UpdateCompanyTeamDto = req.body;
         const { id } = req.params;
-        await this.companiesService.updateCompanyUpdateTeam(
+        const updateCompanyResult = await this.companiesService.updateCompanyUpdateTeam(
             id,
             companyTeam
         );
-        const companyUpdateTeamResult = await this.companiesService.getCompanyByTeam(id);
-        if (companyUpdateTeamResult) {
-            return res.send(companyUpdateTeamResult);
+        if (updateCompanyResult) {
+            return res.send(updateCompanyResult);
         }
         next(new TeamOfTeamNotFoundException(id));
     }
 
     private updateCompanyDeleteTeam = async (req: Request, res: Response, next: NextFunction) => {
         const { id } = req.params;
-        await this.companiesService.updateCompanyDeleteTeam(
+        const updateCompanyResult = await this.companiesService.updateCompanyDeleteTeam(
             id
         );
-        const companyUpdateTeamResult = await this.companiesService.getCompanyByTeam(id);
-        if (companyUpdateTeamResult) {
-            return res.send(companyUpdateTeamResult);
+        if (updateCompanyResult) {
+            return res.send(updateCompanyResult);
         }
         next(new TeamOfTeamNotFoundException(id));
     }
 
     private publish = async (req: Request, res: Response, next: NextFunction) => {
         const { id } = req.params;
-        await this.companiesService.publish(id);
-        const publishCompanyResult = await this.companiesService.findCompanyByIdForUpdate(id);
+        const publishCompanyResult = await this.companiesService.publish(id);
         if (publishCompanyResult) {
             return res.send(publishCompanyResult);
         }
@@ -224,8 +214,7 @@ export class CompaniesController {
 
     private publishCancel = async (req: Request, res: Response, next: NextFunction) => {
         const { id } = req.params;
-        await this.companiesService.publishCancel(id);
-        const publishCancelCompanyResult = await this.companiesService.findCompanyByIdForUpdate(id);
+        const publishCancelCompanyResult = await this.companiesService.publishCancel(id);
         if (publishCancelCompanyResult) {
             return res.send(publishCancelCompanyResult);
         }

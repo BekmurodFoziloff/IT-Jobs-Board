@@ -61,11 +61,10 @@ export class RegionsController {
     private updateRegion = async (req: Request, res: Response, next: NextFunction) => {
         const regionData: UpdateRegionDto = req.body;
         const { id } = req.params;
-        await this.regionsService.updateRegion(
+        const updateRegionResult = await this.regionsService.updateRegion(
             id,
             regionData
         );
-        const updateRegionResult = await this.regionsService.findRegionById(id);
         if (updateRegionResult) {
             return res.send(updateRegionResult);
         }

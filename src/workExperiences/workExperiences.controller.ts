@@ -61,11 +61,10 @@ export class WorkExperiencesController {
     private updateWorkExperience = async (req: Request, res: Response, next: NextFunction) => {
         const workExperienceData: UpdateWorkExperienceDto = req.body;
         const { id } = req.params;
-        await this.workExperiencesService.updateWorkExperience(
+        const updateWorkExperienceResult = await this.workExperiencesService.updateWorkExperience(
             id,
             workExperienceData
         );
-        const updateWorkExperienceResult = await this.workExperiencesService.findWorkExperienceById(id);
         if (updateWorkExperienceResult) {
             return res.send(updateWorkExperienceResult);
         }

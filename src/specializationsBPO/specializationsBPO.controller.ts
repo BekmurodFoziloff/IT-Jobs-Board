@@ -61,11 +61,10 @@ export class SpecializationsBPOController {
     private updateSpecializationBPO = async (req: Request, res: Response, next: NextFunction) => {
         const specializationBPOData: UpdateSpecializationBPODto = req.body;
         const { id } = req.params;
-        await this.specializationsBPOService.updateSpecializationBPO(
+        const updateSpecializationBPOResult = await this.specializationsBPOService.updateSpecializationBPO(
             id,
             specializationBPOData
         );
-        const updateSpecializationBPOResult = await this.specializationsBPOService.findSpecializationBPOById(id);
         if (updateSpecializationBPOResult) {
             return res.send(updateSpecializationBPOResult);
         }

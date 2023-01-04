@@ -2,9 +2,9 @@ import OrderModel from './order.model';
 import CreateOrderDto from './dto/createOrder.dto';
 import {
     UpdateOrderDto,
-    UpdateGeneralInformationAboutTheProjectDto,
-    UpdateGeneralRequirementsToTheExecutorDto,
-    UpdateContactInformationDto
+    UpdateProjectDto,
+    UpdateRequirementsDto,
+    UpdateContactsDto
 }
     from './dto/updateOrder.dto';
 import { Order } from './order.interface';
@@ -20,7 +20,7 @@ export class OrdersService {
         return await this.orderModel.findById(id)
             .where('condition').equals(Conditions.PUBLIC)
             .populate('owner', 'email firstName lastName id')
-            .populate('specializations', '-owner');
+            .populate('specializations', 'id name');
     }
 
     public async findAllOrders(queryObj: any): Promise<Order[] | null> {
@@ -41,7 +41,7 @@ export class OrdersService {
         return await this.orderModel.find(query)
             .where('condition').equals(Conditions.PUBLIC)
             .populate('owner', 'email firstName lastName id')
-            .populate('specializations', '-owner');
+            .populate('specializations', 'id name');
     }
 
     public async createOrder(order: CreateOrderDto, owner: User): Promise<Order> {
@@ -58,7 +58,7 @@ export class OrdersService {
     public async deleteOrder(id: string): Promise<Order | null> {
         return await this.orderModel.findByIdAndDelete(id)
             .populate('owner', 'email firstName lastName id')
-            .populate('specializations', '-owner');
+            .populate('specializations', 'id name');
     }
 
     public async updateOrder(id: string, order: UpdateOrderDto): Promise<Order | null> {
@@ -67,73 +67,77 @@ export class OrdersService {
             {
                 ...order,
                 updatedAt: moment().locale('uz-latn').format('LLLL')
-            }
+            },
+            { returnDocument: 'after' }
         )
             .populate('owner', 'email firstName lastName id')
-            .populate('specializations', '-owner');
+            .populate('specializations', 'id name');
     }
 
-    public async updateOrderProject(id: string, order: UpdateGeneralInformationAboutTheProjectDto): Promise<Order | null> {
+    public async updateProject(id: string, project: UpdateProjectDto): Promise<Order | null> {
         return await this.orderModel.findByIdAndUpdate(
             id,
             {
                 $set: {
                     'project': {
                         '_id': id,
-                        ...order
+                        ...project
                     }
                 },
                 updatedAt: moment().locale('uz-latn').format('LLLL')
-            }
+            },
+            { returnDocument: 'after' }
         )
             .populate('owner', 'email firstName lastName id')
-            .populate('specializations', '-owner');
+            .populate('specializations', 'id name');
     }
 
-    public async updateOrderRequirement(id: string, order: UpdateGeneralRequirementsToTheExecutorDto): Promise<Order | null> {
+    public async updateRequirements(id: string, requirements: UpdateRequirementsDto): Promise<Order | null> {
         return await this.orderModel.findByIdAndUpdate(
             id,
             {
                 $set: {
-                    'requirement': {
+                    'requirements': {
                         '_id': id,
-                        ...order
+                        ...requirements
                     }
                 },
                 updatedAt: moment().locale('uz-latn').format('LLLL')
-            }
+            },
+            { returnDocument: 'after' }
         )
             .populate('owner', 'email firstName lastName id')
-            .populate('specializations', '-owner');
+            .populate('specializations', 'id name');
     }
 
-    public async updateOrderContact(id: string, order: UpdateContactInformationDto): Promise<Order | null> {
+    public async updateContacts(id: string, contacts: UpdateContactsDto): Promise<Order | null> {
         return await this.orderModel.findByIdAndUpdate(
             id,
             {
                 $set: {
                     'contact': {
                         '_id': id,
-                        ...order
+                        ...contacts
                     }
                 },
                 updatedAt: moment().locale('uz-latn').format('LLLL')
-            }
+            },
+            { returnDocument: 'after' }
         )
             .populate('owner', 'email firstName lastName id')
-            .populate('specializations', '-owner');
+            .populate('specializations', 'id name');
     }
 
     public async getAllOrdersOfUser(userId: string): Promise<Order[] | null> {
         return await this.orderModel.find({ owner: userId })
             .populate('owner', 'email firstName lastName id')
-            .populate('specializations', '-owner');
+            .populate('specializations', 'id name');
     }
 
-    public async findOrderByIdForUpdate(id: string): Promise<Order | null> {
+    public async getOrderById(id: string): Promise<Order | null> {
         return await this.orderModel.findById(id)
             .populate('owner', 'email firstName lastName id')
-            .populate('specializations', '-owner');
+            .populate('specializations', 'id name');
     }
 
     public async publish(id: string, condition = Conditions.PUBLIC): Promise<Order | null> {
@@ -143,10 +147,11 @@ export class OrdersService {
                 $set: {
                     'condition': condition
                 }
-            }
+            },
+            { returnDocument: 'after' }
         )
             .populate('owner', 'email firstName lastName id')
-            .populate('specializations', '-owner');
+            .populate('specializations', 'id name');
     }
 
     public async publishCancel(id: string, condition = Conditions.PRIVATE): Promise<Order | null> {
@@ -156,9 +161,10 @@ export class OrdersService {
                 $set: {
                     'condition': condition
                 }
-            }
+            },
+            { returnDocument: 'after' }
         )
             .populate('owner', 'email firstName lastName id')
-            .populate('specializations', '-owner');
+            .populate('specializations', 'id name');
     }
 }

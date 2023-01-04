@@ -73,7 +73,7 @@ export class UpdateCompanyDto {
 
 export default UpdateCompanyDto;
 
-export class UpdateCompanyContactsDto {
+export class UpdateContactsDto {
     @IsString()
     @IsOptional()
     id: string;
@@ -119,21 +119,21 @@ export class UpdateCompanyContactsDto {
     linkedLn: string;
 }
 
-export class UpdateBusinessProcessOutsourcingDto {
+export class UpdateBPODto {
     @IsString()
     @IsOptional()
     id: string;
 
     @IsOptional()
     @IsBoolean()
-    isCompanyBusinessProcessOutsourcing: boolean;
+    isCompanyBPO: boolean;
 
     @IsOptional()
     @IsArray()
     specializationsBPO: Array<string>;
 }
 
-export class UpdateCompanyGeneralInformationAboutTheProjectDto {
+export class UpdateCompanyPortfolioDto {
     @IsString()
     @IsOptional()
     id: string;

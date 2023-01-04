@@ -61,11 +61,10 @@ export class IndustriesController {
     private updateIndustry = async (req: Request, res: Response, next: NextFunction) => {
         const industryData: UpdateIndustryDto = req.body;
         const { id } = req.params;
-        await this.industrysService.updateIndustry(
+        const updateIndustryResult = await this.industrysService.updateIndustry(
             id,
             industryData
         );
-        const updateIndustryResult = await this.industrysService.findIndustryById(id);
         if (updateIndustryResult) {
             return res.send(updateIndustryResult);
         }

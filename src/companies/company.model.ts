@@ -28,9 +28,9 @@ const ContactsSchema = new Schema(
     }
 );
 
-const BusinessProcessOutsourcingSchema = new Schema(
+const BPOSchema = new Schema(
     {
-        isCompanyBusinessProcessOutsourcing: {
+        isCompanyBPO: {
             type: Boolean,
             default: false
         },
@@ -44,7 +44,7 @@ const BusinessProcessOutsourcingSchema = new Schema(
     }
 );
 
-const GeneralInformationAboutTheProjectSchema = new Schema(
+const PortfolioSchema = new Schema(
     {
         title: {
             type: String,
@@ -79,7 +79,7 @@ const GeneralInformationAboutTheProjectSchema = new Schema(
     }
 );
 
-const CompanyTeamSchema = new Schema(
+const TeamSchema = new Schema(
     {
         title: {
             type: String,
@@ -145,14 +145,14 @@ const CompanySchema = new Schema(
             type: String
         },
         contacts: ContactsSchema,
-        businessProcessOutsourcing: [
-            BusinessProcessOutsourcingSchema
+        bpo: [
+            BPOSchema
         ],
         portfolios: [
-            GeneralInformationAboutTheProjectSchema
+            PortfolioSchema
         ],
         teams: [
-            CompanyTeamSchema
+            TeamSchema
         ],
         owner: {
             type: Schema.Types.ObjectId,

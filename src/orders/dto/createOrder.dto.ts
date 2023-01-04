@@ -33,6 +33,7 @@ export class CreateOrderDto {
 
     @IsString()
     @Trim()
+    @IsNotEmpty()
     currency: string;
 
     @IsString()

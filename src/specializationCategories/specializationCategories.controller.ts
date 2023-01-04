@@ -61,11 +61,10 @@ export class SpecializationCategoriesController {
     private updateSpecializationCategory = async (req: Request, res: Response, next: NextFunction) => {
         const specializationCategoryData: UpdateSpecializationCategoryDto = req.body;
         const { id } = req.params;
-        await this.specializationCategoriesService.updateSpecializationCategory(
+        const updateSpecializationCategoryResult = await this.specializationCategoriesService.updateSpecializationCategory(
             id,
             specializationCategoryData
         );
-        const updateSpecializationCategoryResult = await this.specializationCategoriesService.findSpecializationCategoryById(id);
         if (updateSpecializationCategoryResult) {
             return res.send(updateSpecializationCategoryResult);
         }

@@ -1,11 +1,11 @@
 import CompanyModel from './company.model';
 import { CreateCompanyDto } from './dto/createCompany.dto';
 import {
-    UpdateCompanyContactsDto,
+    UpdateContactsDto,
     UpdateCompanyDto,
-    UpdateBusinessProcessOutsourcingDto,
+    UpdateBPODto,
     UpdateCompanyTeamDto,
-    UpdateCompanyGeneralInformationAboutTheProjectDto
+    UpdateCompanyPortfolioDto
 } from './dto/updateCompany.dto';
 import { Company } from './company.interface';
 import moment from 'moment';
@@ -20,11 +20,11 @@ export class CompaniesService {
         return await this.companyModel.findById(id)
             .where('condition').equals(Conditions.PUBLIC)
             .populate('owner', 'email firstName lastName id')
-            .populate('legalForm', '-owner')
-            .populate('industries', '-owner')
-            .populate('specializations', '-owner')
-            .populate('region', '-owner')
-            .populate('businessProcessOutsourcing.specializationsBPO', '-owner');
+            .populate('legalForm', 'id name')
+            .populate('industries', 'id name')
+            .populate('specializations', 'id name')
+            .populate('region', 'id name')
+            .populate('bpo.specializationsBPO', 'id name');
     }
 
     public async findAllCompanies(queryObj: any): Promise<Company[] | null> {
@@ -35,11 +35,11 @@ export class CompaniesService {
         return await this.companyModel.find(query)
             .where('condition').equals(Conditions.PUBLIC)
             .populate('owner', 'email firstName lastName id')
-            .populate('legalForm', '-owner')
-            .populate('industries', '-owner')
-            .populate('specializations', '-owner')
-            .populate('region', '-owner')
-            .populate('businessProcessOutsourcing.specializationsBPO', '-owner');
+            .populate('legalForm', 'id name')
+            .populate('industries', 'id name')
+            .populate('specializations', 'id name')
+            .populate('region', 'id name')
+            .populate('bpo.specializationsBPO', 'id name');
     }
 
     public async createCompany(company: CreateCompanyDto, owner: User): Promise<Company> {
@@ -56,11 +56,11 @@ export class CompaniesService {
     public async deleteCompany(id: string): Promise<Company | null> {
         return await this.companyModel.findByIdAndDelete(id)
             .populate('owner', 'email firstName lastName id')
-            .populate('legalForm', '-owner')
-            .populate('industries', '-owner')
-            .populate('specializations', '-owner')
-            .populate('region', '-owner')
-            .populate('businessProcessOutsourcing.specializationsBPO', '-owner');
+            .populate('legalForm', 'id name')
+            .populate('industries', 'id name')
+            .populate('specializations', 'id name')
+            .populate('region', 'id name')
+            .populate('bpo.specializationsBPO', 'id name');
     }
 
     public async updateCompany(id: string, company: UpdateCompanyDto): Promise<Company | null> {
@@ -69,63 +69,66 @@ export class CompaniesService {
             {
                 ...company,
                 updatedAt: moment().locale('uz-latn').format('LLLL')
-            }
+            },
+            { returnDocument: 'after' }
         )
             .populate('owner', 'email firstName lastName id')
-            .populate('legalForm', '-owner')
-            .populate('industries', '-owner')
-            .populate('specializations', '-owner')
-            .populate('region', '-owner')
-            .populate('businessProcessOutsourcing.specializationsBPO', '-owner');
+            .populate('legalForm', 'id name')
+            .populate('industries', 'id name')
+            .populate('specializations', 'id name')
+            .populate('region', 'id name')
+            .populate('bpo.specializationsBPO', 'id name');
     }
 
     public async findCompanyByName(name: string): Promise<Company | null> {
         return await this.companyModel.findOne({ name });
     }
 
-    public async updateCompanyContacts(id: string, companyContacts: UpdateCompanyContactsDto): Promise<Company | null> {
+    public async updateContacts(id: string, contacts: UpdateContactsDto): Promise<Company | null> {
         return await this.companyModel.findByIdAndUpdate(
             id,
             {
                 $set: {
                     'contacts': {
                         '_id': id,
-                        ...companyContacts
+                        ...contacts
                     }
                 },
                 updatedAt: moment().locale('uz-latn').format('LLLL')
-            }
+            },
+            { returnDocument: 'after' }
         )
             .populate('owner', 'email firstName lastName id')
-            .populate('legalForm', '-owner')
-            .populate('industries', '-owner')
-            .populate('specializations', '-owner')
-            .populate('region', '-owner')
-            .populate('businessProcessOutsourcing.specializationsBPO', '-owner');
+            .populate('legalForm', 'id name')
+            .populate('industries', 'id name')
+            .populate('specializations', 'id name')
+            .populate('region', 'id name')
+            .populate('bpo.specializationsBPO', 'id name');
     }
 
-    public async updateCompanyBusinessProcessOutsourcing(id: string, companyBusinessProcessOutsourcing: UpdateBusinessProcessOutsourcingDto): Promise<Company | null> {
+    public async updateBPO(id: string, bpo: UpdateBPODto): Promise<Company | null> {
         return await this.companyModel.findByIdAndUpdate(
             id,
             {
                 $set: {
-                    'businessProcessOutsourcing': {
+                    'bpo': {
                         '_id': id,
-                        ...companyBusinessProcessOutsourcing
+                        ...bpo
                     }
                 },
                 updatedAt: moment().locale('uz-latn').format('LLLL')
-            }
+            },
+            { returnDocument: 'after' }
         )
             .populate('owner', 'email firstName lastName id')
-            .populate('legalForm', '-owner')
-            .populate('industries', '-owner')
-            .populate('specializations', '-owner')
-            .populate('region', '-owner')
-            .populate('businessProcessOutsourcing.specializationsBPO', '-owner');
+            .populate('legalForm', 'id name')
+            .populate('industries', 'id name')
+            .populate('specializations', 'id name')
+            .populate('region', 'id name')
+            .populate('bpo.specializationsBPO', 'id name');
     }
 
-    public async updateCompanyCreateGeneralInformationAboutTheProject(id: string, portfolio: UpdateCompanyGeneralInformationAboutTheProjectDto): Promise<Company | null> {
+    public async updateCompanyCreatePortfolio(id: string, portfolio: UpdateCompanyPortfolioDto): Promise<Company | null> {
         return await this.companyModel.findByIdAndUpdate(
             id,
             {
@@ -133,29 +136,30 @@ export class CompaniesService {
                     'portfolios': portfolio
                 },
                 updatedAt: moment().locale('uz-latn').format('LLLL')
-            }
+            },
+            { returnDocument: 'after' }
         )
             .populate('owner', 'email firstName lastName id')
-            .populate('legalForm', '-owner')
-            .populate('industries', '-owner')
-            .populate('specializations', '-owner')
-            .populate('region', '-owner')
-            .populate('businessProcessOutsourcing.specializationsBPO', '-owner');
+            .populate('legalForm', 'id name')
+            .populate('industries', 'id name')
+            .populate('specializations', 'id name')
+            .populate('region', 'id name')
+            .populate('bpo.specializationsBPO', 'id name');
     }
 
-    public async getCompanyByGeneralInformationAboutTheProject(id: string): Promise<Company | null> {
-        return await this.companyModel.findOne({ 'portfolios': { $elemMatch: { '_id': id } } })
+    public async getCompanyByPortfolio(id: string): Promise<Company | null> {
+        return await this.companyModel.findOne({ 'portfolios': { $elemMatch: { 'id': id } } })
             .populate('owner', 'email firstName lastName id')
-            .populate('legalForm', '-owner')
-            .populate('industries', '-owner')
-            .populate('specializations', '-owner')
-            .populate('region', '-owner')
-            .populate('businessProcessOutsourcing.specializationsBPO', '-owner');
+            .populate('legalForm', 'id name')
+            .populate('industries', 'id name')
+            .populate('specializations', 'id name')
+            .populate('region', 'id name')
+            .populate('bpo.specializationsBPO', 'id name');
     }
 
-    public async updateCompanyUpdateGeneralInformationAboutTheProject(id: string, portfolio: UpdateCompanyGeneralInformationAboutTheProjectDto): Promise<Company | null> {
+    public async updateCompanyUpdatePortfolio(id: string, portfolio: UpdateCompanyPortfolioDto): Promise<Company | null> {
         return await this.companyModel.findOneAndUpdate(
-            { 'portfolios': { $elemMatch: { '_id': id } } },
+            { 'portfolios': { $elemMatch: { 'id': id } } },
             {
                 $set: {
                     'portfolios.$[element]': {
@@ -171,34 +175,35 @@ export class CompaniesService {
                         'element._id': id
                     }
                 ],
-                new: true
+                returnDocument: 'after'
             }
         )
             .populate('owner', 'email firstName lastName id')
-            .populate('legalForm', '-owner')
-            .populate('industries', '-owner')
-            .populate('specializations', '-owner')
-            .populate('region', '-owner')
-            .populate('businessProcessOutsourcing.specializationsBPO', '-owner');
+            .populate('legalForm', 'id name')
+            .populate('industries', 'id name')
+            .populate('specializations', 'id name')
+            .populate('region', 'id name')
+            .populate('bpo.specializationsBPO', 'id name');
     }
 
-    public async updateCompanyDeleteGeneralInformationAboutTheProject(id: string): Promise<Company | null> {
+    public async updateCompanyDeletePortfolio(id: string): Promise<Company | null> {
         return await this.companyModel.findOneAndUpdate(
-            { 'portfolios': { $elemMatch: { '_id': id } } },
+            { 'portfolios': { $elemMatch: { 'id': id } } },
             {
                 $pull: {
                     'portfolios': {
                         '_id': id
                     }
                 }
-            }
+            },
+            { returnDocument: 'after' }
         )
             .populate('owner', 'email firstName lastName id')
-            .populate('legalForm', '-owner')
-            .populate('industries', '-owner')
-            .populate('specializations', '-owner')
-            .populate('region', '-owner')
-            .populate('businessProcessOutsourcing.specializationsBPO', '-owner');
+            .populate('legalForm', 'id name')
+            .populate('industries', 'id name')
+            .populate('specializations', 'id name')
+            .populate('region', 'id name')
+            .populate('bpo.specializationsBPO', 'id name');
     }
 
     public async updateCompanyCreateTeam(id: string, team: UpdateCompanyTeamDto): Promise<Company | null> {
@@ -209,29 +214,30 @@ export class CompaniesService {
                     'teams': team
                 },
                 updatedAt: moment().locale('uz-latn').format('LLLL')
-            }
+            },
+            { returnDocument: 'after' }
         )
             .populate('owner', 'email firstName lastName id')
-            .populate('legalForm', '-owner')
-            .populate('industries', '-owner')
-            .populate('specializations', '-owner')
-            .populate('region', '-owner')
-            .populate('businessProcessOutsourcing.specializationsBPO', '-owner');
+            .populate('legalForm', 'id name')
+            .populate('industries', 'id name')
+            .populate('specializations', 'id name')
+            .populate('region', 'id name')
+            .populate('bpo.specializationsBPO', 'id name');
     }
 
     public async getCompanyByTeam(id: string): Promise<Company | null> {
-        return await this.companyModel.findOne({ 'teams': { $elemMatch: { '_id': id } } })
+        return await this.companyModel.findOne({ 'teams': { $elemMatch: { 'id': id } } })
             .populate('owner', 'email firstName lastName id')
-            .populate('legalForm', '-owner')
-            .populate('industries', '-owner')
-            .populate('specializations', '-owner')
-            .populate('region', '-owner')
-            .populate('businessProcessOutsourcing.specializationsBPO', '-owner');
+            .populate('legalForm', 'id name')
+            .populate('industries', 'id name')
+            .populate('specializations', 'id name')
+            .populate('region', 'id name')
+            .populate('bpo.specializationsBPO', 'id name');
     }
 
     public async updateCompanyUpdateTeam(id: string, team: UpdateCompanyTeamDto): Promise<Company | null> {
         return await this.companyModel.findOneAndUpdate(
-            { 'teams': { $elemMatch: { '_id': id } } },
+            { 'teams': { $elemMatch: { 'id': id } } },
             {
                 $set: {
                     'teams.$[element]': {
@@ -247,54 +253,55 @@ export class CompaniesService {
                         'element._id': id
                     }
                 ],
-                new: true
+                returnDocument: 'after'
             }
         )
             .populate('owner', 'email firstName lastName id')
-            .populate('legalForm', '-owner')
-            .populate('industries', '-owner')
-            .populate('specializations', '-owner')
-            .populate('region', '-owner')
-            .populate('businessProcessOutsourcing.specializationsBPO', '-owner');
+            .populate('legalForm', 'id name')
+            .populate('industries', 'id name')
+            .populate('specializations', 'id name')
+            .populate('region', 'id name')
+            .populate('bpo.specializationsBPO', 'id name');
     }
 
     public async updateCompanyDeleteTeam(id: string): Promise<Company | null> {
         return await this.companyModel.findOneAndUpdate(
-            { 'teams': { $elemMatch: { '_id': id } } },
+            { 'teams': { $elemMatch: { 'id': id } } },
             {
                 $pull: {
                     'teams': {
                         '_id': id
                     }
                 }
-            }
+            },
+            { returnDocument: 'after' }
         )
             .populate('owner', 'email firstName lastName id')
-            .populate('legalForm', '-owner')
-            .populate('industries', '-owner')
-            .populate('specializations', '-owner')
-            .populate('region', '-owner')
-            .populate('businessProcessOutsourcing.specializationsBPO', '-owner');
+            .populate('legalForm', 'id name')
+            .populate('industries', 'id name')
+            .populate('specializations', 'id name')
+            .populate('region', 'id name')
+            .populate('bpo.specializationsBPO', 'id name');
     }
 
     public async getAllCompaniesOfUser(userId: string): Promise<Company[] | null> {
         return await this.companyModel.find({ owner: userId })
             .populate('owner', 'email firstName lastName id')
-            .populate('legalForm', '-owner')
-            .populate('industries', '-owner')
-            .populate('specializations', '-owner')
-            .populate('region', '-owner')
-            .populate('businessProcessOutsourcing.specializationsBPO', '-owner');
+            .populate('legalForm', 'id name')
+            .populate('industries', 'id name')
+            .populate('specializations', 'id name')
+            .populate('region', 'id name')
+            .populate('bpo.specializationsBPO', 'id name');
     }
 
-    public async findCompanyByIdForUpdate(id: string): Promise<Company | null> {
+    public async getCompanyById(id: string): Promise<Company | null> {
         return await this.companyModel.findById(id)
             .populate('owner', 'email firstName lastName id')
-            .populate('legalForm', '-owner')
-            .populate('industries', '-owner')
-            .populate('specializations', '-owner')
-            .populate('region', '-owner')
-            .populate('businessProcessOutsourcing.specializationsBPO', '-owner');
+            .populate('legalForm', 'id name')
+            .populate('industries', 'id name')
+            .populate('specializations', 'id name')
+            .populate('region', 'id name')
+            .populate('bpo.specializationsBPO', 'id name');
     }
 
     public async publish(id: string, condition = Conditions.PUBLIC): Promise<Company | null> {
@@ -304,14 +311,15 @@ export class CompaniesService {
                 $set: {
                     'condition': condition
                 }
-            }
+            },
+            { returnDocument: 'after' }
         )
             .populate('owner', 'email firstName lastName id')
-            .populate('legalForm', '-owner')
-            .populate('industries', '-owner')
-            .populate('specializations', '-owner')
-            .populate('region', '-owner')
-            .populate('businessProcessOutsourcing.specializationsBPO', '-owner');
+            .populate('legalForm', 'id name')
+            .populate('industries', 'id name')
+            .populate('specializations', 'id name')
+            .populate('region', 'id name')
+            .populate('bpo.specializationsBPO', 'id name');
     }
 
     public async publishCancel(id: string, condition = Conditions.PRIVATE): Promise<Company | null> {
@@ -321,13 +329,14 @@ export class CompaniesService {
                 $set: {
                     'condition': condition
                 }
-            }
+            },
+            { returnDocument: 'after' }
         )
             .populate('owner', 'email firstName lastName id')
-            .populate('legalForm', '-owner')
-            .populate('industries', '-owner')
-            .populate('specializations', '-owner')
-            .populate('region', '-owner')
-            .populate('businessProcessOutsourcing.specializationsBPO', '-owner');
+            .populate('legalForm', 'id name')
+            .populate('industries', 'id name')
+            .populate('specializations', 'id name')
+            .populate('region', 'id name')
+            .populate('bpo.specializationsBPO', 'id name');
     }
 }

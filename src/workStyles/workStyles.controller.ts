@@ -61,11 +61,10 @@ export class WorkStylesController {
     private updateWorkStyle = async (req: Request, res: Response, next: NextFunction) => {
         const workStyleData: UpdateWorkStyleDto = req.body;
         const { id } = req.params;
-        await this.workStylesService.updateWorkStyle(
+        const updateWorkStyleResult = await this.workStylesService.updateWorkStyle(
             id,
             workStyleData
         );
-        const updateWorkStyleResult = await this.workStylesService.findWorkStyleById(id);
         if (updateWorkStyleResult) {
             return res.send(updateWorkStyleResult);
         }

@@ -4,13 +4,15 @@ import dtoValidationMiddleware from '../middlewares/dtoValidation.middleware';
 import CreateOrderDto from './dto/createOrder.dto';
 import {
     UpdateOrderDto,
-    UpdateGeneralInformationAboutTheProjectDto,
-    UpdateGeneralRequirementsToTheExecutorDto,
-    UpdateContactInformationDto
-} from './dto/updateOrder.dto';
+    UpdateProjectDto,
+    UpdateRequirementsDto,
+    UpdateContactsDto
+}
+    from './dto/updateOrder.dto';
 import OrderNotFoundException from '../exceptions/OrderNotFoundException';
 import authMiddleware from '../middlewares/auth.middleware';
 import RequestWithUser from '../interfaces/requestWithUser.interface';
+import isOwnerOrder from '../middlewares/isOwnenOrder.middleware';
 
 export class OrdersController {
     public path = '/order';
@@ -30,19 +32,19 @@ export class OrdersController {
         this.router.route(`${this.path}/:id`)
             .get(this.findOrderById);
         this.router.route(`/my${this.path}/:id/edit`)
-            .put(authMiddleware, dtoValidationMiddleware(UpdateOrderDto, true), this.updateOrder);
+            .put(authMiddleware, isOwnerOrder, dtoValidationMiddleware(UpdateOrderDto, true), this.updateOrder);
         this.router.route(`/my${this.path}/project/:id/edit`)
-            .put(authMiddleware, dtoValidationMiddleware(UpdateGeneralInformationAboutTheProjectDto, true), this.updateOrderProject);
-        this.router.route(`/my${this.path}/reuirement/:id/edit`)
-            .put(authMiddleware, dtoValidationMiddleware(UpdateGeneralRequirementsToTheExecutorDto, true), this.updateOrderRequirement);
-        this.router.route(`/my${this.path}/contact/:id/edit`)
-            .put(authMiddleware, dtoValidationMiddleware(UpdateContactInformationDto, true), this.updateOrderContact);
+            .put(authMiddleware, isOwnerOrder, dtoValidationMiddleware(UpdateProjectDto, true), this.updateProject);
+        this.router.route(`/my${this.path}/reuirements/:id/edit`)
+            .put(authMiddleware, isOwnerOrder, dtoValidationMiddleware(UpdateRequirementsDto, true), this.updateRequirements);
+        this.router.route(`/my${this.path}/contacts/:id/edit`)
+            .put(authMiddleware, isOwnerOrder, dtoValidationMiddleware(UpdateContactsDto, true), this.updateContacts);
         this.router.route(`/my${this.path}/:id/delete`)
-            .delete(authMiddleware, this.deleteOrder);
+            .delete(authMiddleware, isOwnerOrder, this.deleteOrder);
         this.router.route(`/my${this.path}/:id/publish`)
-            .put(authMiddleware, this.publish);
+            .put(authMiddleware, isOwnerOrder, this.publish);
         this.router.route(`/my${this.path}/:id/publish-cancel`)
-            .put(authMiddleware, this.publishCancel);
+            .put(authMiddleware, isOwnerOrder, this.publishCancel);
     }
 
     private findOrderById = async (req: Request, res: Response, next: NextFunction) => {
@@ -82,53 +84,49 @@ export class OrdersController {
     private updateOrder = async (req: Request, res: Response, next: NextFunction) => {
         const orderData: UpdateOrderDto = req.body;
         const { id } = req.params;
-        await this.ordersService.updateOrder(
+        const updateOrderResult = await this.ordersService.updateOrder(
             id,
             orderData
         );
-        const updateOrderResult = await this.ordersService.findOrderByIdForUpdate(id);
         if (updateOrderResult) {
             return res.send(updateOrderResult);
         }
         next(new OrderNotFoundException(id));
     }
 
-    private updateOrderProject = async (req: Request, res: Response, next: NextFunction) => {
-        const orderData: UpdateGeneralInformationAboutTheProjectDto = req.body;
+    private updateProject = async (req: Request, res: Response, next: NextFunction) => {
+        const orderData: UpdateProjectDto = req.body;
         const { id } = req.params;
-        await this.ordersService.updateOrderProject(
+        const updateOrderResult = await this.ordersService.updateProject(
             id,
             orderData
         );
-        const updateOrderResult = await this.ordersService.findOrderByIdForUpdate(id);
         if (updateOrderResult) {
             return res.send(updateOrderResult);
         }
         next(new OrderNotFoundException(id));
     }
 
-    private updateOrderRequirement = async (req: Request, res: Response, next: NextFunction) => {
-        const orderData: UpdateGeneralRequirementsToTheExecutorDto = req.body;
+    private updateRequirements = async (req: Request, res: Response, next: NextFunction) => {
+        const orderData: UpdateRequirementsDto = req.body;
         const { id } = req.params;
-        await this.ordersService.updateOrderRequirement(
+        const updateOrderResult = await this.ordersService.updateRequirements(
             id,
             orderData
         );
-        const updateOrderResult = await this.ordersService.findOrderByIdForUpdate(id);
         if (updateOrderResult) {
             return res.send(updateOrderResult);
         }
         next(new OrderNotFoundException(id));
     }
 
-    private updateOrderContact = async (req: Request, res: Response, next: NextFunction) => {
-        const orderData: UpdateContactInformationDto = req.body;
+    private updateContacts = async (req: Request, res: Response, next: NextFunction) => {
+        const orderData: UpdateContactsDto = req.body;
         const { id } = req.params;
-        await this.ordersService.updateOrderContact(
+        const updateOrderResult = await this.ordersService.updateContacts(
             id,
             orderData
         );
-        const updateOrderResult = await this.ordersService.findOrderByIdForUpdate(id);
         if (updateOrderResult) {
             return res.send(updateOrderResult);
         }
@@ -137,8 +135,7 @@ export class OrdersController {
 
     private publish = async (req: Request, res: Response, next: NextFunction) => {
         const { id } = req.params;
-        await this.ordersService.publish(id);
-        const publishOrderResult = await this.ordersService.findOrderByIdForUpdate(id);
+        const publishOrderResult = await this.ordersService.publish(id);
         if (publishOrderResult) {
             return res.send(publishOrderResult);
         }
@@ -147,8 +144,7 @@ export class OrdersController {
 
     private publishCancel = async (req: Request, res: Response, next: NextFunction) => {
         const { id } = req.params;
-        await this.ordersService.publishCancel(id);
-        const publishCancelOrderResult = await this.ordersService.findOrderByIdForUpdate(id);
+        const publishCancelOrderResult = await this.ordersService.publishCancel(id);
         if (publishCancelOrderResult) {
             return res.send(publishCancelOrderResult);
         }

@@ -61,11 +61,10 @@ export class SkillsController {
     private updateSkill = async (req: Request, res: Response, next: NextFunction) => {
         const skillData: UpdateSkillDto = req.body;
         const { id } = req.params;
-        await this.skillsService.updateSkill(
+        const updateSkillResult = await this.skillsService.updateSkill(
             id,
             skillData
         );
-        const updateSkillResult = await this.skillsService.findSkillById(id);
         if (updateSkillResult) {
             return res.send(updateSkillResult);
         }

@@ -19,10 +19,10 @@ export class UsersService {
     public async findUserById(id: string): Promise<User | null> {
         return await this.userModel.findById(id)
             .where('condition').equals(Conditions.PUBLIC)
-            .populate('profile.region', '-owner -createdAt -updatedAt')
-            .populate('profile.skills', '-owner -createdAt -updatedAt')
-            .populate('profile.specializationCategories', '-owner -createdAt -updatedAt')
-            .populate('workExperiences.employmentTypes', '-owner -createdAt -updatedAt');
+            .populate('profile.region', 'id name')
+            .populate('profile.skills', 'id name')
+            .populate('profile.specializationCategories', 'id name')
+            .populate('workExperiences.employmentTypes', 'id name');
     }
 
     public async findAllUsers(queryObj: any): Promise<User[] | null> {
@@ -36,10 +36,10 @@ export class UsersService {
         }
         return await this.userModel.find(query)
             .where('condition').equals(Conditions.PUBLIC)
-            .populate('profile.region', '-owner -createdAt -updatedAt')
-            .populate('profile.skills', '-owner -createdAt -updatedAt')
-            .populate('profile.specializationCategories', '-owner -createdAt -updatedAt')
-            .populate('workExperiences.employmentTypes', '-owner -createdAt -updatedAt');
+            .populate('profile.region', 'id name')
+            .populate('profile.skills', 'id name')
+            .populate('profile.specializationCategories', 'id name')
+            .populate('workExperiences.employmentTypes', 'id name');
     }
 
     public async createUser(user: CreateUserDto): Promise<User> {
@@ -52,26 +52,26 @@ export class UsersService {
 
     public async getUserByEmail(email: string): Promise<User | null> {
         return await this.userModel.findOne({ email })
-            .populate('profile.region', '-owner -createdAt -updatedAt')
-            .populate('profile.skills', '-owner -createdAt -updatedAt')
-            .populate('profile.specializationCategories', '-owner -createdAt -updatedAt')
-            .populate('workExperiences.employmentTypes', '-owner -createdAt -updatedAt');
+            .populate('profile.region', 'id name')
+            .populate('profile.skills', 'id name')
+            .populate('profile.specializationCategories', 'id name')
+            .populate('workExperiences.employmentTypes', 'id name');
     }
 
     public async getUserById(id: string): Promise<User | null> {
         return await this.userModel.findById(id)
-            .populate('profile.region', '-owner -createdAt -updatedAt')
-            .populate('profile.skills', '-owner -createdAt -updatedAt')
-            .populate('profile.specializationCategories', '-owner -createdAt -updatedAt')
-            .populate('workExperiences.employmentTypes', '-owner -createdAt -updatedAt');
+            .populate('profile.region', 'id name')
+            .populate('profile.skills', 'id name')
+            .populate('profile.specializationCategories', 'id name')
+            .populate('workExperiences.employmentTypes', 'id name');
     }
 
     public async deleteUser(id: string): Promise<User | null> {
         return await this.userModel.findByIdAndDelete(id)
-            .populate('profile.region', '-owner -createdAt -updatedAt')
-            .populate('profile.skills', '-owner -createdAt -updatedAt')
-            .populate('profile.specializationCategories', '-owner -createdAt -updatedAt')
-            .populate('workExperiences.employmentTypes', '-owner -createdAt -updatedAt');
+            .populate('profile.region', 'id name')
+            .populate('profile.skills', 'id name')
+            .populate('profile.specializationCategories', 'id name')
+            .populate('workExperiences.employmentTypes', 'id name');
     }
 
     public async updateProfile(id: string, userProfile: UpdateProfileDto): Promise<User | null> {
@@ -90,10 +90,10 @@ export class UsersService {
             },
             { returnDocument: 'after' }
         )
-            .populate('profile.region', '-owner -createdAt -updatedAt')
-            .populate('profile.skills', '-owner -createdAt -updatedAt')
-            .populate('profile.specializationCategories', '-owner -createdAt -updatedAt')
-            .populate('workExperiences.employmentTypes', '-owner -createdAt -updatedAt');
+            .populate('profile.region', 'id name')
+            .populate('profile.skills', 'id name')
+            .populate('profile.specializationCategories', 'id name')
+            .populate('workExperiences.employmentTypes', 'id name');
     }
 
     public async updateContacts(id: string, userContacts: UpdateContactsDto): Promise<User | null> {
@@ -110,10 +110,10 @@ export class UsersService {
             },
             { returnDocument: 'after' }
         )
-            .populate('profile.region', '-owner -createdAt -updatedAt')
-            .populate('profile.skills', '-owner -createdAt -updatedAt')
-            .populate('profile.specializationCategories', '-owner -createdAt -updatedAt')
-            .populate('workExperiences.employmentTypes', '-owner -createdAt -updatedAt');
+            .populate('profile.region', 'id name')
+            .populate('profile.skills', 'id name')
+            .populate('profile.specializationCategories', 'id name')
+            .populate('workExperiences.employmentTypes', 'id name');
     }
 
     public async updateUserCreateWorkExperience(id: string, workExperience: UpdateUserWorkExperienceDto): Promise<User | null> {
@@ -127,18 +127,18 @@ export class UsersService {
             },
             { returnDocument: 'after' }
         )
-            .populate('profile.region', '-owner -createdAt -updatedAt')
-            .populate('profile.skills', '-owner -createdAt -updatedAt')
-            .populate('profile.specializationCategories', '-owner -createdAt -updatedAt')
-            .populate('workExperiences.employmentTypes', '-owner -createdAt -updatedAt');
+            .populate('profile.region', 'id name')
+            .populate('profile.skills', 'id name')
+            .populate('profile.specializationCategories', 'id name')
+            .populate('workExperiences.employmentTypes', 'id name');
     }
 
     public async getUserByWorkExperience(id: string): Promise<User | null> {
         return await this.userModel.findOne({ 'workExperiences': { $elemMatch: { 'id': id } } })
-            .populate('profile.region', '-owner -createdAt -updatedAt')
-            .populate('profile.skills', '-owner -createdAt -updatedAt')
-            .populate('profile.specializationCategories', '-owner -createdAt -updatedAt')
-            .populate('workExperiences.employmentTypes', '-owner -createdAt -updatedAt');
+            .populate('profile.region', 'id name')
+            .populate('profile.skills', 'id name')
+            .populate('profile.specializationCategories', 'id name')
+            .populate('workExperiences.employmentTypes', 'id name');
     }
 
     public async updateUserUpdateWorkExperience(id: string, workExperience: UpdateUserWorkExperienceDto): Promise<User | null> {
@@ -162,10 +162,10 @@ export class UsersService {
                 returnDocument: 'after'
             }
         )
-            .populate('profile.region', '-owner -createdAt -updatedAt')
-            .populate('profile.skills', '-owner -createdAt -updatedAt')
-            .populate('profile.specializationCategories', '-owner -createdAt -updatedAt')
-            .populate('workExperiences.employmentTypes', '-owner -createdAt -updatedAt');
+            .populate('profile.region', 'id name')
+            .populate('profile.skills', 'id name')
+            .populate('profile.specializationCategories', 'id name')
+            .populate('workExperiences.employmentTypes', 'id name');
     }
 
     public async updateUserDeleteWorkExperience(id: string): Promise<User | null> {
@@ -180,10 +180,10 @@ export class UsersService {
             },
             { returnDocument: 'after' }
         )
-            .populate('profile.region', '-owner -createdAt -updatedAt')
-            .populate('profile.skills', '-owner -createdAt -updatedAt')
-            .populate('profile.specializationCategories', '-owner -createdAt -updatedAt')
-            .populate('workExperiences.employmentTypes', '-owner -createdAt -updatedAt');
+            .populate('profile.region', 'id name')
+            .populate('profile.skills', 'id name')
+            .populate('profile.specializationCategories', 'id name')
+            .populate('workExperiences.employmentTypes', 'id name');
     }
 
     public async updateUserCreateEducation(id: string, education: UpdateUserEducationDto): Promise<User | null> {
@@ -197,18 +197,18 @@ export class UsersService {
             },
             { returnDocument: 'after' }
         )
-            .populate('profile.region', '-owner -createdAt -updatedAt')
-            .populate('profile.skills', '-owner -createdAt -updatedAt')
-            .populate('profile.specializationCategories', '-owner -createdAt -updatedAt')
-            .populate('workExperiences.employmentTypes', '-owner -createdAt -updatedAt');
+            .populate('profile.region', 'id name')
+            .populate('profile.skills', 'id name')
+            .populate('profile.specializationCategories', 'id name')
+            .populate('workExperiences.employmentTypes', 'id name');
     }
 
     public async getUserByEducation(id: string): Promise<User | null> {
         return await this.userModel.findOne({ 'educations': { $elemMatch: { 'id': id } } })
-            .populate('profile.region', '-owner -createdAt -updatedAt')
-            .populate('profile.skills', '-owner -createdAt -updatedAt')
-            .populate('profile.specializationCategories', '-owner -createdAt -updatedAt')
-            .populate('workExperiences.employmentTypes', '-owner -createdAt -updatedAt');
+            .populate('profile.region', 'id name')
+            .populate('profile.skills', 'id name')
+            .populate('profile.specializationCategories', 'id name')
+            .populate('workExperiences.employmentTypes', 'id name');
     }
 
     public async updateUserUpdateEducation(id: string, education: UpdateUserEducationDto): Promise<User | null> {
@@ -232,10 +232,10 @@ export class UsersService {
                 returnDocument: 'after'
             }
         )
-            .populate('profile.region', '-owner -createdAt -updatedAt')
-            .populate('profile.skills', '-owner -createdAt -updatedAt')
-            .populate('profile.specializationCategories', '-owner -createdAt -updatedAt')
-            .populate('workExperiences.employmentTypes', '-owner -createdAt -updatedAt');
+            .populate('profile.region', 'id name')
+            .populate('profile.skills', 'id name')
+            .populate('profile.specializationCategories', 'id name')
+            .populate('workExperiences.employmentTypes', 'id name');
     }
 
     public async updateUserDeleteEducation(id: string): Promise<User | null> {
@@ -250,10 +250,10 @@ export class UsersService {
             },
             { returnDocument: 'after' }
         )
-            .populate('profile.region', '-owner -createdAt -updatedAt')
-            .populate('profile.skills', '-owner -createdAt -updatedAt')
-            .populate('profile.specializationCategories', '-owner -createdAt -updatedAt')
-            .populate('workExperiences.employmentTypes', '-owner -createdAt -updatedAt');
+            .populate('profile.region', 'id name')
+            .populate('profile.skills', 'id name')
+            .populate('profile.specializationCategories', 'id name')
+            .populate('workExperiences.employmentTypes', 'id name');
     }
 
     public async updateUserCreateAchievement(id: string, achievement: UpdateUserAchievementDto): Promise<User | null> {
@@ -267,18 +267,18 @@ export class UsersService {
             },
             { returnDocument: 'after' }
         )
-            .populate('profile.region', '-owner -createdAt -updatedAt')
-            .populate('profile.skills', '-owner -createdAt -updatedAt')
-            .populate('profile.specializationCategories', '-owner -createdAt -updatedAt')
-            .populate('workExperiences.employmentTypes', '-owner -createdAt -updatedAt');
+            .populate('profile.region', 'id name')
+            .populate('profile.skills', 'id name')
+            .populate('profile.specializationCategories', 'id name')
+            .populate('workExperiences.employmentTypes', 'id name');
     }
 
     public async getUserByAchievement(id: string): Promise<User | null> {
         return await this.userModel.findOne({ 'achievements': { $elemMatch: { 'id': id } } })
-            .populate('profile.region', '-owner -createdAt -updatedAt')
-            .populate('profile.skills', '-owner -createdAt -updatedAt')
-            .populate('profile.specializationCategories', '-owner -createdAt -updatedAt')
-            .populate('workExperiences.employmentTypes', '-owner -createdAt -updatedAt');
+            .populate('profile.region', 'id name')
+            .populate('profile.skills', 'id name')
+            .populate('profile.specializationCategories', 'id name')
+            .populate('workExperiences.employmentTypes', 'id name');
     }
 
     public async updateUserUpdateAchievement(id: string, achievement: UpdateUserAchievementDto): Promise<User | null> {
@@ -302,10 +302,10 @@ export class UsersService {
                 returnDocument: 'after'
             }
         )
-            .populate('profile.region', '-owner -createdAt -updatedAt')
-            .populate('profile.skills', '-owner -createdAt -updatedAt')
-            .populate('profile.specializationCategories', '-owner -createdAt -updatedAt')
-            .populate('workExperiences.employmentTypes', '-owner -createdAt -updatedAt');
+            .populate('profile.region', 'id name')
+            .populate('profile.skills', 'id name')
+            .populate('profile.specializationCategories', 'id name')
+            .populate('workExperiences.employmentTypes', 'id name');
     }
 
     public async updateUserDeleteAchievement(id: string): Promise<User | null> {
@@ -320,10 +320,10 @@ export class UsersService {
             },
             { returnDocument: 'after' }
         )
-            .populate('profile.region', '-owner -createdAt -updatedAt')
-            .populate('profile.skills', '-owner -createdAt -updatedAt')
-            .populate('profile.specializationCategories', '-owner -createdAt -updatedAt')
-            .populate('workExperiences.employmentTypes', '-owner -createdAt -updatedAt');
+            .populate('profile.region', 'id name')
+            .populate('profile.skills', 'id name')
+            .populate('profile.specializationCategories', 'id name')
+            .populate('workExperiences.employmentTypes', 'id name');
     }
 
     public async updateUserCreatePortfolio(id: string, portfolio: UpdateUserPortfolioDto): Promise<User | null> {
@@ -337,18 +337,18 @@ export class UsersService {
             },
             { returnDocument: 'after' }
         )
-            .populate('profile.region', '-owner -createdAt -updatedAt')
-            .populate('profile.skills', '-owner -createdAt -updatedAt')
-            .populate('profile.specializationCategories', '-owner -createdAt -updatedAt')
-            .populate('workExperiences.employmentTypes', '-owner -createdAt -updatedAt');
+            .populate('profile.region', 'id name')
+            .populate('profile.skills', 'id name')
+            .populate('profile.specializationCategories', 'id name')
+            .populate('workExperiences.employmentTypes', 'id name');
     }
 
     public async getUserByPortfolio(id: string): Promise<User | null> {
         return await this.userModel.findOne({ 'portfolios': { $elemMatch: { 'id': id } } })
-            .populate('profile.region', '-owner -createdAt -updatedAt')
-            .populate('profile.skills', '-owner -createdAt -updatedAt')
-            .populate('profile.specializationCategories', '-owner -createdAt -updatedAt')
-            .populate('workExperiences.employmentTypes', '-owner -createdAt -updatedAt');
+            .populate('profile.region', 'id name')
+            .populate('profile.skills', 'id name')
+            .populate('profile.specializationCategories', 'id name')
+            .populate('workExperiences.employmentTypes', 'id name');
     }
 
     public async updateUserUpdatePortfolio(id: string, portfolio: UpdateUserPortfolioDto): Promise<User | null> {
@@ -372,10 +372,10 @@ export class UsersService {
                 returnDocument: 'after'
             }
         )
-            .populate('profile.region', '-owner -createdAt -updatedAt')
-            .populate('profile.skills', '-owner -createdAt -updatedAt')
-            .populate('profile.specializationCategories', '-owner -createdAt -updatedAt')
-            .populate('workExperiences.employmentTypes', '-owner -createdAt -updatedAt');
+            .populate('profile.region', 'id name')
+            .populate('profile.skills', 'id name')
+            .populate('profile.specializationCategories', 'id name')
+            .populate('workExperiences.employmentTypes', 'id name');
     }
 
     public async updateUserDeletePortfolio(id: string): Promise<User | null> {
@@ -390,10 +390,10 @@ export class UsersService {
             },
             { returnDocument: 'after' }
         )
-            .populate('profile.region', '-owner -createdAt -updatedAt')
-            .populate('profile.skills', '-owner -createdAt -updatedAt')
-            .populate('profile.specializationCategories', '-owner -createdAt -updatedAt')
-            .populate('workExperiences.employmentTypes', '-owner -createdAt -updatedAt');
+            .populate('profile.region', 'id name')
+            .populate('profile.skills', 'id name')
+            .populate('profile.specializationCategories', 'id name')
+            .populate('workExperiences.employmentTypes', 'id name');
     }
 
     public async publish(id: string, condition = Conditions.PUBLIC): Promise<User | null> {
@@ -406,10 +406,10 @@ export class UsersService {
             },
             { returnDocument: 'after' }
         )
-            .populate('profile.region', '-owner -createdAt -updatedAt')
-            .populate('profile.skills', '-owner -createdAt -updatedAt')
-            .populate('profile.specializationCategories', '-owner -createdAt -updatedAt')
-            .populate('workExperiences.employmentTypes', '-owner -createdAt -updatedAt');
+            .populate('profile.region', 'id name')
+            .populate('profile.skills', 'id name')
+            .populate('profile.specializationCategories', 'id name')
+            .populate('workExperiences.employmentTypes', 'id name');
     }
 
     public async publishCancel(id: string, condition = Conditions.PRIVATE): Promise<User | null> {
@@ -422,9 +422,9 @@ export class UsersService {
             },
             { returnDocument: 'after' }
         )
-            .populate('profile.region', '-owner -createdAt -updatedAt')
-            .populate('profile.skills', '-owner -createdAt -updatedAt')
-            .populate('profile.specializationCategories', '-owner -createdAt -updatedAt')
-            .populate('workExperiences.employmentTypes', '-owner -createdAt -updatedAt');
+            .populate('profile.region', 'id name')
+            .populate('profile.skills', 'id name')
+            .populate('profile.specializationCategories', 'id name')
+            .populate('workExperiences.employmentTypes', 'id name');
     }
 }

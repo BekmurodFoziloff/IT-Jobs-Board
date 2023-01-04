@@ -2,7 +2,7 @@ import { Schema, model } from 'mongoose';
 import { Order } from './order.interface';
 import { Conditions } from '../utils/enums/condition.enum';
 
-const GeneralInformationAboutTheProjectSchema = new Schema(
+const ProjectSchema = new Schema(
     {
         title: {
             type: String,
@@ -26,21 +26,21 @@ const GeneralInformationAboutTheProjectSchema = new Schema(
     }
 );
 
-const GeneralRequirementsToTheExecutorSchema = new Schema(
+const Requirements = new Schema(
     {
-        expectedTransactionType: {
+        transactionType: {
             type: String
         },
         requirementsToTheExecutor: {
             type: String
         },
-        commentsToTheRequirements: {
+        comments: {
             type: String
         }
     }
 );
 
-const ContactInformationSchema = new Schema(
+const ContactsSchema = new Schema(
     {
         customerWebsite: {
             type: String
@@ -123,9 +123,9 @@ const OrderSchema = new Schema(
                 required: true
             }
         ],
-        project: GeneralInformationAboutTheProjectSchema,
-        requirement: GeneralRequirementsToTheExecutorSchema,
-        contact: ContactInformationSchema,
+        project: ProjectSchema,
+        requirements: Requirements,
+        contacts: ContactsSchema,
         owner: {
             type: Schema.Types.ObjectId,
             ref: 'User',

@@ -40,7 +40,8 @@ export class EmploymentTypesService {
             {
                 ...employmentType,
                 updatedAt: moment().locale('uz-latn').format('LLLL')
-            }
+            },
+            { returnDocument: 'after' }
         )
             .populate('owner', 'email firstName lastName id');
     }

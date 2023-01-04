@@ -61,11 +61,10 @@ export class LegalFormsController {
     private updateLegalForm = async (req: Request, res: Response, next: NextFunction) => {
         const legalFormData: UpdateLegalFormDto = req.body;
         const { id } = req.params;
-        await this.legalFormsService.updateLegalForm(
+        const updateLegalFormResult = await this.legalFormsService.updateLegalForm(
             id,
             legalFormData
         );
-        const updateLegalFormResult = await this.legalFormsService.findLegalFormById(id);
         if (updateLegalFormResult) {
             return res.send(updateLegalFormResult);
         }

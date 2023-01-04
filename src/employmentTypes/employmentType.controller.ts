@@ -61,11 +61,10 @@ export class EmploymentTypesController {
     private updateEmploymentType = async (req: Request, res: Response, next: NextFunction) => {
         const employmentTypeData: UpdateEmploymentTypeDto = req.body;
         const { id } = req.params;
-        await this.employmentTypesService.updateEmploymentType(
+        const updateEmploymentTypeResult = await this.employmentTypesService.updateEmploymentType(
             id,
             employmentTypeData
         );
-        const updateEmploymentTypeResult = await this.employmentTypesService.findEmploymentTypeById(id);
         if (updateEmploymentTypeResult) {
             return res.send(updateEmploymentTypeResult);
         }

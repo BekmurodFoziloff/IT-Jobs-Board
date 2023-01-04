@@ -17,13 +17,13 @@ interface Contacts extends Document {
     linkedLn: string;
 }
 
-interface BusinessProcessOutsourcing extends Document {
+interface BPO extends Document {
     id: string;
-    isCompanyBusinessProcessOutsourcing: boolean;
+    isCompanyBPO: boolean;
     specializationsBPO: SpecializationBPO[];
 }
 
-interface GeneralInformationAboutTheProject extends Document {
+interface Portfolio extends Document {
     id: string;
     title: string;
     description: string;
@@ -57,8 +57,8 @@ export interface Company extends Document {
     aboutCompany: string;
     logo: string;
     contacts: Contacts;
-    businessProcessOutsourcing: BusinessProcessOutsourcing[];
-    portfolios: GeneralInformationAboutTheProject[];
+    bpo: BPO[];
+    portfolios: Portfolio[];
     teams: CompanyTeam[];
     owner: User;
     condition: string;

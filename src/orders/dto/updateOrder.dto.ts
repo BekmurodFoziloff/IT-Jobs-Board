@@ -43,6 +43,7 @@ export class UpdateOrderDto {
 
     @IsString()
     @Trim()
+    @IsNotEmpty()
     @IsOptional()
     currency: string;
 
@@ -65,7 +66,7 @@ export class UpdateOrderDto {
 
 export default UpdateOrderDto;
 
-export class UpdateGeneralInformationAboutTheProjectDto {
+export class UpdateProjectDto {
     @IsString()
     @IsOptional()
     id: string;
@@ -101,7 +102,7 @@ export class UpdateGeneralInformationAboutTheProjectDto {
     attachedFile: string;
 }
 
-export class UpdateGeneralRequirementsToTheExecutorDto {
+export class UpdateRequirementsDto {
     @IsString()
     @IsOptional()
     id: string;
@@ -109,7 +110,7 @@ export class UpdateGeneralRequirementsToTheExecutorDto {
     @IsString()
     @Trim()
     @IsOptional()
-    expectedTransactionType: string;
+    transactionType: string;
 
     @IsString()
     @Trim()
@@ -119,10 +120,10 @@ export class UpdateGeneralRequirementsToTheExecutorDto {
     @IsString()
     @Trim()
     @IsOptional()
-    commentsToTheRequirements: string;
+    comments: string;
 }
 
-export class UpdateContactInformationDto {
+export class UpdateContactsDto {
     @IsString()
     @IsOptional()
     id: string;

@@ -2,7 +2,7 @@ import { Document } from 'mongoose';
 import { Specialization } from '../specializations/specialization.interface';
 import { User } from '../users/user.interface';
 
-interface GeneralInformationAboutTheProject extends Document {
+interface Project extends Document {
     id: string;
     title: string;
     description: string;
@@ -11,14 +11,14 @@ interface GeneralInformationAboutTheProject extends Document {
     attachedFile: string;
 }
 
-interface GeneralRequirementsToTheExecutor extends Document {
+interface Requirements extends Document {
     id: string;
-    expectedTransactionType: string;
+    transactionType: string;
     requirementsToTheExecutor: string;
-    commentsToTheRequirements: string;
+    comments: string;
 }
 
-interface ContactInformation extends Document {
+interface Contacts extends Document {
     id: string;
     customerWebsite: string;
     customerEmail: string;
@@ -44,9 +44,9 @@ export interface Order extends Document {
     negotiable: string;
     filingConditions: string;
     specializations: Specialization[];
-    project: GeneralInformationAboutTheProject;
-    requirement: GeneralRequirementsToTheExecutor;
-    contact: ContactInformation;
+    project: Project;
+    requirements: Requirements;
+    contacts: Contacts;
     owner: User;
     condition: string;
     createdAt?: string;
