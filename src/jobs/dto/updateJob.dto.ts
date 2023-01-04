@@ -68,7 +68,7 @@ export class UpdateJobDto {
 
 export default UpdateJobDto;
 
-export class UpdateJobRequirementsDto {
+export class UpdateRequirementsDto {
     @IsString()
     @IsOptional()
     id: string;
@@ -91,14 +91,14 @@ export class UpdateJobRequirementsDto {
     @IsOptional()
     @IsString()
     @Trim()
-    additationRequirements: string;
+    additionalRequirements: string;
 
     @IsOptional()
     @IsArray()
     skills: Array<string>;
 }
 
-export class UpdateGeneralInformationAboutTheEmployerDto {
+export class UpdateEmployerDto {
     @IsString()
     @IsOptional()
     id: string;

@@ -7,16 +7,16 @@ import { EmploymentType } from '../employmentTypes/employmentType.interface';
 import { WorkStyle } from '../workStyles/workStyle.interface';
 import { LegalForm } from '../legalForms/legalForm.interface';
 
-interface JobRequirements extends Document {
+interface Requiremets extends Document {
     id: string;
     minAge: number;
     maxAge: number;
     workExperience: WorkExperience;
-    additationRequirements: string;
+    additionalRequirements: string;
     skills: Skill[];
 }
 
-interface GeneralInformationAboutTheEmployer extends Document {
+interface Employer extends Document {
     id: string;
     companyName: string;
     legalForm: LegalForm;
@@ -44,7 +44,7 @@ export interface Job extends Document {
     owner: User;
     createdAt?: string;
     updatedAt?: string;
-    jobRequirements: JobRequirements;
-    generalInformationAboutTheEmployer: GeneralInformationAboutTheEmployer;
+    requirements: Requiremets;
+    employer: Employer;
     condition: string;
 }

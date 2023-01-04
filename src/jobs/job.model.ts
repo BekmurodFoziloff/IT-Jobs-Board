@@ -2,7 +2,7 @@ import { Schema, model } from 'mongoose';
 import { Conditions } from '../utils/enums/condition.enum';
 import { Job } from './job.interface';
 
-const JobRequirementsSchema = new Schema({
+const RequirementsSchema = new Schema({
     minAge: {
         type: Number
     },
@@ -14,7 +14,7 @@ const JobRequirementsSchema = new Schema({
         ref: 'WorkExperience',
         required: true
     },
-    additationRequirements: {
+    additionalRequirements: {
         type: String
     },
     skills: [
@@ -25,7 +25,7 @@ const JobRequirementsSchema = new Schema({
     ]
 });
 
-const GeneralInformationAboutTheEmployerSchema = new Schema({
+const EmployerSchema = new Schema({
     companyName: {
         type: String,
         required: true
@@ -115,8 +115,8 @@ const JobSchema = new Schema(
         toDate: {
             type: Date
         },
-        jobRequirements: JobRequirementsSchema,
-        generalInformationAboutTheEmployer: GeneralInformationAboutTheEmployerSchema,
+        requirements: RequirementsSchema,
+        employer: EmployerSchema,
         condition: {
             type: String,
             enum: Conditions,

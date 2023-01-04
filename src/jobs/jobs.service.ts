@@ -2,8 +2,8 @@ import JobModel from './job.model';
 import CreateJobDto from './dto/createJob.dto';
 import {
     UpdateJobDto,
-    UpdateGeneralInformationAboutTheEmployerDto,
-    UpdateJobRequirementsDto
+    UpdateEmployerDto,
+    UpdateRequirementsDto
 } from './dto/updateJob.dto';
 import { Job } from './job.interface';
 import moment from 'moment';
@@ -17,13 +17,13 @@ export class JobsService {
     public async findJobById(id: string): Promise<Job | null> {
         return await this.jobModel.findById(id)
             .where('condition').equals(Conditions.PUBLIC)
-            .populate('owner', '-password')
-            .populate('employmentTypes', '-owner')
-            .populate('specializationCategories', '-owner')
-            .populate('workStyles', '-owner')
-            .populate('jobRequirements.workExperience', '-owner')
-            .populate('jobRequirements.skills', '-owner')
-            .populate('generalInformationAboutTheEmployer.legalForm', '-owner');
+            .populate('owner', 'email firstName lastName id')
+            .populate('employmentTypes', '-owner -createdAt -updatedAt')
+            .populate('specializationCategories', '-owner -createdAt -updatedAt')
+            .populate('workStyles', '-owner -createdAt -updatedAt')
+            .populate('requirements.workExperience', '-owner -createdAt -updatedAt')
+            .populate('requirements.skills', '-owner -createdAt -updatedAt')
+            .populate('employer.legalForm', '-owner -createdAt -updatedAt');
     }
 
     public async findAllJobs(queryObj: any): Promise<Job[] | null> {
@@ -31,21 +31,21 @@ export class JobsService {
         if (queryObj.employmentTypes && queryObj.employmentTypes.length > 0) {
             query['employmentTypes'] = { $in: queryObj.employmentTypes }
         } else if (queryObj.workExperience) {
-            query['jobRequirements.workExperience'] = { $in: queryObj.workExperience }
+            query['requirements.workExperience'] = { $in: queryObj.workExperience }
         } else if (queryObj.specializationCategories && queryObj.specializationCategories.length > 0) {
             query['specializationCategories'] = { $in: queryObj.specializationCategories }
         } else if (queryObj.skills && queryObj.skills.length > 0) {
-            query['jobRequirements.skills'] = { $in: queryObj.skills }
+            query['requirements.skills'] = { $in: queryObj.skills }
         }
         return await this.jobModel.find(query)
             .where('condition').equals(Conditions.PUBLIC)
-            .populate('owner', '-password')
-            .populate('employmentTypes', '-owner')
-            .populate('specializationCategories', '-owner')
-            .populate('workStyles', '-owner')
-            .populate('jobRequirements.workExperience', '-owner')
-            .populate('jobRequirements.skills', '-owner')
-            .populate('generalInformationAboutTheEmployer.legalForm', '-owner');
+            .populate('owner', 'email firstName lastName id')
+            .populate('employmentTypes', '-owner -createdAt -updatedAt')
+            .populate('specializationCategories', '-owner -createdAt -updatedAt')
+            .populate('workStyles', '-owner -createdAt -updatedAt')
+            .populate('requirements.workExperience', '-owner -createdAt -updatedAt')
+            .populate('requirements.skills', '-owner -createdAt -updatedAt')
+            .populate('employer.legalForm', '-owner -createdAt -updatedAt');
     }
 
     public async createJob(job: CreateJobDto, owner: User): Promise<Job> {
@@ -56,18 +56,18 @@ export class JobsService {
         });
         await newJob.save();
         return await newJob
-            .populate('owner', '-password');
+            .populate('owner', 'email firstName lastName id');
     }
 
     public async deleteJob(id: string): Promise<Job | null> {
         return await this.jobModel.findByIdAndDelete(id)
-            .populate('owner', '-password')
-            .populate('employmentTypes', '-owner')
-            .populate('specializationCategories', '-owner')
-            .populate('workStyles', '-owner')
-            .populate('jobRequirements.workExperience', '-owner')
-            .populate('jobRequirements.skills', '-owner')
-            .populate('generalInformationAboutTheEmployer.legalForm', '-owner');
+            .populate('owner', 'email firstName lastName id')
+            .populate('employmentTypes', '-owner -createdAt -updatedAt')
+            .populate('specializationCategories', '-owner -createdAt -updatedAt')
+            .populate('workStyles', '-owner -createdAt -updatedAt')
+            .populate('requirements.workExperience', '-owner -createdAt -updatedAt')
+            .populate('requirements.skills', '-owner -createdAt -updatedAt')
+            .populate('employer.legalForm', '-owner -createdAt -updatedAt');
     }
 
     public async updateJob(id: string, job: UpdateJobDto): Promise<Job | null> {
@@ -76,81 +76,84 @@ export class JobsService {
             {
                 ...job,
                 updatedAt: moment().locale('uz-latn').format('LLLL')
-            }
+            },
+            { returnDocument: 'after' }
         )
-            .populate('owner', '-password')
-            .populate('employmentTypes', '-owner')
-            .populate('specializationCategories', '-owner')
-            .populate('workStyles', '-owner')
-            .populate('jobRequirements.workExperience', '-owner')
-            .populate('jobRequirements.skills', '-owner')
-            .populate('generalInformationAboutTheEmployer.legalForm', '-owner');
+            .populate('owner', 'email firstName lastName id')
+            .populate('employmentTypes', '-owner -createdAt -updatedAt')
+            .populate('specializationCategories', '-owner -createdAt -updatedAt')
+            .populate('workStyles', '-owner -createdAt -updatedAt')
+            .populate('requirements.workExperience', '-owner -createdAt -updatedAt')
+            .populate('requirements.skills', '-owner -createdAt -updatedAt')
+            .populate('employer.legalForm', '-owner -createdAt -updatedAt');
     }
 
-    public async updateJobRequirements(id: string, job: UpdateJobRequirementsDto): Promise<Job | null> {
+    public async updateRequirements(id: string, requrements: UpdateRequirementsDto): Promise<Job | null> {
         return await this.jobModel.findByIdAndUpdate(
             id,
             {
                 $set: {
-                    'jobRequirements': {
+                    'requirements': {
                         '_id': id,
-                        ...job
+                        ...requrements
                     }
                 },
                 updatedAt: moment().locale('uz-latn').format('LLLL')
-            }
+            },
+            { returnDocument: 'after' }
         )
-            .populate('owner', '-password')
-            .populate('employmentTypes', '-owner')
-            .populate('specializationCategories', '-owner')
-            .populate('workStyles', '-owner')
-            .populate('jobRequirements.workExperience', '-owner')
-            .populate('jobRequirements.skills', '-owner')
-            .populate('generalInformationAboutTheEmployer.legalForm', '-owner');
+            .populate('owner', 'email firstName lastName id')
+            .populate('employmentTypes', '-owner -createdAt -updatedAt')
+            .populate('specializationCategories', '-owner -createdAt -updatedAt')
+            .populate('workStyles', '-owner -createdAt -updatedAt')
+            .populate('requirements.workExperience', '-owner -createdAt -updatedAt')
+            .populate('requirements.skills', '-owner -createdAt -updatedAt')
+            .populate('employer.legalForm', '-owner -createdAt -updatedAt');
     }
 
-    public async updateJobGeneralInformationAboutTheEmployer(id: string, job: UpdateGeneralInformationAboutTheEmployerDto): Promise<Job | null> {
+    public async updateEmployer(id: string, employer: UpdateEmployerDto): Promise<Job | null> {
         return await this.jobModel.findByIdAndUpdate(
             id,
             {
                 $set: {
-                    'generalInformationAboutTheEmployer': {
+                    'employer': {
                         '_id': id,
-                        ...job
+                        ...employer
                     }
                 },
                 updatedAt: moment().locale('uz-latn').format('LLLL')
-            }
+            },
+            { returnDocument: 'after' }
         )
-            .populate('owner', '-password')
-            .populate('employmentTypes', '-owner')
-            .populate('specializationCategories', '-owner')
-            .populate('workStyles', '-owner')
-            .populate('jobRequirements.workExperience', '-owner')
-            .populate('jobRequirements.skills', '-owner')
-            .populate('generalInformationAboutTheEmployer.legalForm', '-owner');
+            .populate('owner', 'email firstName lastName id')
+            .populate('employmentTypes', '-owner -createdAt -updatedAt')
+            .populate('specializationCategories', '-owner -createdAt -updatedAt')
+            .populate('workStyles', '-owner -createdAt -updatedAt')
+            .populate('requirements.workExperience', '-owner -createdAt -updatedAt')
+            .populate('requirements.skills', '-owner -createdAt -updatedAt')
+            .populate('employer.legalForm', '-owner -createdAt -updatedAt');
     }
 
     public async getAllJobsOfUser(userId: string): Promise<Job[] | null> {
         return await this.jobModel.find({ owner: userId })
-            .populate('owner', '-password')
-            .populate('employmentTypes', '-owner')
-            .populate('specializationCategories', '-owner')
-            .populate('workStyles', '-owner')
-            .populate('jobRequirements.workExperience', '-owner')
-            .populate('jobRequirements.skills', '-owner')
-            .populate('generalInformationAboutTheEmployer.legalForm', '-owner');
+            .populate('owner', 'email firstName lastName id')
+            .populate('employmentTypes', '-owner -createdAt -updatedAt')
+            .populate('specializationCategories', '-owner -createdAt -updatedAt')
+            .populate('workStyles', '-owner -createdAt -updatedAt')
+            .populate('requirements.workExperience', '-owner -createdAt -updatedAt')
+            .populate('requirements.skills', '-owner -createdAt -updatedAt')
+            .populate('employer.legalForm', '-owner -createdAt -updatedAt');
     }
 
-    public async findJobByIdForUpdate(id: string): Promise<Job | null> {
+    public async getJobById(id: string): Promise<Job | null> {
         return await this.jobModel.findById(id)
-            .populate('owner', '-password')
-            .populate('employmentTypes', '-owner')
-            .populate('specializationCategories', '-owner')
-            .populate('workStyles', '-owner')
-            .populate('jobRequirements.workExperience', '-owner')
-            .populate('jobRequirements.skills', '-owner')
-            .populate('generalInformationAboutTheEmployer.legalForm', '-owner');
+            .populate('owner', 'email firstName lastName id')
+            .populate('employmentTypes', '-owner -createdAt -updatedAt')
+            .populate('specializationCategories', '-owner -createdAt -updatedAt')
+            .populate('workStyles', '-owner -createdAt -updatedAt')
+            .populate('requirements.workExperience', '-owner -createdAt -updatedAt')
+            .populate('requirements.skills', '-owner -createdAt -updatedAt')
+            .populate('employer.legalForm', '-owner -createdAt -updatedAt');
     }
 
     public async publish(id: string, condition = Conditions.PUBLIC): Promise<Job | null> {
@@ -160,15 +163,16 @@ export class JobsService {
                 $set: {
                     'condition': condition
                 }
-            }
+            },
+            { returnDocument: 'after' }
         )
-            .populate('owner', '-password')
-            .populate('employmentTypes', '-owner')
-            .populate('specializationCategories', '-owner')
-            .populate('workStyles', '-owner')
-            .populate('jobRequirements.workExperience', '-owner')
-            .populate('jobRequirements.skills', '-owner')
-            .populate('generalInformationAboutTheEmployer.legalForm', '-owner');
+            .populate('owner', 'email firstName lastName id')
+            .populate('employmentTypes', '-owner -createdAt -updatedAt')
+            .populate('specializationCategories', '-owner -createdAt -updatedAt')
+            .populate('workStyles', '-owner -createdAt -updatedAt')
+            .populate('requirements.workExperience', '-owner -createdAt -updatedAt')
+            .populate('requirements.skills', '-owner -createdAt -updatedAt')
+            .populate('employer.legalForm', '-owner -createdAt -updatedAt');
     }
 
     public async publishCancel(id: string, condition = Conditions.PRIVATE): Promise<Job | null> {
@@ -178,14 +182,15 @@ export class JobsService {
                 $set: {
                     'condition': condition
                 }
-            }
+            },
+            { returnDocument: 'after' }
         )
-            .populate('owner', '-password')
-            .populate('employmentTypes', '-owner')
-            .populate('specializationCategories', '-owner')
-            .populate('workStyles', '-owner')
-            .populate('jobRequirements.workExperience', '-owner')
-            .populate('jobRequirements.skills', '-owner')
-            .populate('generalInformationAboutTheEmployer.legalForm', '-owner');
+            .populate('owner', 'email firstName lastName id')
+            .populate('employmentTypes', '-owner -createdAt -updatedAt')
+            .populate('specializationCategories', '-owner -createdAt -updatedAt')
+            .populate('workStyles', '-owner -createdAt -updatedAt')
+            .populate('requirements.workExperience', '-owner -createdAt -updatedAt')
+            .populate('requirements.skills', '-owner -createdAt -updatedAt')
+            .populate('employer.legalForm', '-owner -createdAt -updatedAt');
     }
 }

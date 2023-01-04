@@ -2,7 +2,7 @@ interface JobFilterQuery {
     employmentTypes?: {
         $in: Array<string>;
     };
-    jobRequirements?: {
+    requirements?: {
         workExperience?: {
             $in: string;
         };
