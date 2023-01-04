@@ -10,12 +10,12 @@ export class IndustriesService {
 
     public async findIndustryById(id: string): Promise<Industry | null> {
         return await this.industryModel.findById(id)
-            .populate('owner', '-password');
+            .populate('owner', 'email firstName lastName id');
     }
 
     public async findAllIndustries(): Promise<Industry[]> {
         return await this.industryModel.find({})
-            .populate('owner', '-password');
+            .populate('owner', 'email firstName lastName id');
     }
 
     public async createIndustry(industry: CreateIndustryDto, owner: User): Promise<Industry> {
@@ -25,13 +25,13 @@ export class IndustriesService {
             createdAt: moment().locale('uz-latn').format('LLLL')
         });
         await newIndustry.save();
-        await newIndustry.populate('owner', '-password');
+        await newIndustry.populate('owner', 'email firstName lastName id');
         return newIndustry;
     }
 
     public async deleteIndustry(id: string): Promise<Industry | null> {
         return await this.industryModel.findByIdAndDelete(id)
-            .populate('owner', '-password');
+            .populate('owner', 'email firstName lastName id');
     }
 
     public async updateIndustry(id: string, industry: UpdateIndustryDto): Promise<Industry | null> {
@@ -42,7 +42,7 @@ export class IndustriesService {
                 updatedAt: moment().locale('uz-latn').format('LLLL')
             }
         )
-            .populate('owner', '-password');
+            .populate('owner', 'email firstName lastName id');
     }
 
     public async findIndustryByName(name: string): Promise<Industry | null> {

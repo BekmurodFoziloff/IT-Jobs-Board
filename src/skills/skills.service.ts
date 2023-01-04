@@ -10,12 +10,12 @@ export class SkillsService {
 
     public async findSkillById(id: string): Promise<Skill | null> {
         return await this.skillModel.findById(id)
-            .populate('owner', '-password');
+            .populate('owner', 'email firstName lastName id');
     }
 
     public async findAllSkills(): Promise<Skill[]> {
         return await this.skillModel.find({})
-            .populate('owner', '-password');
+            .populate('owner', 'email firstName lastName id');
     }
 
     public async createSkill(skill: CreateSkillDto, owner: User): Promise<Skill> {
@@ -25,13 +25,13 @@ export class SkillsService {
             createdAt: moment().locale('uz-latn').format('LLLL')
         });
         await newSkill.save();
-        await newSkill.populate('owner', '-password');
+        await newSkill.populate('owner', 'email firstName lastName id');
         return newSkill;
     }
 
     public async deleteSkill(id: string): Promise<Skill | null> {
         return await this.skillModel.findByIdAndDelete(id)
-            .populate('owner', '-password');
+            .populate('owner', 'email firstName lastName id');
     }
 
     public async updateSkill(id: string, skill: UpdateSkillDto): Promise<Skill | null> {
@@ -42,7 +42,7 @@ export class SkillsService {
                 updatedAt: moment().locale('uz-latn').format('LLLL')
             }
         )
-            .populate('owner', '-password');
+            .populate('owner', 'email firstName lastName id');
     }
 
     public async findSkillByName(name: string): Promise<Skill | null> {

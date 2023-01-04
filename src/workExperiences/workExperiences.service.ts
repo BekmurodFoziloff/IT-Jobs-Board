@@ -10,12 +10,12 @@ export class WorkExperiencesService {
 
     public async findWorkExperienceById(id: string): Promise<WorkExperience | null> {
         return await this.workExperienceModel.findById(id)
-            .populate('owner', '-password');
+            .populate('owner', 'email firstName lastName id');
     }
 
     public async findAllWorkExperiences(): Promise<WorkExperience[]> {
         return await this.workExperienceModel.find({})
-            .populate('owner', '-password');
+            .populate('owner', 'email firstName lastName id');
     }
 
     public async createWorkExperience(workExperience: CreateWorkExperienceDto, owner: User): Promise<WorkExperience> {
@@ -25,13 +25,13 @@ export class WorkExperiencesService {
             createdAt: moment().locale('uz-latn').format('LLLL')
         });
         await newWorkExperience.save();
-        await newWorkExperience.populate('owner', '-password');
+        await newWorkExperience.populate('owner', 'email firstName lastName id');
         return newWorkExperience;
     }
 
     public async deleteWorkExperience(id: string): Promise<WorkExperience | null> {
         return await this.workExperienceModel.findByIdAndDelete(id)
-            .populate('owner', '-password');
+            .populate('owner', 'email firstName lastName id');
     }
 
     public async updateWorkExperience(id: string, workExperience: UpdateWorkExperienceDto): Promise<WorkExperience | null> {
@@ -42,7 +42,7 @@ export class WorkExperiencesService {
                 updatedAt: moment().locale('uz-latn').format('LLLL')
             }
         )
-            .populate('owner', '-password');
+            .populate('owner', 'email firstName lastName id');
     }
 
     public async findWorkExperienceByName(name: string): Promise<WorkExperience | null> {

@@ -1,7 +1,7 @@
 import { IsString, IsNotEmpty, IsArray, IsDateString, IsOptional, IsUrl, IsEmail, IsNumber, IsAlpha } from 'class-validator';
 import { Trim } from 'class-sanitizer';
 
-export class UpdateUserProfileDto {
+export class UpdateProfileDto {
     @IsOptional()
     @IsString()
     @Trim()
@@ -66,7 +66,7 @@ export class UpdateUserProfileDto {
     specializationCategories: Array<string>;
 }
 
-export class UpdateUserContactsDto {
+export class UpdateContactsDto {
     @IsString()
     @IsOptional()
     id: string;
@@ -226,7 +226,7 @@ export class UpdateUserAchievementDto {
     description: string;
 }
 
-export class UpdateUserGeneralInformationAboutTheProjectDto {
+export class UpdateUserPortfolioDto {
     @IsString()
     @IsOptional()
     id: string;

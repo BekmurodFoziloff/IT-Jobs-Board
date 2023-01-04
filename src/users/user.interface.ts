@@ -4,7 +4,7 @@ import { Region } from '../regions/region.interface';
 import { Skill } from '../skills/skill.interface';
 import { SpecializationCategory } from '../specializationCategories/specializationCategory.interface';
 
-interface GeneralInformationUser extends Document {
+interface Profile extends Document {
     id: string;
     photo: string;
     firstName: string;
@@ -61,7 +61,7 @@ interface Achievement extends Document {
     description: string;
 }
 
-interface GeneralInformationAboutTheProject extends Document {
+interface Portfolio extends Document {
     id: string;
     title: string;
     description: string;
@@ -80,12 +80,12 @@ export interface User extends Document {
     lastName: string;
     password: string;
     role: string;
-    profile: GeneralInformationUser;
+    profile: Profile;
     contacts: Contacts;
     workExperiences: WorkExperience[];
     educations: Education[];
     achievements: Achievement[];
-    portfolios: GeneralInformationAboutTheProject[];
+    portfolios: Portfolio[];
     condition: string;
     createdAt: string;
     updatedAt: string;

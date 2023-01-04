@@ -10,12 +10,12 @@ export class SpecializationsBPOService {
 
     public async findSpecializationBPOById(id: string): Promise<SpecializationBPO | null> {
         return await this.specializationBPOModel.findById(id)
-            .populate('owner', '-password');
+            .populate('owner', 'email firstName lastName id');
     }
 
     public async findAllSpecializationsBPO(): Promise<SpecializationBPO[]> {
         return await this.specializationBPOModel.find({})
-            .populate('owner', '-password');
+            .populate('owner', 'email firstName lastName id');
     }
 
     public async createSpecializationBPO(specializationBPO: CreateSpecializationBPODto, owner: User): Promise<SpecializationBPO> {
@@ -25,13 +25,13 @@ export class SpecializationsBPOService {
             createdAt: moment().locale('uz-latn').format('LLLL')
         });
         await newSpecializationBPO.save();
-        await newSpecializationBPO.populate('owner', '-password');
+        await newSpecializationBPO.populate('owner', 'email firstName lastName id');
         return newSpecializationBPO;
     }
 
     public async deleteSpecializationBPO(id: string): Promise<SpecializationBPO | null> {
         return await this.specializationBPOModel.findByIdAndDelete(id)
-            .populate('owner', '-password');
+            .populate('owner', 'email firstName lastName id');
     }
 
     public async updateSpecializationBPO(id: string, specializationBPO: UpdateSpecializationBPODto): Promise<SpecializationBPO | null> {
@@ -42,7 +42,7 @@ export class SpecializationsBPOService {
                 updatedAt: moment().locale('uz-latn').format('LLLL')
             }
         )
-            .populate('owner', '-password');
+            .populate('owner', 'email firstName lastName id');
     }
 
     public async findSpecializationBPOByName(name: string): Promise<SpecializationBPO | null> {

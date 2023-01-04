@@ -2,12 +2,12 @@ import { Router, Request, Response, NextFunction } from 'express';
 import NotAuthorizedException from '../exceptions/NotAuthorizedException';
 import authMiddleware from '../middlewares/auth.middleware';
 import {
-    UpdateUserProfileDto,
-    UpdateUserContactsDto,
+    UpdateProfileDto,
+    UpdateContactsDto,
     UpdateUserWorkExperienceDto,
     UpdateUserEducationDto,
     UpdateUserAchievementDto,
-    UpdateUserGeneralInformationAboutTheProjectDto
+    UpdateUserPortfolioDto
 } from './dto/updateUser.dto';
 import { UsersService } from './users.service';
 import WorkExperienceOfUserNotFoundException from '../exceptions/WorkExperienceOfUserNotFoundException';
@@ -16,6 +16,13 @@ import AchievementOfUserNotFoundException from '../exceptions/AchievementOfUserN
 import PortfolioOfUserNotFoundException from '../exceptions/PortfolioOfUserNotFoundException';
 import ProfessionalNotFoundException from '../exceptions/ProfessionalNotFoundException';
 import dtoValidationMiddleware from '../middlewares/dtoValidation.middleware';
+import {
+    isCreatorUser,
+    isCreatorWork,
+    isCreatorEducation,
+    isCreatorAchievement,
+    isCreatorPortfolio
+} from '../middlewares/isCreator.middleware';
 
 export class UsersController {
     public path = '/my';
@@ -27,39 +34,39 @@ export class UsersController {
 
     public setRoutes() {
         this.router.route(`${this.path}/profile/:id/delete`)
-            .put(authMiddleware, this.deleteUser);
+            .put(authMiddleware, isCreatorUser, this.deleteUser);
         this.router.route(`${this.path}/profile/:id/edit`)
-            .put(authMiddleware, dtoValidationMiddleware(UpdateUserProfileDto, true), this.updateUserProfile);
+            .put(authMiddleware, isCreatorUser, dtoValidationMiddleware(UpdateProfileDto, true), this.updateProfile);
         this.router.route(`${this.path}/profile/contacts/:id/edit`)
-            .put(authMiddleware, dtoValidationMiddleware(UpdateUserProfileDto, true), this.updateUserContacts);
+            .put(authMiddleware, isCreatorUser, dtoValidationMiddleware(UpdateProfileDto, true), this.updateContacts);
         this.router.route(`${this.path}/profile/:id/work/new`)
-            .put(authMiddleware, dtoValidationMiddleware(UpdateUserWorkExperienceDto, true), this.updateUserCreateWorkExperience);
+            .put(authMiddleware, isCreatorWork, dtoValidationMiddleware(UpdateUserWorkExperienceDto, true), this.updateUserCreateWorkExperience);
         this.router.route(`${this.path}/profile/work/:id/edit`)
-            .put(authMiddleware, dtoValidationMiddleware(UpdateUserWorkExperienceDto, true), this.updateUserUpdateWorkExperience);
+            .put(authMiddleware, isCreatorWork, dtoValidationMiddleware(UpdateUserWorkExperienceDto, true), this.updateUserUpdateWorkExperience);
         this.router.route(`${this.path}/profile/work/:id/delete`)
-            .put(authMiddleware, dtoValidationMiddleware(UpdateUserWorkExperienceDto, true), this.updateUserDeleteWorkExperience);
+            .put(authMiddleware, isCreatorWork, dtoValidationMiddleware(UpdateUserWorkExperienceDto, true), this.updateUserDeleteWorkExperience);
         this.router.route(`${this.path}/profile/:id/education/new`)
-            .put(authMiddleware, dtoValidationMiddleware(UpdateUserEducationDto, true), this.updateUserCreateEducation);
+            .put(authMiddleware, isCreatorEducation, dtoValidationMiddleware(UpdateUserEducationDto, true), this.updateUserCreateEducation);
         this.router.route(`${this.path}/profile/education/:id/edit`)
-            .put(authMiddleware, dtoValidationMiddleware(UpdateUserEducationDto, true), this.updateUserUpdateEducation);
+            .put(authMiddleware, isCreatorEducation, dtoValidationMiddleware(UpdateUserEducationDto, true), this.updateUserUpdateEducation);
         this.router.route(`${this.path}/profile/education/:id/delete`)
-            .put(authMiddleware, dtoValidationMiddleware(UpdateUserEducationDto, true), this.updateUserDeleteEducation);
+            .put(authMiddleware, isCreatorEducation, dtoValidationMiddleware(UpdateUserEducationDto, true), this.updateUserDeleteEducation);
         this.router.route(`${this.path}/profile/:id/achievement/new`)
-            .put(authMiddleware, dtoValidationMiddleware(UpdateUserAchievementDto, true), this.updateUserCreateAchievement);
+            .put(authMiddleware, isCreatorAchievement, dtoValidationMiddleware(UpdateUserAchievementDto, true), this.updateUserCreateAchievement);
         this.router.route(`${this.path}/profile/achievement/:id/edit`)
-            .put(authMiddleware, dtoValidationMiddleware(UpdateUserAchievementDto, true), this.updateUserUpdateAchievement);
+            .put(authMiddleware, isCreatorAchievement, dtoValidationMiddleware(UpdateUserAchievementDto, true), this.updateUserUpdateAchievement);
         this.router.route(`${this.path}/profile/achievement/:id/delete`)
-            .put(authMiddleware, dtoValidationMiddleware(UpdateUserAchievementDto, true), this.updateUserDeleteAchievement);
+            .put(authMiddleware, isCreatorAchievement, dtoValidationMiddleware(UpdateUserAchievementDto, true), this.updateUserDeleteAchievement);
         this.router.route(`${this.path}/profile/:id/portfolio/new`)
-            .put(authMiddleware, dtoValidationMiddleware(UpdateUserGeneralInformationAboutTheProjectDto, true), this.updateUserCreateGeneralInformationAboutTheProject);
+            .put(authMiddleware, isCreatorPortfolio, dtoValidationMiddleware(UpdateUserPortfolioDto, true), this.updateUserCreatePortfolio);
         this.router.route(`${this.path}/profile/portfolio/:id/edit`)
-            .put(authMiddleware, dtoValidationMiddleware(UpdateUserGeneralInformationAboutTheProjectDto, true), this.updateUserUpdateGeneralInformationAboutTheProject);
+            .put(authMiddleware, isCreatorPortfolio, dtoValidationMiddleware(UpdateUserPortfolioDto, true), this.updateUserUpdatePortfolio);
         this.router.route(`${this.path}/profile/portfolio/:id/delete`)
-            .put(authMiddleware, dtoValidationMiddleware(UpdateUserGeneralInformationAboutTheProjectDto, true), this.updateUserDeleteGeneralInformationAboutTheProject);
+            .put(authMiddleware, isCreatorPortfolio, dtoValidationMiddleware(UpdateUserPortfolioDto, true), this.updateUserDeletePortfolio);
         this.router.route(`${this.path}/profile/:id/publish`)
-            .put(authMiddleware, this.publish);
+            .put(authMiddleware, isCreatorUser, this.publish);
         this.router.route(`${this.path}/profile/:id/publish-cancel`)
-            .put(authMiddleware, this.publishCancel);
+            .put(authMiddleware, isCreatorUser, this.publishCancel);
         this.router.route(`/professional/:id`)
             .get(this.findUserById);
         this.router.route(`/professional`)
@@ -87,42 +94,41 @@ export class UsersController {
         res.send(deleteUserResult);
     }
 
-    private updateUserProfile = async (req: Request, res: Response) => {
-        const userProfileData: UpdateUserProfileDto = req.body;
+    private updateProfile = async (req: Request, res: Response, next: NextFunction) => {
+        const userProfileData: UpdateProfileDto = req.body;
         const { id } = req.params;
-        await this.usersService.updateUserProfile(
+        const updateUserResult = await this.usersService.updateProfile(
             id,
             userProfileData
         );
-        const updateUserProfileResult = await this.usersService.getUserById(id);
-        if (updateUserProfileResult) {
-            return res.send(updateUserProfileResult);
+        if (updateUserResult) {
+            return res.send(updateUserResult);
         }
+        next(new NotAuthorizedException());
     }
 
-    private updateUserContacts = async (req: Request, res: Response) => {
-        const userContactsData: UpdateUserContactsDto = req.body;
+    private updateContacts = async (req: Request, res: Response, next: NextFunction) => {
+        const userContactsData: UpdateContactsDto = req.body;
         const { id } = req.params;
-        await this.usersService.updateUserContacts(
+        const updateUserResult = await this.usersService.updateContacts(
             id,
             userContactsData
         );
-        const updateUserProfileResult = await this.usersService.getUserById(id);
-        if (updateUserProfileResult) {
-            return res.send(updateUserProfileResult);
+        if (updateUserResult) {
+            return res.send(updateUserResult);
         }
+        next(new NotAuthorizedException());
     }
 
     private updateUserCreateWorkExperience = async (req: Request, res: Response, next: NextFunction) => {
         const userWorkExperience: UpdateUserWorkExperienceDto = req.body;
         const { id } = req.params;
-        await this.usersService.updateUserCreateWorkExperience(
+        const updateUserResult = await this.usersService.updateUserCreateWorkExperience(
             id,
             userWorkExperience
         );
-        const userNewWorkExperienceResult = await this.usersService.getUserById(id);
-        if (userNewWorkExperienceResult) {
-            return res.send(userNewWorkExperienceResult);
+        if (updateUserResult) {
+            return res.send(updateUserResult);
         }
         next(new NotAuthorizedException());
     }
@@ -130,25 +136,23 @@ export class UsersController {
     private updateUserUpdateWorkExperience = async (req: Request, res: Response, next: NextFunction) => {
         const userWorkExperience: UpdateUserWorkExperienceDto = req.body;
         const { id } = req.params;
-        await this.usersService.updateUserUpdateWorkExperience(
+        const updateUserResult = await this.usersService.updateUserUpdateWorkExperience(
             id,
             userWorkExperience
         );
-        const userUpdateWorkExperienceResult = await this.usersService.getUserByWorkExperience(id);
-        if (userUpdateWorkExperienceResult) {
-            return res.send(userUpdateWorkExperienceResult);
+        if (updateUserResult) {
+            return res.send(updateUserResult);
         }
         next(new WorkExperienceOfUserNotFoundException(id));
     }
 
     private updateUserDeleteWorkExperience = async (req: Request, res: Response, next: NextFunction) => {
         const { id } = req.params;
-        await this.usersService.updateUserDeleteWorkExperience(
+        const updateUserResult = await this.usersService.updateUserDeleteWorkExperience(
             id
         );
-        const userUpdateWorkExperienceResult = await this.usersService.getUserByWorkExperience(id);
-        if (userUpdateWorkExperienceResult) {
-            return res.send(userUpdateWorkExperienceResult);
+        if (updateUserResult) {
+            return res.send(updateUserResult);
         }
         next(new WorkExperienceOfUserNotFoundException(id));
     }
@@ -156,13 +160,12 @@ export class UsersController {
     private updateUserCreateEducation = async (req: Request, res: Response, next: NextFunction) => {
         const userEducation: UpdateUserEducationDto = req.body;
         const { id } = req.params;
-        await this.usersService.updateUserCreateEducation(
+        const updateUserResult = await this.usersService.updateUserCreateEducation(
             id,
             userEducation
         );
-        const userNewEducationResult = await this.usersService.getUserById(id);
-        if (userNewEducationResult) {
-            return res.send(userNewEducationResult);
+        if (updateUserResult) {
+            return res.send(updateUserResult);
         }
         next(new NotAuthorizedException());
     }
@@ -170,25 +173,23 @@ export class UsersController {
     private updateUserUpdateEducation = async (req: Request, res: Response, next: NextFunction) => {
         const userEducation: UpdateUserEducationDto = req.body;
         const { id } = req.params;
-        await this.usersService.updateUserUpdateEducation(
+        const updateUserResult = await this.usersService.updateUserUpdateEducation(
             id,
             userEducation
         );
-        const userUpdateEducationResult = await this.usersService.getUserByEducation(id);
-        if (userUpdateEducationResult) {
-            return res.send(userUpdateEducationResult);
+        if (updateUserResult) {
+            return res.send(updateUserResult);
         }
         next(new EducationOfUserNotFoundException(id));
     }
 
     private updateUserDeleteEducation = async (req: Request, res: Response, next: NextFunction) => {
         const { id } = req.params;
-        await this.usersService.updateUserDeleteEducation(
+        const updateUserResult = await this.usersService.updateUserDeleteEducation(
             id
         );
-        const userUpdateEducationResult = await this.usersService.getUserByEducation(id);
-        if (userUpdateEducationResult) {
-            return res.send(userUpdateEducationResult);
+        if (updateUserResult) {
+            return res.send(updateUserResult);
         }
         next(new EducationOfUserNotFoundException(id));
     }
@@ -196,13 +197,12 @@ export class UsersController {
     private updateUserCreateAchievement = async (req: Request, res: Response, next: NextFunction) => {
         const userAchievement: UpdateUserAchievementDto = req.body;
         const { id } = req.params;
-        await this.usersService.updateUserCreateAchievement(
+        const updateUserResult = await this.usersService.updateUserCreateAchievement(
             id,
             userAchievement
         );
-        const userNewAchievementResult = await this.usersService.getUserById(id);
-        if (userNewAchievementResult) {
-            return res.send(userNewAchievementResult);
+        if (updateUserResult) {
+            return res.send(updateUserResult);
         }
         next(new NotAuthorizedException());
     }
@@ -210,73 +210,68 @@ export class UsersController {
     private updateUserUpdateAchievement = async (req: Request, res: Response, next: NextFunction) => {
         const userAchievement: UpdateUserAchievementDto = req.body;
         const { id } = req.params;
-        await this.usersService.updateUserUpdateAchievement(
+        const updateUserResult = await this.usersService.updateUserUpdateAchievement(
             id,
             userAchievement
         );
-        const userUpdateAchievementResult = await this.usersService.getUserByAchievement(id);
-        if (userUpdateAchievementResult) {
-            return res.send(userUpdateAchievementResult);
+        if (updateUserResult) {
+            return res.send(updateUserResult);
         }
         next(new AchievementOfUserNotFoundException(id));
     }
 
     private updateUserDeleteAchievement = async (req: Request, res: Response, next: NextFunction) => {
         const { id } = req.params;
-        await this.usersService.updateUserDeleteAchievement(
+        const updateUserResult = await this.usersService.updateUserDeleteAchievement(
             id
         );
-        const userUpdateAchievementResult = await this.usersService.getUserByAchievement(id);
-        if (userUpdateAchievementResult) {
-            return res.send(userUpdateAchievementResult);
+        if (updateUserResult) {
+            return res.send(updateUserResult);
         }
         next(new AchievementOfUserNotFoundException(id));
     }
 
-    private updateUserCreateGeneralInformationAboutTheProject = async (req: Request, res: Response, next: NextFunction) => {
-        const userGeneralInformationAboutTheProject: UpdateUserGeneralInformationAboutTheProjectDto = req.body;
+    private updateUserCreatePortfolio = async (req: Request, res: Response, next: NextFunction) => {
+        const userPortfolio: UpdateUserPortfolioDto = req.body;
         const { id } = req.params;
-        await this.usersService.updateUserCreateGeneralInformationAboutTheProject(
+        const updateUserResult = await this.usersService.updateUserCreatePortfolio(
             id,
-            userGeneralInformationAboutTheProject
+            userPortfolio
         );
-        const userNewGeneralInformationAboutTheProjectResult = await this.usersService.getUserById(id);
-        if (userNewGeneralInformationAboutTheProjectResult) {
-            return res.send(userNewGeneralInformationAboutTheProjectResult);
+        const userNewPortfolioResult = await this.usersService.getUserById(id);
+        if (userNewPortfolioResult) {
+            return res.send(userNewPortfolioResult);
         }
         next(new NotAuthorizedException());
     }
 
-    private updateUserUpdateGeneralInformationAboutTheProject = async (req: Request, res: Response, next: NextFunction) => {
-        const userGeneralInformationAboutTheProject: UpdateUserGeneralInformationAboutTheProjectDto = req.body;
+    private updateUserUpdatePortfolio = async (req: Request, res: Response, next: NextFunction) => {
+        const userPortfolio: UpdateUserPortfolioDto = req.body;
         const { id } = req.params;
-        await this.usersService.updateUserUpdateGeneralInformationAboutTheProject(
+        const updateUserResult = await this.usersService.updateUserUpdatePortfolio(
             id,
-            userGeneralInformationAboutTheProject
+            userPortfolio
         );
-        const userUpdateGeneralInformationAboutTheProjectResult = await this.usersService.getUserByGeneralInformationAboutTheProject(id);
-        if (userUpdateGeneralInformationAboutTheProjectResult) {
-            return res.send(userUpdateGeneralInformationAboutTheProjectResult);
+        if (updateUserResult) {
+            return res.send(updateUserResult);
         }
         next(new PortfolioOfUserNotFoundException(id));
     }
 
-    private updateUserDeleteGeneralInformationAboutTheProject = async (req: Request, res: Response, next: NextFunction) => {
+    private updateUserDeletePortfolio = async (req: Request, res: Response, next: NextFunction) => {
         const { id } = req.params;
-        await this.usersService.updateUserDeleteGeneralInformationAboutTheProject(
+        const updateUserResult = await this.usersService.updateUserDeletePortfolio(
             id
         );
-        const userUpdateGeneralInformationAboutTheProjectResult = await this.usersService.getUserByGeneralInformationAboutTheProject(id);
-        if (userUpdateGeneralInformationAboutTheProjectResult) {
-            return res.send(userUpdateGeneralInformationAboutTheProjectResult);
+        if (updateUserResult) {
+            return res.send(updateUserResult);
         }
         next(new PortfolioOfUserNotFoundException(id));
     }
 
     private publish = async (req: Request, res: Response, next: NextFunction) => {
         const { id } = req.params;
-        await this.usersService.publish(id);
-        const publishUserResult = await this.usersService.getUserById(id);
+        const publishUserResult = await this.usersService.publish(id);
         if (publishUserResult) {
             return res.send(publishUserResult);
         }
@@ -285,8 +280,7 @@ export class UsersController {
 
     private publishCancel = async (req: Request, res: Response, next: NextFunction) => {
         const { id } = req.params;
-        await this.usersService.publishCancel(id);
-        const publishCancelUserResult = await this.usersService.getUserById(id);
+        const publishCancelUserResult = await this.usersService.publishCancel(id);
         if (publishCancelUserResult) {
             return res.send(publishCancelUserResult);
         }

@@ -19,7 +19,7 @@ export class OrdersService {
     public async findOrderById(id: string): Promise<Order | null> {
         return await this.orderModel.findById(id)
             .where('condition').equals(Conditions.PUBLIC)
-            .populate('owner', '-password')
+            .populate('owner', 'email firstName lastName id')
             .populate('specializations', '-owner');
     }
 
@@ -40,7 +40,7 @@ export class OrdersService {
         }
         return await this.orderModel.find(query)
             .where('condition').equals(Conditions.PUBLIC)
-            .populate('owner', '-password')
+            .populate('owner', 'email firstName lastName id')
             .populate('specializations', '-owner');
     }
 
@@ -52,12 +52,12 @@ export class OrdersService {
         });
         await newOrder.save();
         return await newOrder
-            .populate('owner', '-password');
+            .populate('owner', 'email firstName lastName id');
     }
 
     public async deleteOrder(id: string): Promise<Order | null> {
         return await this.orderModel.findByIdAndDelete(id)
-            .populate('owner', '-password')
+            .populate('owner', 'email firstName lastName id')
             .populate('specializations', '-owner');
     }
 
@@ -69,7 +69,7 @@ export class OrdersService {
                 updatedAt: moment().locale('uz-latn').format('LLLL')
             }
         )
-            .populate('owner', '-password')
+            .populate('owner', 'email firstName lastName id')
             .populate('specializations', '-owner');
     }
 
@@ -86,7 +86,7 @@ export class OrdersService {
                 updatedAt: moment().locale('uz-latn').format('LLLL')
             }
         )
-            .populate('owner', '-password')
+            .populate('owner', 'email firstName lastName id')
             .populate('specializations', '-owner');
     }
 
@@ -103,7 +103,7 @@ export class OrdersService {
                 updatedAt: moment().locale('uz-latn').format('LLLL')
             }
         )
-            .populate('owner', '-password')
+            .populate('owner', 'email firstName lastName id')
             .populate('specializations', '-owner');
     }
 
@@ -120,19 +120,19 @@ export class OrdersService {
                 updatedAt: moment().locale('uz-latn').format('LLLL')
             }
         )
-            .populate('owner', '-password')
+            .populate('owner', 'email firstName lastName id')
             .populate('specializations', '-owner');
     }
 
     public async getAllOrdersOfUser(userId: string): Promise<Order[] | null> {
         return await this.orderModel.find({ owner: userId })
-            .populate('owner', '-password')
+            .populate('owner', 'email firstName lastName id')
             .populate('specializations', '-owner');
     }
 
     public async findOrderByIdForUpdate(id: string): Promise<Order | null> {
         return await this.orderModel.findById(id)
-            .populate('owner', '-password')
+            .populate('owner', 'email firstName lastName id')
             .populate('specializations', '-owner');
     }
 
@@ -145,7 +145,7 @@ export class OrdersService {
                 }
             }
         )
-            .populate('owner', '-password')
+            .populate('owner', 'email firstName lastName id')
             .populate('specializations', '-owner');
     }
 
@@ -158,7 +158,7 @@ export class OrdersService {
                 }
             }
         )
-            .populate('owner', '-password')
+            .populate('owner', 'email firstName lastName id')
             .populate('specializations', '-owner');
     }
 }

@@ -19,7 +19,7 @@ export class CompaniesService {
     public async findCompanyById(id: string): Promise<Company | null> {
         return await this.companyModel.findById(id)
             .where('condition').equals(Conditions.PUBLIC)
-            .populate('owner', '-password')
+            .populate('owner', 'email firstName lastName id')
             .populate('legalForm', '-owner')
             .populate('industries', '-owner')
             .populate('specializations', '-owner')
@@ -34,7 +34,7 @@ export class CompaniesService {
         }
         return await this.companyModel.find(query)
             .where('condition').equals(Conditions.PUBLIC)
-            .populate('owner', '-password')
+            .populate('owner', 'email firstName lastName id')
             .populate('legalForm', '-owner')
             .populate('industries', '-owner')
             .populate('specializations', '-owner')
@@ -50,12 +50,12 @@ export class CompaniesService {
         });
         await newCompany.save();
         return await newCompany
-            .populate('owner', '-password');
+            .populate('owner', 'email firstName lastName id');
     }
 
     public async deleteCompany(id: string): Promise<Company | null> {
         return await this.companyModel.findByIdAndDelete(id)
-            .populate('owner', '-password')
+            .populate('owner', 'email firstName lastName id')
             .populate('legalForm', '-owner')
             .populate('industries', '-owner')
             .populate('specializations', '-owner')
@@ -71,7 +71,7 @@ export class CompaniesService {
                 updatedAt: moment().locale('uz-latn').format('LLLL')
             }
         )
-            .populate('owner', '-password')
+            .populate('owner', 'email firstName lastName id')
             .populate('legalForm', '-owner')
             .populate('industries', '-owner')
             .populate('specializations', '-owner')
@@ -96,7 +96,7 @@ export class CompaniesService {
                 updatedAt: moment().locale('uz-latn').format('LLLL')
             }
         )
-            .populate('owner', '-password')
+            .populate('owner', 'email firstName lastName id')
             .populate('legalForm', '-owner')
             .populate('industries', '-owner')
             .populate('specializations', '-owner')
@@ -117,7 +117,7 @@ export class CompaniesService {
                 updatedAt: moment().locale('uz-latn').format('LLLL')
             }
         )
-            .populate('owner', '-password')
+            .populate('owner', 'email firstName lastName id')
             .populate('legalForm', '-owner')
             .populate('industries', '-owner')
             .populate('specializations', '-owner')
@@ -135,7 +135,7 @@ export class CompaniesService {
                 updatedAt: moment().locale('uz-latn').format('LLLL')
             }
         )
-            .populate('owner', '-password')
+            .populate('owner', 'email firstName lastName id')
             .populate('legalForm', '-owner')
             .populate('industries', '-owner')
             .populate('specializations', '-owner')
@@ -145,7 +145,7 @@ export class CompaniesService {
 
     public async getCompanyByGeneralInformationAboutTheProject(id: string): Promise<Company | null> {
         return await this.companyModel.findOne({ 'portfolios': { $elemMatch: { '_id': id } } })
-            .populate('owner', '-password')
+            .populate('owner', 'email firstName lastName id')
             .populate('legalForm', '-owner')
             .populate('industries', '-owner')
             .populate('specializations', '-owner')
@@ -174,7 +174,7 @@ export class CompaniesService {
                 new: true
             }
         )
-            .populate('owner', '-password')
+            .populate('owner', 'email firstName lastName id')
             .populate('legalForm', '-owner')
             .populate('industries', '-owner')
             .populate('specializations', '-owner')
@@ -193,7 +193,7 @@ export class CompaniesService {
                 }
             }
         )
-            .populate('owner', '-password')
+            .populate('owner', 'email firstName lastName id')
             .populate('legalForm', '-owner')
             .populate('industries', '-owner')
             .populate('specializations', '-owner')
@@ -211,7 +211,7 @@ export class CompaniesService {
                 updatedAt: moment().locale('uz-latn').format('LLLL')
             }
         )
-            .populate('owner', '-password')
+            .populate('owner', 'email firstName lastName id')
             .populate('legalForm', '-owner')
             .populate('industries', '-owner')
             .populate('specializations', '-owner')
@@ -221,7 +221,7 @@ export class CompaniesService {
 
     public async getCompanyByTeam(id: string): Promise<Company | null> {
         return await this.companyModel.findOne({ 'teams': { $elemMatch: { '_id': id } } })
-            .populate('owner', '-password')
+            .populate('owner', 'email firstName lastName id')
             .populate('legalForm', '-owner')
             .populate('industries', '-owner')
             .populate('specializations', '-owner')
@@ -250,7 +250,7 @@ export class CompaniesService {
                 new: true
             }
         )
-            .populate('owner', '-password')
+            .populate('owner', 'email firstName lastName id')
             .populate('legalForm', '-owner')
             .populate('industries', '-owner')
             .populate('specializations', '-owner')
@@ -269,7 +269,7 @@ export class CompaniesService {
                 }
             }
         )
-            .populate('owner', '-password')
+            .populate('owner', 'email firstName lastName id')
             .populate('legalForm', '-owner')
             .populate('industries', '-owner')
             .populate('specializations', '-owner')
@@ -279,7 +279,7 @@ export class CompaniesService {
 
     public async getAllCompaniesOfUser(userId: string): Promise<Company[] | null> {
         return await this.companyModel.find({ owner: userId })
-            .populate('owner', '-password')
+            .populate('owner', 'email firstName lastName id')
             .populate('legalForm', '-owner')
             .populate('industries', '-owner')
             .populate('specializations', '-owner')
@@ -289,7 +289,7 @@ export class CompaniesService {
 
     public async findCompanyByIdForUpdate(id: string): Promise<Company | null> {
         return await this.companyModel.findById(id)
-            .populate('owner', '-password')
+            .populate('owner', 'email firstName lastName id')
             .populate('legalForm', '-owner')
             .populate('industries', '-owner')
             .populate('specializations', '-owner')
@@ -306,7 +306,7 @@ export class CompaniesService {
                 }
             }
         )
-            .populate('owner', '-password')
+            .populate('owner', 'email firstName lastName id')
             .populate('legalForm', '-owner')
             .populate('industries', '-owner')
             .populate('specializations', '-owner')
@@ -323,7 +323,7 @@ export class CompaniesService {
                 }
             }
         )
-            .populate('owner', '-password')
+            .populate('owner', 'email firstName lastName id')
             .populate('legalForm', '-owner')
             .populate('industries', '-owner')
             .populate('specializations', '-owner')

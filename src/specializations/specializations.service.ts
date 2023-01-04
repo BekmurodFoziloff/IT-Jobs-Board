@@ -10,13 +10,13 @@ export class SpecializationsService {
 
     public async findSpecializationById(id: string): Promise<Specialization | null> {
         return await this.specializationModel.findById(id)
-            .populate('owner', '-password')
+            .populate('owner', 'email firstName lastName id')
             .populate('specializationCategory', '-password');
     }
 
     public async findAllSpecializations(): Promise<Specialization[]> {
         return await this.specializationModel.find({})
-            .populate('owner', '-password')
+            .populate('owner', 'email firstName lastName id')
             .populate('specializationCategory', '-password');
     }
 
@@ -27,13 +27,13 @@ export class SpecializationsService {
             createdAt: moment().locale('uz-latn').format('LLLL')
         });
         await newSpecialization.save();
-        await newSpecialization.populate('owner', '-password');
+        await newSpecialization.populate('owner', 'email firstName lastName id');
         return newSpecialization;
     }
 
     public async deleteSpecialization(id: string): Promise<Specialization | null> {
         return await this.specializationModel.findByIdAndDelete(id)
-            .populate('owner', '-password')
+            .populate('owner', 'email firstName lastName id')
             .populate('specializationCategory', '-password');
     }
 
@@ -45,7 +45,7 @@ export class SpecializationsService {
                 updatedAt: moment().locale('uz-latn').format('LLLL')
             }
         )
-            .populate('owner', '-password')
+            .populate('owner', 'email firstName lastName id')
             .populate('specializationCategory', '-password');
     }
 

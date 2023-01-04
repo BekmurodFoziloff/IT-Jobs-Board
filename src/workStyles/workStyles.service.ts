@@ -10,12 +10,12 @@ export class WorkStylesService {
 
     public async findWorkStyleById(id: string): Promise<WorkStyle | null> {
         return await this.workStyleModel.findById(id)
-            .populate('owner', '-password');
+            .populate('owner', 'email firstName lastName id');
     }
 
     public async findAllWorkStyles(): Promise<WorkStyle[]> {
         return await this.workStyleModel.find({})
-            .populate('owner', '-password');
+            .populate('owner', 'email firstName lastName id');
     }
 
     public async createWorkStyle(workStyle: CreateWorkStyleDto, owner: User): Promise<WorkStyle> {
@@ -25,13 +25,13 @@ export class WorkStylesService {
             createdAt: moment().locale('uz-latn').format('LLLL')
         });
         await newWorkStyle.save();
-        await newWorkStyle.populate('owner', '-password');
+        await newWorkStyle.populate('owner', 'email firstName lastName id');
         return newWorkStyle;
     }
 
     public async deleteWorkStyle(id: string): Promise<WorkStyle | null> {
         return await this.workStyleModel.findByIdAndDelete(id)
-            .populate('owner', '-password');
+            .populate('owner', 'email firstName lastName id');
     }
 
     public async updateWorkStyle(id: string, workStyle: UpdateWorkStyleDto): Promise<WorkStyle | null> {
@@ -42,7 +42,7 @@ export class WorkStylesService {
                 updatedAt: moment().locale('uz-latn').format('LLLL')
             }
         )
-            .populate('owner', '-password');
+            .populate('owner', 'email firstName lastName id');
     }
 
     public async findWorkStyleByName(name: string): Promise<WorkStyle | null> {

@@ -3,7 +3,7 @@ import { User } from './user.interface';
 import { Roles } from '../utils/enums/role.enum';
 import { Conditions } from '../utils/enums/condition.enum';
 
-const GeneralInformationUserSchema = new Schema(
+const ProfileSchema = new Schema(
     {
         photo: {
             type: String
@@ -164,7 +164,7 @@ const AchievementSchema = new Schema(
     }
 );
 
-const GeneralInformationAboutTheProjectSchema = new Schema(
+const PortfolioSchema = new Schema(
     {
         title: {
             type: String,
@@ -219,7 +219,7 @@ const UserSchema = new Schema(
             required: true,
             default: Roles.USER
         },
-        profile: GeneralInformationUserSchema,
+        profile: ProfileSchema,
         contacts: ContactsSchema,
         workExperiences: [
             WorkExperienceSchema
@@ -231,7 +231,7 @@ const UserSchema = new Schema(
             AchievementSchema
         ],
         portfolios: [
-            GeneralInformationAboutTheProjectSchema
+            PortfolioSchema
         ],
         condition: {
             type: String,
