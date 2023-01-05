@@ -29,7 +29,7 @@ export class AuthenticationController {
 
     private register = async (req: Request, res: Response, next: NextFunction) => {
         const userData: RegisterDto = req.body;
-        const hashedPassword = await this.authenticationService.hashPassword(userData.password);
+        const hashedPassword = await this.usersService.hashPassword(userData.password);
         const getByEmailUser = await this.usersService.getUserByEmail(userData.email);
         if (getByEmailUser) {
             next(new UserWithThatEmailAlreadyExistsException(userData.email));
@@ -48,7 +48,7 @@ export class AuthenticationController {
         const logInData: LogInDto = req.body;
         const user = await this.usersService.getUserByEmail(logInData.email);
         if (user) {
-            const isPasswordMatching = await this.authenticationService.verifyPassword(logInData.password, user.password);
+            const isPasswordMatching = await this.usersService.verifyPassword(logInData.password, user.password);
             if (isPasswordMatching) {
                 const tokenData = await this.authenticationService.createToken(user);
                 res.setHeader('Set-Cookie', this.authenticationService.getCookieForLogIn(tokenData));

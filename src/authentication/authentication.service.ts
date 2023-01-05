@@ -1,18 +1,9 @@
-import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import TokenData from '../interfaces/tokenData.interface';
 import { User } from '../users/user.interface';
 import DataStoredInToken from '../interfaces/dataStoredInToken.interface';
 
 export class AuthenticationService {
-    public async hashPassword(password: string, salt: number = 10) {
-        return await bcrypt.hash(password, salt);
-    }
-
-    public async verifyPassword(plainTextPassword: string, hashedPassword: string) {
-        return await bcrypt.compare(plainTextPassword, hashedPassword);
-    }
-
     public async createToken(user: User): Promise<TokenData> {
         const expiresIn = process.env.JWT_TOKEN_EXPIRATSION_TIME as string;
         const secret = process.env.JWT_TOKEN_SECRET as string;

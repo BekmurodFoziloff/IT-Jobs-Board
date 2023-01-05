@@ -7,7 +7,8 @@ import {
     UpdateUserWorkExperienceDto,
     UpdateUserEducationDto,
     UpdateUserAchievementDto,
-    UpdateUserPortfolioDto
+    UpdateUserPortfolioDto,
+    ChangePassword
 } from './dto/updateUser.dto';
 import { UsersService } from './users.service';
 import WorkExperienceOfUserNotFoundException from '../exceptions/WorkExperienceOfUserNotFoundException';
@@ -23,6 +24,7 @@ import {
     isCreatorAchievement,
     isCreatorPortfolio
 } from '../middlewares/isCreator.middleware';
+import RequestWithUser from '../interfaces/requestWithUser.interface';
 
 export class UsersController {
     public path = '/my';
@@ -34,7 +36,7 @@ export class UsersController {
 
     public setRoutes() {
         this.router.route(`${this.path}/profile/:id/delete`)
-            .put(authMiddleware, isCreatorUser, this.deleteUser);
+            .delete(authMiddleware, isCreatorUser, this.deleteUser);
         this.router.route(`${this.path}/profile/:id/edit`)
             .put(authMiddleware, isCreatorUser, dtoValidationMiddleware(UpdateProfileDto, true), this.updateProfile);
         this.router.route(`${this.path}/profile/contacts/:id/edit`)
@@ -71,6 +73,8 @@ export class UsersController {
             .get(this.findUserById);
         this.router.route(`/professional`)
             .get(this.findAllUsers);
+        this.router.route(`/settings/change-password`)
+            .post(authMiddleware, this.changePassword);
     }
 
     private findUserById = async (req: Request, res: Response, next: NextFunction) => {
@@ -88,10 +92,13 @@ export class UsersController {
         res.send(users);
     }
 
-    private deleteUser = async (req: Request, res: Response) => {
+    private deleteUser = async (req: Request, res: Response, next: NextFunction) => {
         const { id } = req.params;
         const deleteUserResult = await this.usersService.deleteUser(id);
-        res.send(deleteUserResult);
+        if (deleteUserResult) {
+            return res.send(deleteUserResult);
+        }
+        next(new NotAuthorizedException());
     }
 
     private updateProfile = async (req: Request, res: Response, next: NextFunction) => {
@@ -283,6 +290,24 @@ export class UsersController {
         const publishCancelUserResult = await this.usersService.publishCancel(id);
         if (publishCancelUserResult) {
             return res.send(publishCancelUserResult);
+        }
+        next(new NotAuthorizedException());
+    }
+
+    private changePassword = async (req: Request, res: Response, next: NextFunction) => {
+        const passwordData: ChangePassword = req.body;
+        const userId = (req as RequestWithUser).user.id;
+        const user = await this.usersService.getUserById(userId);
+        if (user) {
+            const isPasswordMatching = await this.usersService.verifyPassword(
+                passwordData.oldPassword,
+                user.password
+            );
+            if (isPasswordMatching) {
+                const hashedPassword = await this.usersService.hashPassword(passwordData.newPassword);
+                const updateUserResult = await this.usersService.changePassword(user.id, hashedPassword);
+                return res.send(updateUserResult)
+            }
         }
         next(new NotAuthorizedException());
     }

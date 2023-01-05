@@ -12,9 +12,18 @@ import {
 } from './dto/updateUser.dto';
 import { Conditions } from '../utils/enums/condition.enum';
 import UserFilterQuery from '../interfaces/userFilterQuery.interface';
+import CompanyModel from '../companies/company.model';
+import JobModel from '../jobs/job.model';
+import OrderModel from '../orders/order.model';
+import JobApplicationModel from '../jobApplications/jobApplication.model';
+import bcrypt from 'bcrypt';
 
 export class UsersService {
     private userModel = UserModel;
+    private companyModel = CompanyModel;
+    private jobModel = JobModel;
+    private orderModel = OrderModel;
+    private jobApplicationModel = JobApplicationModel;
 
     public async findUserById(id: string): Promise<User | null> {
         return await this.userModel.findById(id)
@@ -67,6 +76,10 @@ export class UsersService {
     }
 
     public async deleteUser(id: string): Promise<User | null> {
+        await this.companyModel.deleteMany({ owner: id });
+        await this.jobModel.deleteMany({ owner: id });
+        await this.orderModel.deleteMany({ owner: id });
+        await this.jobApplicationModel.deleteMany({ jobOwner: id });
         return await this.userModel.findByIdAndDelete(id)
             .populate('profile.region', 'id name')
             .populate('profile.skills', 'id name')
@@ -427,4 +440,29 @@ export class UsersService {
             .populate('profile.specializationCategories', 'id name')
             .populate('workExperiences.employmentTypes', 'id name');
     }
+    public async hashPassword(password: string, salt: number = 10) {
+        return await bcrypt.hash(password, salt);
+    }
+
+    public async verifyPassword(plainTextPassword: string, hashedPassword: string) {
+        return await bcrypt.compare(plainTextPassword, hashedPassword);
+    }
+
+    public async changePassword(id: string, newPassword: string): Promise<User | null> {
+        return await this.userModel.findByIdAndUpdate(
+            id,
+            {
+                $set: {
+                    'password': newPassword
+                },
+                updatedAt: moment().locale('uz-latn').format('LLLL')
+            },
+            { returnDocument: 'after' }
+        )
+            .populate('profile.region', 'id name')
+            .populate('profile.skills', 'id name')
+            .populate('profile.specializationCategories', 'id name')
+            .populate('workExperiences.employmentTypes', 'id name');
+    }
+
 }
