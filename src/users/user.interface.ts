@@ -87,6 +87,7 @@ export interface User extends Document {
     achievements: Achievement[];
     portfolios: Portfolio[];
     condition: string;
+    currentHashedRefreshToken: string;
     createdAt: string;
     updatedAt: string;
 }

@@ -58,7 +58,6 @@ export class OrdersController {
 
     private findAllOrders = async (req: Request, res: Response) => {
         const { query } = req;
-        console.log(query);
         const orders = await this.ordersService.findAllOrders(query);
         res.send(orders);
     }

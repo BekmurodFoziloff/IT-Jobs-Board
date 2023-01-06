@@ -7,8 +7,8 @@ async function isOwnerOrder(req: Request, res: Response, next: NextFunction) {
     try {
         const ordersService = new OrdersService();
         const { id } = req.params;
-        const job = await ordersService.getOrderById(id);
-        if (!(job?.owner.id.toString() === (req as RequestWithUser).user.id.toString())) {
+        const order = await ordersService.getOrderById(id);
+        if (!(order?.owner.id.toString() === (req as RequestWithUser).user.id.toString())) {
             next(new YouAreNotAllowed());
         }
         next();

@@ -1,27 +1,34 @@
 import jwt from 'jsonwebtoken';
-import TokenData from '../interfaces/tokenData.interface';
-import { User } from '../users/user.interface';
-import DataStoredInToken from '../interfaces/dataStoredInToken.interface';
+import TokenPayload from '../interfaces/tokenPayload.interface';
 
 export class AuthenticationService {
-    public async createToken(user: User): Promise<TokenData> {
-        const expiresIn = process.env.JWT_TOKEN_EXPIRATSION_TIME as string;
-        const secret = process.env.JWT_TOKEN_SECRET as string;
-        const dataStoredInToken: DataStoredInToken = {
-            id: user.id,
-        };
-        const token = jwt.sign(dataStoredInToken, secret, { expiresIn });
+    
+    public getCookieWithJwtAccessToken(userId: string) {
+        const payload: TokenPayload = { userId };
+        const secret = process.env.JWT_ACCESS_TOKEN_SECRET as string;
+        type alphanumeric = number | string;
+        const expiresIn = process.env.JWT_ACCESS_TOKEN_EXPIRATION_TIME as alphanumeric;
+        const token = jwt.sign(payload, secret, { expiresIn: `${expiresIn}s` });
+        return `Authentication=${token}; HttpOnly; Path=/; Max-Age=${expiresIn}`;
+    }
+
+    public getCookieWithJwtRefreshToken(userId: string) {
+        const payload: TokenPayload = { userId };
+        const secret = process.env.JWT_REFRESH_TOKEN_SECRET as string;
+        type alphanumeric = number | string;
+        const expiresIn = process.env.JWT_REFRESH_TOKEN_EXPIRATION_TIME as alphanumeric;
+        const token = jwt.sign(payload, secret, { expiresIn: `${expiresIn}s` });
+        const cookie = `Refresh=${token}; HttpOnly; Path=/; Max-Age=${expiresIn}`;
         return {
-            expiresIn,
+            cookie,
             token
         }
     }
 
-    public getCookieForLogIn(tokenData: TokenData) {
-        return `Authorization=${tokenData.token}; HttpOnly; Path=/; Max-Age=${tokenData.expiresIn}`;
-    }
-
-    public getCookieForLogOut() {
-        return `Authorization=; HttpOnly; Path=/; Max-Age=0`;
+    public getCookiesForLogOut() {
+        return [
+            'Authentication=; HttpOnly; Path=/; Max-Age=0',
+            'Refresh=; HttpOnly; Path=/; Max-Age=0'
+        ];
     }
 }

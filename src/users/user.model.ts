@@ -239,6 +239,9 @@ const UserSchema = new Schema(
             required: true,
             default: Conditions.PRIVATE
         },
+        currentHashedRefreshToken: {
+            type: String
+        },
         createdAt: {
             type: String
         },

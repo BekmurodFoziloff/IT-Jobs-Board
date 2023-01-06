@@ -7,8 +7,8 @@ export const isOwnerCompany = async (req: Request, res: Response, next: NextFunc
     try {
         const companiesService = new CompaniesService();
         const { id } = req.params;
-        const user = await companiesService.getCompanyById(id);
-        if (!(user?.id.toString() === (req as RequestWithUser).user.id.toString())) {
+        const company = await companiesService.getCompanyById(id);
+        if (!(company?.owner.id.toString() === (req as RequestWithUser).user.id.toString())) {
             next(new YouAreNotAllowed());
         }
         next();
@@ -21,8 +21,8 @@ export const isOwnerPortfolio = async (req: Request, res: Response, next: NextFu
     try {
         const companiesService = new CompaniesService();
         const { id } = req.params;
-        const user = await companiesService.getCompanyByPortfolio(id);
-        if (!(user?.id.toString() === (req as RequestWithUser).user.id.toString())) {
+        const company = await companiesService.getCompanyByPortfolio(id);
+        if (!(company?.owner.id.toString() === (req as RequestWithUser).user.id.toString())) {
             next(new YouAreNotAllowed());
         }
         next();
@@ -35,8 +35,8 @@ export const isOwnerTeam = async (req: Request, res: Response, next: NextFunctio
     try {
         const companiesService = new CompaniesService();
         const { id } = req.params;
-        const user = await companiesService.getCompanyByTeam(id);
-        if (!(user?.id.toString() === (req as RequestWithUser).user.id.toString())) {
+        const company = await companiesService.getCompanyByTeam(id);
+        if (!(company?.owner.id.toString() === (req as RequestWithUser).user.id.toString())) {
             next(new YouAreNotAllowed());
         }
         next();

@@ -156,7 +156,7 @@ const CompanySchema = new Schema(
         ],
         owner: {
             type: Schema.Types.ObjectId,
-            ref: 'Region',
+            ref: 'User',
             required: true
         },
         condition: {

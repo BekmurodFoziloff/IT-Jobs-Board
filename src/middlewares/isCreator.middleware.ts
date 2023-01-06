@@ -49,7 +49,7 @@ export const isCreatorAchievement = async (req: Request, res: Response, next: Ne
     try {
         const usersService = new UsersService();
         const { id } = req.params;
-        const user = await usersService.getUserByWorkExperience(id);
+        const user = await usersService.getUserByAchievement(id);
         if (!(user?.id.toString() === (req as RequestWithUser).user.id.toString())) {
             next(new YouAreNotAllowed());
         }

@@ -1,7 +1,7 @@
 import { Schema, model } from 'mongoose';
 import { SpecializationBPO } from './specializationBPO.interface';
 
-const SpecializationsBPOSchema = new Schema(
+const SpecializationBPOSchema = new Schema(
     {
         name: {
             type: String,
@@ -22,6 +22,6 @@ const SpecializationsBPOSchema = new Schema(
     }
 );
 
-const SpecializationsBPOModel = model<SpecializationBPO>('SpecializationsBPO', SpecializationsBPOSchema);
+const SpecializationBPOModel = model<SpecializationBPO>('SpecializationBPO', SpecializationBPOSchema);
 
-export default SpecializationsBPOModel;
+export default SpecializationBPOModel;

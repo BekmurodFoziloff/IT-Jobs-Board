@@ -62,6 +62,6 @@ export interface Company extends Document {
     teams: CompanyTeam[];
     owner: User;
     condition: string;
-    createdAt: string;
-    updatedAt: string;
+    createdAt?: string;
+    updatedAt?: string;
 }

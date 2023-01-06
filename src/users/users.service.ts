@@ -440,6 +440,7 @@ export class UsersService {
             .populate('profile.specializationCategories', 'id name')
             .populate('workExperiences.employmentTypes', 'id name');
     }
+
     public async hashPassword(password: string, salt: number = 10) {
         return await bcrypt.hash(password, salt);
     }
@@ -465,4 +466,30 @@ export class UsersService {
             .populate('workExperiences.employmentTypes', 'id name');
     }
 
+    public async setCurrentRefreshToken(refreshtoken: string, userId: string, salt: number = 10) {
+        const currentHashedRefreshToken = await bcrypt.hash(refreshtoken, salt);
+        await this.userModel.findByIdAndUpdate(
+            userId,
+            {
+                $set: {
+                    'currentHashedRefreshToken': currentHashedRefreshToken
+                }
+            }
+        )
+    }
+
+    public async refreshTokenMatches(refreshToken: string, currentHashedRefreshToken: string) {
+        return await bcrypt.compare(refreshToken, currentHashedRefreshToken);
+    }
+
+    public async removeCurrentRefreshToken(userId: string) {
+        return await this.userModel.findByIdAndUpdate(
+            userId,
+            {
+                $set: {
+                    'currentHashedRefreshToken': null
+                }
+            }
+        )
+    }
 }

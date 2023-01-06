@@ -6,6 +6,9 @@ import LogInDto from './dto/logIn.dto';
 import dtoValidationMiddleware from '../middlewares/dtoValidation.middleware';
 import UserWithThatEmailAlreadyExistsException from '../exceptions/UserWithThatEmailAlreadyExistsException';
 import WrongCredentialsException from '../exceptions/WrongCredentialsException';
+import RequestWithUser from '../interfaces/requestWithUser.interface';
+import authMiddleware from '../middlewares/auth.middleware';
+import refreshMiddleware from '../middlewares/refresh.middleware';
 
 export class AuthenticationController {
     public path = '/auth';
@@ -24,22 +27,22 @@ export class AuthenticationController {
         this.router.route(`${this.path}/login`)
             .post(dtoValidationMiddleware(LogInDto), this.logIn);
         this.router.route(`${this.path}/logout`)
-            .get(this.logOut);
+            .get(authMiddleware, this.logOut);
+        this.router.route(`${this.path}/refresh`)
+            .get(refreshMiddleware, this.refresh);
     }
 
     private register = async (req: Request, res: Response, next: NextFunction) => {
         const userData: RegisterDto = req.body;
+        const getUserByEmail = await this.usersService.getUserByEmail(userData.email);
         const hashedPassword = await this.usersService.hashPassword(userData.password);
-        const getByEmailUser = await this.usersService.getUserByEmail(userData.email);
-        if (getByEmailUser) {
+        if (getUserByEmail) {
             next(new UserWithThatEmailAlreadyExistsException(userData.email));
         } else {
             const user = await this.usersService.createUser({
                 ...userData,
                 password: hashedPassword
             });
-            const tokenData = await this.authenticationService.createToken(user);
-            res.setHeader('Set-Cookie', this.authenticationService.getCookieForLogIn(tokenData));
             res.send(user);
         }
     }
@@ -50,8 +53,13 @@ export class AuthenticationController {
         if (user) {
             const isPasswordMatching = await this.usersService.verifyPassword(logInData.password, user.password);
             if (isPasswordMatching) {
-                const tokenData = await this.authenticationService.createToken(user);
-                res.setHeader('Set-Cookie', this.authenticationService.getCookieForLogIn(tokenData));
+                const accessTokenCookie = await this.authenticationService.getCookieWithJwtAccessToken(user.id);
+                const {
+                    cookie: refreshTokenCookie,
+                    token: refreshToken
+                } = this.authenticationService.getCookieWithJwtRefreshToken(user.id);
+                await this.usersService.setCurrentRefreshToken(refreshToken, user.id);
+                res.setHeader('Set-Cookie', [accessTokenCookie, refreshTokenCookie]);
                 return res.send(user);
             } else {
                 next(new WrongCredentialsException());
@@ -61,9 +69,19 @@ export class AuthenticationController {
         }
     }
 
-    public logOut = async (req: Request, res: Response, next: NextFunction) => {
+    private logOut = async (req: Request, res: Response, next: NextFunction) => {
+        const { user } = (req as RequestWithUser);
+        await this.usersService.removeCurrentRefreshToken(user.id);
         res
-            .setHeader('Set-Cookie', this.authenticationService.getCookieForLogOut())
+            .setHeader('Set-Cookie', this.authenticationService.getCookiesForLogOut())
+            .sendStatus(200);
+    }
+
+    private refresh = async (req: Request, res: Response, next: NextFunction) => {
+        const { user } = (req as RequestWithUser);
+        const accessTokenCookie = await this.authenticationService.getCookieWithJwtAccessToken(user.id);
+        res
+            .setHeader('Set-Cookie', accessTokenCookie)
             .sendStatus(200);
     }
 }
