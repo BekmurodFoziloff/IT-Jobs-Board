@@ -42,10 +42,11 @@ export class CompaniesService {
             .populate('bpo.specializationsBPO', 'id name');
     }
 
-    public async createCompany(company: CreateCompanyDto, owner: User): Promise<Company> {
+    public async createCompany(company: CreateCompanyDto, owner: User, logo: any): Promise<Company> {
         const newCompany = await this.companyModel.create({
             ...company,
             owner,
+            logo,
             createdAt: moment().locale('uz-latn').format('LLLL')
         });
         await newCompany.save();
@@ -63,11 +64,12 @@ export class CompaniesService {
             .populate('bpo.specializationsBPO', 'id name');
     }
 
-    public async updateCompany(id: string, company: UpdateCompanyDto): Promise<Company | null> {
+    public async updateCompany(id: string, company: UpdateCompanyDto, logo: any): Promise<Company | null> {
         return await this.companyModel.findByIdAndUpdate(
             id,
             {
                 ...company,
+                logo,
                 updatedAt: moment().locale('uz-latn').format('LLLL')
             },
             { returnDocument: 'after' }

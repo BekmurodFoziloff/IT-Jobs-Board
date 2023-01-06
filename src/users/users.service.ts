@@ -87,14 +87,15 @@ export class UsersService {
             .populate('workExperiences.employmentTypes', 'id name');
     }
 
-    public async updateProfile(id: string, userProfile: UpdateProfileDto): Promise<User | null> {
+    public async updateProfile(id: string, userProfile: UpdateProfileDto, avatar: any): Promise<User | null> {
         return await this.userModel.findByIdAndUpdate(
             id,
             {
                 $set: {
                     'profile': {
                         '_id': id,
-                        ...userProfile
+                        ...userProfile,
+                        avatar
                     },
                     'firstName': userProfile.firstName,
                     'lastName': userProfile.lastName

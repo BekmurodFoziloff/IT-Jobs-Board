@@ -6,7 +6,7 @@ import { SpecializationCategory } from '../specializationCategories/specializati
 
 interface Profile extends Document {
     id: string;
-    photo: string;
+    avatar: string;
     firstName: string;
     middleName: string;
     lastName: string;

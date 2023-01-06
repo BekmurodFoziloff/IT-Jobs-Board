@@ -25,6 +25,7 @@ import {
     isCreatorPortfolio
 } from '../middlewares/isCreator.middleware';
 import RequestWithUser from '../interfaces/requestWithUser.interface';
+import { upload } from '../files/files.service';
 
 export class UsersController {
     public path = '/my';
@@ -38,7 +39,7 @@ export class UsersController {
         this.router.route(`${this.path}/profile/:id/delete`)
             .delete(authMiddleware, isCreatorUser, this.deleteUser);
         this.router.route(`${this.path}/profile/:id/edit`)
-            .put(authMiddleware, isCreatorUser, dtoValidationMiddleware(UpdateProfileDto, true), this.updateProfile);
+            .put(authMiddleware, isCreatorUser, upload.single('avatar'), dtoValidationMiddleware(UpdateProfileDto, true), this.updateProfile);
         this.router.route(`${this.path}/profile/contacts/:id/edit`)
             .put(authMiddleware, isCreatorUser, dtoValidationMiddleware(UpdateProfileDto, true), this.updateContacts);
         this.router.route(`${this.path}/profile/:id/work/new`)
@@ -104,9 +105,11 @@ export class UsersController {
     private updateProfile = async (req: Request, res: Response, next: NextFunction) => {
         const userProfileData: UpdateProfileDto = req.body;
         const { id } = req.params;
+        const { file } = req;
         const updateUserResult = await this.usersService.updateProfile(
             id,
-            userProfileData
+            userProfileData,
+            file?.path
         );
         if (updateUserResult) {
             return res.send(updateUserResult);
@@ -245,9 +248,8 @@ export class UsersController {
             id,
             userPortfolio
         );
-        const userNewPortfolioResult = await this.usersService.getUserById(id);
-        if (userNewPortfolioResult) {
-            return res.send(userNewPortfolioResult);
+        if (updateUserResult) {
+            return res.send(updateUserResult);
         }
         next(new NotAuthorizedException());
     }

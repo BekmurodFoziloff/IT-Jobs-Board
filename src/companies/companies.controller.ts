@@ -15,6 +15,7 @@ import RequestWithUser from '../interfaces/requestWithUser.interface';
 import PortfolioOfCompanyNotFoundException from '../exceptions/PortfolioOfCompanyNotFoundException';
 import TeamOfTeamNotFoundException from '../exceptions/TeamOfCompanyNotFoundException';
 import { isOwnerCompany, isOwnerPortfolio, isOwnerTeam } from '../middlewares/isOwnerCompany.middleware';
+import { upload } from '../files/files.service';
 
 export class CompaniesController {
     public path = '/company';
@@ -30,11 +31,11 @@ export class CompaniesController {
         this.router.route(`/my${this.path}/list`)
             .get(authMiddleware, this.getAllCompaniesOfUser);
         this.router.route(`/my${this.path}/new`)
-            .post(authMiddleware, dtoValidationMiddleware(CreateCompanyDto), this.createCompany);
+            .post(authMiddleware, upload.single('logo'), dtoValidationMiddleware(CreateCompanyDto), this.createCompany);
         this.router.route(`${this.path}/:id`)
             .get(this.findCompanyById);
         this.router.route(`/my${this.path}/:id/edit`)
-            .put(authMiddleware, isOwnerCompany, dtoValidationMiddleware(UpdateCompanyDto, true), this.updateCompany);
+            .put(authMiddleware, isOwnerCompany, upload.single('logo'), dtoValidationMiddleware(UpdateCompanyDto, true), this.updateCompany);
         this.router.route(`/my${this.path}/:id/delete`)
             .delete(authMiddleware, isOwnerCompany, this.deleteCompany);
         this.router.route(`/my${this.path}/contacts/:id/edit`)
@@ -76,9 +77,11 @@ export class CompaniesController {
 
     private createCompany = async (req: Request, res: Response) => {
         const companyData: CreateCompanyDto = req.body;
+        const { file } = req;
         const newCompanyResult = await this.companiesService.createCompany(
             companyData,
-            (req as RequestWithUser).user
+            (req as RequestWithUser).user,
+            file?.path
         );
         res.send(newCompanyResult);
     }
@@ -95,9 +98,11 @@ export class CompaniesController {
     private updateCompany = async (req: Request, res: Response, next: NextFunction) => {
         const companyData: UpdateCompanyDto = req.body;
         const { id } = req.params;
+        const { file } = req;
         const updateCompanyResult = await this.companiesService.updateCompany(
             id,
-            companyData
+            companyData,
+            file?.path
         );
         if (updateCompanyResult) {
             return res.send(updateCompanyResult);

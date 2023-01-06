@@ -19,7 +19,7 @@ export class UpdateProfileDto {
     @IsOptional()
     @IsString()
     @Trim()
-    photo: string;
+    avatar: string;
 
     @IsOptional()
     @IsString()

@@ -5,7 +5,7 @@ import { Conditions } from '../utils/enums/condition.enum';
 
 const ProfileSchema = new Schema(
     {
-        photo: {
+        avatar: {
             type: String
         },
         firstName: {
