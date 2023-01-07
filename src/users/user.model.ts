@@ -175,10 +175,10 @@ const PortfolioSchema = new Schema(
             required: true
         },
         customer: {
-            type: Date
+            type: String
         },
         completionDate: {
-            type: String
+            type: Date
         },
         link: {
             type: String

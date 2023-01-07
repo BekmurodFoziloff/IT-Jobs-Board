@@ -130,12 +130,17 @@ export class CompaniesService {
             .populate('bpo.specializationsBPO', 'id name');
     }
 
-    public async updateCompanyCreatePortfolio(id: string, portfolio: UpdateCompanyPortfolioDto): Promise<Company | null> {
+    public async updateCompanyCreatePortfolio(id: string, portfolio: UpdateCompanyPortfolioDto, files: any): Promise<Company | null> {
         return await this.companyModel.findByIdAndUpdate(
             id,
             {
                 $push: {
-                    'portfolios': portfolio
+                    'portfolios': {
+                        ...portfolio,
+                        image: files.image[0].path,
+                        image1: files.image1[0].path,
+                        image2: files.image2[0].path
+                    }
                 },
                 updatedAt: moment().locale('uz-latn').format('LLLL')
             },
@@ -159,14 +164,17 @@ export class CompaniesService {
             .populate('bpo.specializationsBPO', 'id name');
     }
 
-    public async updateCompanyUpdatePortfolio(id: string, portfolio: UpdateCompanyPortfolioDto): Promise<Company | null> {
+    public async updateCompanyUpdatePortfolio(id: string, portfolio: UpdateCompanyPortfolioDto, files: any): Promise<Company | null> {
         return await this.companyModel.findOneAndUpdate(
             { 'portfolios': { $elemMatch: { 'id': id } } },
             {
                 $set: {
                     'portfolios.$[element]': {
                         '_id': id,
-                        ...portfolio
+                        ...portfolio,
+                        image: files.image[0].path,
+                        image1: files.image1[0].path,
+                        image2: files.image2[0].path
                     }
                 },
                 updatedAt: moment().locale('uz-latn').format('LLLL')

@@ -43,29 +43,51 @@ export class UsersController {
         this.router.route(`${this.path}/profile/contacts/:id/edit`)
             .put(authMiddleware, isCreatorUser, dtoValidationMiddleware(UpdateProfileDto, true), this.updateContacts);
         this.router.route(`${this.path}/profile/:id/work/new`)
-            .put(authMiddleware, isCreatorWork, dtoValidationMiddleware(UpdateUserWorkExperienceDto, true), this.updateUserCreateWorkExperience);
+            .put(authMiddleware, dtoValidationMiddleware(UpdateUserWorkExperienceDto, true), this.updateUserCreateWorkExperience);
         this.router.route(`${this.path}/profile/work/:id/edit`)
             .put(authMiddleware, isCreatorWork, dtoValidationMiddleware(UpdateUserWorkExperienceDto, true), this.updateUserUpdateWorkExperience);
         this.router.route(`${this.path}/profile/work/:id/delete`)
-            .put(authMiddleware, isCreatorWork, dtoValidationMiddleware(UpdateUserWorkExperienceDto, true), this.updateUserDeleteWorkExperience);
+            .put(authMiddleware, isCreatorWork, this.updateUserDeleteWorkExperience);
         this.router.route(`${this.path}/profile/:id/education/new`)
-            .put(authMiddleware, isCreatorEducation, dtoValidationMiddleware(UpdateUserEducationDto, true), this.updateUserCreateEducation);
+            .put(authMiddleware, dtoValidationMiddleware(UpdateUserEducationDto, true), this.updateUserCreateEducation);
         this.router.route(`${this.path}/profile/education/:id/edit`)
             .put(authMiddleware, isCreatorEducation, dtoValidationMiddleware(UpdateUserEducationDto, true), this.updateUserUpdateEducation);
         this.router.route(`${this.path}/profile/education/:id/delete`)
-            .put(authMiddleware, isCreatorEducation, dtoValidationMiddleware(UpdateUserEducationDto, true), this.updateUserDeleteEducation);
+            .put(authMiddleware, isCreatorEducation, this.updateUserDeleteEducation);
         this.router.route(`${this.path}/profile/:id/achievement/new`)
-            .put(authMiddleware, isCreatorAchievement, dtoValidationMiddleware(UpdateUserAchievementDto, true), this.updateUserCreateAchievement);
+            .put(authMiddleware, dtoValidationMiddleware(UpdateUserAchievementDto, true), this.updateUserCreateAchievement);
         this.router.route(`${this.path}/profile/achievement/:id/edit`)
             .put(authMiddleware, isCreatorAchievement, dtoValidationMiddleware(UpdateUserAchievementDto, true), this.updateUserUpdateAchievement);
         this.router.route(`${this.path}/profile/achievement/:id/delete`)
-            .put(authMiddleware, isCreatorAchievement, dtoValidationMiddleware(UpdateUserAchievementDto, true), this.updateUserDeleteAchievement);
+            .put(authMiddleware, isCreatorAchievement, this.updateUserDeleteAchievement);
         this.router.route(`${this.path}/profile/:id/portfolio/new`)
-            .put(authMiddleware, isCreatorPortfolio, dtoValidationMiddleware(UpdateUserPortfolioDto, true), this.updateUserCreatePortfolio);
+            .put(
+                authMiddleware,
+                upload.fields(
+                    [
+                        { name: 'image', maxCount: 1 },
+                        { name: 'image1', maxCount: 1 },
+                        { name: 'image2', maxCount: 1 }
+                    ]
+                ),
+                dtoValidationMiddleware(UpdateUserPortfolioDto, true),
+                this.updateUserCreatePortfolio
+            );
         this.router.route(`${this.path}/profile/portfolio/:id/edit`)
-            .put(authMiddleware, isCreatorPortfolio, dtoValidationMiddleware(UpdateUserPortfolioDto, true), this.updateUserUpdatePortfolio);
+            .put(
+                authMiddleware,
+                upload.fields(
+                    [
+                        { name: 'image', maxCount: 1 },
+                        { name: 'image1', maxCount: 1 },
+                        { name: 'image2', maxCount: 1 }
+                    ]
+                ),
+                dtoValidationMiddleware(UpdateUserPortfolioDto, true),
+                this.updateUserUpdatePortfolio
+            );
         this.router.route(`${this.path}/profile/portfolio/:id/delete`)
-            .put(authMiddleware, isCreatorPortfolio, dtoValidationMiddleware(UpdateUserPortfolioDto, true), this.updateUserDeletePortfolio);
+            .put(authMiddleware, isCreatorPortfolio, this.updateUserDeletePortfolio);
         this.router.route(`${this.path}/profile/:id/publish`)
             .put(authMiddleware, isCreatorUser, this.publish);
         this.router.route(`${this.path}/profile/:id/publish-cancel`)
@@ -244,9 +266,11 @@ export class UsersController {
     private updateUserCreatePortfolio = async (req: Request, res: Response, next: NextFunction) => {
         const userPortfolio: UpdateUserPortfolioDto = req.body;
         const { id } = req.params;
+        const { files } = req;
         const updateUserResult = await this.usersService.updateUserCreatePortfolio(
             id,
-            userPortfolio
+            userPortfolio,
+            files
         );
         if (updateUserResult) {
             return res.send(updateUserResult);
@@ -257,9 +281,11 @@ export class UsersController {
     private updateUserUpdatePortfolio = async (req: Request, res: Response, next: NextFunction) => {
         const userPortfolio: UpdateUserPortfolioDto = req.body;
         const { id } = req.params;
+        const { files } = req;
         const updateUserResult = await this.usersService.updateUserUpdatePortfolio(
             id,
-            userPortfolio
+            userPortfolio,
+            files
         );
         if (updateUserResult) {
             return res.send(updateUserResult);

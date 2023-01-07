@@ -340,12 +340,17 @@ export class UsersService {
             .populate('workExperiences.employmentTypes', 'id name');
     }
 
-    public async updateUserCreatePortfolio(id: string, portfolio: UpdateUserPortfolioDto): Promise<User | null> {
+    public async updateUserCreatePortfolio(id: string, portfolio: UpdateUserPortfolioDto, files: any): Promise<User | null> {
         return await this.userModel.findByIdAndUpdate(
             id,
             {
                 $push: {
-                    'portfolios': portfolio
+                    'portfolios': {
+                        ...portfolio,
+                        image: files.image[0].path,
+                        image1: files.image1[0].path,
+                        image2: files.image2[0].path
+                    }
                 },
                 updatedAt: moment().locale('uz-latn').format('LLLL')
             },
@@ -365,14 +370,18 @@ export class UsersService {
             .populate('workExperiences.employmentTypes', 'id name');
     }
 
-    public async updateUserUpdatePortfolio(id: string, portfolio: UpdateUserPortfolioDto): Promise<User | null> {
+    public async updateUserUpdatePortfolio(id: string, portfolio: UpdateUserPortfolioDto, files: any): Promise<User | null> {
         return await this.userModel.findOneAndUpdate(
             { 'portfolios': { $elemMatch: { 'id': id } } },
             {
                 $set: {
                     'portfolios.$[element]': {
                         '_id': id,
-                        ...portfolio
+                        ...portfolio,
+                        image: files.image[0].path,
+                        image1: files.image1[0].path,
+                        image2: files.image2[0].path
+
                     }
                 },
                 updatedAt: moment().locale('uz-latn').format('LLLL')

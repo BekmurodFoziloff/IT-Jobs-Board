@@ -43,17 +43,39 @@ export class CompaniesController {
         this.router.route(`/my${this.path}/bpo/:id/edit`)
             .put(authMiddleware, isOwnerCompany, dtoValidationMiddleware(UpdateBPODto, true), this.updateBPO);
         this.router.route(`/my${this.path}/:id/portfolio/new`)
-            .put(authMiddleware, isOwnerPortfolio, dtoValidationMiddleware(UpdateCompanyPortfolioDto, true), this.updateCompanyCreatePortfolio);
+            .put(
+                authMiddleware,
+                upload.fields(
+                    [
+                        { name: 'image', maxCount: 1 },
+                        { name: 'image1', maxCount: 1 },
+                        { name: 'image2', maxCount: 1 }
+                    ]
+                ),
+                dtoValidationMiddleware(UpdateCompanyPortfolioDto, true),
+                this.updateCompanyCreatePortfolio
+            );
         this.router.route(`/my${this.path}/portfolio/:id/edit`)
-            .put(authMiddleware, isOwnerPortfolio, dtoValidationMiddleware(UpdateCompanyPortfolioDto, true), this.updateCompanyUpdatePortfolio);
+            .put(
+                authMiddleware,
+                upload.fields(
+                    [
+                        { name: 'image', maxCount: 1 },
+                        { name: 'image1', maxCount: 1 },
+                        { name: 'image2', maxCount: 1 }
+                    ]
+                ),
+                dtoValidationMiddleware(UpdateCompanyPortfolioDto, true),
+                this.updateCompanyUpdatePortfolio
+            );
         this.router.route(`/my${this.path}/portfolio/:id/delete`)
-            .put(authMiddleware, isOwnerPortfolio, dtoValidationMiddleware(UpdateCompanyPortfolioDto, true), this.updateCompanyDeletePortfolio);
+            .put(authMiddleware, isOwnerPortfolio, this.updateCompanyDeletePortfolio);
         this.router.route(`/my${this.path}/:id/team/new`)
-            .put(authMiddleware, isOwnerTeam, dtoValidationMiddleware(UpdateCompanyTeamDto, true), this.updateCompanyCreateTeam);
+            .put(authMiddleware, dtoValidationMiddleware(UpdateCompanyTeamDto, true), this.updateCompanyCreateTeam);
         this.router.route(`/my${this.path}/team/:id/edit`)
             .put(authMiddleware, isOwnerTeam, dtoValidationMiddleware(UpdateCompanyTeamDto, true), this.updateCompanyUpdateTeam);
         this.router.route(`/my${this.path}/team/:id/delete`)
-            .put(authMiddleware, isOwnerTeam, dtoValidationMiddleware(UpdateCompanyTeamDto, true), this.updateCompanyDeleteTeam);
+            .put(authMiddleware, isOwnerTeam, this.updateCompanyDeleteTeam);
         this.router.route(`/my${this.path}/:id/publish`)
             .put(authMiddleware, isOwnerCompany, this.publish);
         this.router.route(`/my${this.path}/:id/publish-cancel`)
@@ -139,9 +161,11 @@ export class CompaniesController {
     private updateCompanyCreatePortfolio = async (req: Request, res: Response, next: NextFunction) => {
         const companyPortfolio: UpdateCompanyPortfolioDto = req.body;
         const { id } = req.params;
+        const { files } = req;
         const updateCompanyResult = await this.companiesService.updateCompanyCreatePortfolio(
             id,
-            companyPortfolio
+            companyPortfolio,
+            files
         );
         if (updateCompanyResult) {
             return res.send(updateCompanyResult);
@@ -152,9 +176,11 @@ export class CompaniesController {
     private updateCompanyUpdatePortfolio = async (req: Request, res: Response, next: NextFunction) => {
         const companyPortfolio: UpdateCompanyPortfolioDto = req.body;
         const { id } = req.params;
+        const { files } = req;
         const updateCompanyResult = await this.companiesService.updateCompanyUpdatePortfolio(
             id,
-            companyPortfolio
+            companyPortfolio,
+            files
         );
         if (updateCompanyResult) {
             return res.send(updateCompanyResult);
