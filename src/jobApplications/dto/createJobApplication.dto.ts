@@ -1,4 +1,4 @@
-import { IsString, IsNotEmpty, IsDateString } from 'class-validator';
+import { IsString, IsNotEmpty, IsDateString, IsOptional } from 'class-validator';
 import { Trim } from 'class-sanitizer';
 
 export class CreateJobApplicationDto {
@@ -17,8 +17,9 @@ export class CreateJobApplicationDto {
     birthDate: Date
     
     @IsString()
-    @IsNotEmpty()
     @Trim()
+    @IsNotEmpty()
+    @IsOptional()
     resume: string
     
     @IsString()

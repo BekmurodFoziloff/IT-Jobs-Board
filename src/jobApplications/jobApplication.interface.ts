@@ -4,11 +4,11 @@ import { User } from '../users/user.interface';
 export interface JobApplication extends Document {
     id: string;
     fullName: string;
-    phoneNumber: User;
+    phoneNumber: string;
     birthDate: Date;
     resume: string;
     experience: string;
     gender: string;
-    jobOwner: string;
+    jobOwner: User;
     createdAt?: string;
 }

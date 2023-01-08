@@ -7,6 +7,7 @@ import JobNotFoundException from '../exceptions/JobNotFoundException';
 import authMiddleware from '../middlewares/auth.middleware';
 import RequestWithUser from '../interfaces/requestWithUser.interface';
 import { JobsService } from '../jobs/jobs.service';
+import { upload } from '../files/files.service';
 
 export class JobApplicationsController {
     public path = '/applicants';
@@ -21,7 +22,7 @@ export class JobApplicationsController {
 
     public setRoutes() {
         this.router.route(`/job/:id/apply`)
-            .post(dtoValidationMiddleware(CreateJobApplicationDto), this.createJobApplication);
+            .post(upload.single('resume'), dtoValidationMiddleware(CreateJobApplicationDto), this.createJobApplication);
         this.router.route(`/my/residents${this.path}/list`)
             .get(authMiddleware, this.getAllJobsApllicationsOfUser);
         this.router.route(`/my/residents${this.path}/list/:id/delete`)
@@ -32,10 +33,15 @@ export class JobApplicationsController {
 
     private createJobApplication = async (req: Request, res: Response, next: NextFunction) => {
         const { id } = req.params;
+        const { file } = req;
         const job = await this.jobsService.findJobById(id);
         if (job) {
             const jobApplicationData: CreateJobApplicationDto = req.body;
-            const newJobApplicationResult = await this.jobApplicationsService.createJobApplication(jobApplicationData, job.owner);
+            const newJobApplicationResult = await this.jobApplicationsService.createJobApplication(
+                jobApplicationData,
+                job.owner, 
+                file?.path
+                );
             return res.send(newJobApplicationResult);
         }
         next(new JobNotFoundException(id));

@@ -13,6 +13,7 @@ import OrderNotFoundException from '../exceptions/OrderNotFoundException';
 import authMiddleware from '../middlewares/auth.middleware';
 import RequestWithUser from '../interfaces/requestWithUser.interface';
 import isOwnerOrder from '../middlewares/isOwnenOrder.middleware';
+import { upload } from '../files/files.service';
 
 export class OrdersController {
     public path = '/order';
@@ -34,7 +35,7 @@ export class OrdersController {
         this.router.route(`/my${this.path}/:id/edit`)
             .put(authMiddleware, isOwnerOrder, dtoValidationMiddleware(UpdateOrderDto, true), this.updateOrder);
         this.router.route(`/my${this.path}/project/:id/edit`)
-            .put(authMiddleware, isOwnerOrder, dtoValidationMiddleware(UpdateProjectDto, true), this.updateProject);
+            .put(authMiddleware, isOwnerOrder, upload.single('attachedFile'), dtoValidationMiddleware(UpdateProjectDto, true), this.updateProject);
         this.router.route(`/my${this.path}/reuirements/:id/edit`)
             .put(authMiddleware, isOwnerOrder, dtoValidationMiddleware(UpdateRequirementsDto, true), this.updateRequirements);
         this.router.route(`/my${this.path}/contacts/:id/edit`)
@@ -96,9 +97,11 @@ export class OrdersController {
     private updateProject = async (req: Request, res: Response, next: NextFunction) => {
         const orderData: UpdateProjectDto = req.body;
         const { id } = req.params;
+        const { file } = req;
         const updateOrderResult = await this.ordersService.updateProject(
             id,
-            orderData
+            orderData,
+            file?.path
         );
         if (updateOrderResult) {
             return res.send(updateOrderResult);

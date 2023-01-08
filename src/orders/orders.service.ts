@@ -74,14 +74,15 @@ export class OrdersService {
             .populate('specializations', 'id name');
     }
 
-    public async updateProject(id: string, project: UpdateProjectDto): Promise<Order | null> {
+    public async updateProject(id: string, project: UpdateProjectDto, attachedFile: any): Promise<Order | null> {
         return await this.orderModel.findByIdAndUpdate(
             id,
             {
                 $set: {
                     'project': {
                         '_id': id,
-                        ...project
+                        ...project,
+                        attachedFile
                     }
                 },
                 updatedAt: moment().locale('uz-latn').format('LLLL')

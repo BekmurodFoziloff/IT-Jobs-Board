@@ -7,10 +7,11 @@ import { User } from '../users/user.interface';
 export class JobApplicationsService {
     private jobApplicationModel = JobApplicationModel;
 
-    public async createJobApplication(jobApplication: CreateJobApplicationDto, jobOwner: User): Promise<JobApplication> {
+    public async createJobApplication(jobApplication: CreateJobApplicationDto, jobOwner: User, resume: any): Promise<JobApplication> {
         const newJobApplication = await this.jobApplicationModel.create({
             ...jobApplication,
             jobOwner,
+            resume,
             createdAt: moment().locale('uz-latn').format('LLLL')
         });
         return await newJobApplication.save();
