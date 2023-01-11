@@ -17,6 +17,7 @@ import JobModel from '../jobs/job.model';
 import OrderModel from '../orders/order.model';
 import JobApplicationModel from '../jobApplications/jobApplication.model';
 import bcrypt from 'bcrypt';
+import crypto from 'crypto';
 
 export class UsersService {
     private userModel = UserModel;
@@ -484,7 +485,8 @@ export class UsersService {
                 $set: {
                     'currentHashedRefreshToken': currentHashedRefreshToken
                 }
-            }
+            },
+            { returnDocument: 'after' }
         )
     }
 
@@ -499,7 +501,77 @@ export class UsersService {
                 $set: {
                     'currentHashedRefreshToken': null
                 }
-            }
+            },
+            { returnDocument: 'after' }
+        )
+    }
+
+    public async createConfirmToken() {
+        return await crypto.randomBytes(48).toString('base64url');
+    }
+
+    public async getUserByEmailConfirmToken(emailConfirmToken: string) {
+        return await this.userModel.findOne({
+            emailConfirmToken,
+            emailConfirmTokenExpire: { $gt: Date.now() }
+        });
+    }
+
+    public async removeEmailConfirmTokenAndExpire(id: string) {
+        return await this.userModel.findByIdAndUpdate(
+            id,
+            {
+                $set: {
+                    'emailConfirmToken': null,
+                    'emailConfirmTokenExpire': null,
+                }
+            },
+            { returnDocument: 'after' }
+        )
+    }
+
+    public async activate(id: string) {
+        return await this.userModel.findByIdAndUpdate(
+            id,
+            {
+                $set: {
+                    'isActive': true
+                }
+            },
+            { returnDocument: 'after' }
+        )
+    }
+
+    public async getUserByResetPasswordConfirmToken(resetPasswordConfirmToken: string) {
+        return await this.userModel.findOne({
+            resetPasswordConfirmToken,
+            resetPasswordConfirmTokenExpire: { $gt: Date.now() }
+        });
+    }
+
+    public async setResetPasswordConfirmTokenAndExpire(id: string, token: string, tokenExpire: number) {
+        return await this.userModel.findByIdAndUpdate(
+            id,
+            {
+                $set: {
+                    'resetPasswordConfirmToken': token,
+                    'resetPasswordConfirmTokenExpire': tokenExpire,
+                }
+            },
+            { returnDocument: 'after' }
+        )
+    }
+
+    public async removeResetPasswordConfirmTokenAndExpire(id: string) {
+        return await this.userModel.findByIdAndUpdate(
+            id,
+            {
+                $set: {
+                    'resetPasswordConfirmToken': null,
+                    'resetPasswordConfirmTokenExpire': null,
+                }
+            },
+            { returnDocument: 'after' }
         )
     }
 }

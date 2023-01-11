@@ -312,3 +312,20 @@ export class ChangePassword {
     @IsMatch('newPassword')
     newPasswordConfirm: string;
 }
+export class ResetPassword {
+    @IsString()
+    @Trim()
+    @IsNotEmpty()
+    @MinLength(8)
+    @MaxLength(16)
+    @Matches('^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})')
+    newPassword: string;
+
+    @IsString()
+    @Trim()
+    @IsNotEmpty()
+    @MinLength(8)
+    @MaxLength(16)
+    @IsMatch('newPassword')
+    newPasswordConfirm: string;
+}

@@ -139,8 +139,6 @@ JobSchema.pre('validate', function (next) {
     next(new Error(`toDate with date ${this.toDate} must be future`));
 });
 
-JobSchema.index({ toDate: 1 }, { expireAfterSeconds: 0 }); // auto delete JobSchema data
-
 const JobModel = model<Job>('Job', JobSchema);
 
 export default JobModel;

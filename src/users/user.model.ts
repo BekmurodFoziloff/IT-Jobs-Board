@@ -204,10 +204,12 @@ const UserSchema = new Schema(
             required: true
         },
         firstName: {
-            type: String
+            type: String,
+            required: true
         },
         lastName: {
-            type: String
+            type: String,
+            required: true
         },
         password: {
             type: String,
@@ -242,14 +244,42 @@ const UserSchema = new Schema(
         currentHashedRefreshToken: {
             type: String
         },
+        emailConfirmToken: {
+            type: String
+        },
+        emailConfirmTokenExpire: {
+            type: Date
+        },
+        resetPasswordConfirmToken: {
+            type: String
+        },
+        resetPasswordConfirmTokenExpire: {
+            type: Date
+        },
+        isActive: {
+            type: Boolean,
+            default: false,
+            required: true
+        },
         createdAt: {
             type: String
         },
         updatedAt: {
             type: String
         }
+    },
+    {
+        toJSON: {
+            virtuals: true
+        }
     }
 );
+
+UserSchema.virtual('fullName').get(function () {
+    return `${this.firstName}  ${this.lastName}`;
+})
+
+UserSchema.index({ confirmTokenExpire: 1 }, { expireAfterSeconds: 0 }); // auto delete UserSchema data
 
 const UserModel = model<User>('User', UserSchema);
 

@@ -97,7 +97,7 @@ export class UsersController {
         this.router.route(`/professional`)
             .get(this.findAllUsers);
         this.router.route(`/settings/change-password`)
-            .post(authMiddleware, this.changePassword);
+            .post(authMiddleware, dtoValidationMiddleware(ChangePassword), this.changePassword);
     }
 
     private findUserById = async (req: Request, res: Response, next: NextFunction) => {

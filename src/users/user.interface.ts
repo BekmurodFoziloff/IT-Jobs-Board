@@ -88,6 +88,11 @@ export interface User extends Document {
     portfolios: Portfolio[];
     condition: string;
     currentHashedRefreshToken: string;
+    emailConfirmToken: string;
+    emailConfirmTokenExpire: Date;
+    resetPasswordConfirmToken: string;
+    resetPasswordConfirmTokenExpire: Date;
+    isActive: boolean;
     createdAt: string;
     updatedAt: string;
 }
