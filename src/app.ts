@@ -3,6 +3,7 @@ import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import mongoose from 'mongoose';
+import logger from './lib/logger';
 import { JobsController } from './jobs/jobs.controller';
 import { JobsService } from './jobs/jobs.service';
 import { AuthenticationController } from './authentication/authentication.controller';
@@ -35,6 +36,7 @@ import { JobApplicationsController } from './jobApplications/jobApplications.con
 import { JobApplicationsService } from './jobApplications/jobApplications.service';
 import { OrdersController } from './orders/orders.controller';
 import { OrdersService } from './orders/orders.service';
+import morganMiddleware from './middlewares/morgan.middleware';
 import errorHandler from './middlewares/errorHandler.middleware';
 
 class App {
@@ -57,6 +59,8 @@ class App {
         this.app.use(cookieParser());
         // Enables cors
         this.app.use(cors());
+        // morgan middleware
+        this.app.use(morganMiddleware);
     }
 
     private setMongoConfig() {
@@ -64,10 +68,10 @@ class App {
         const MONGO_URI = process.env.MONGO_URI as string;
         mongoose.connect(MONGO_URI)
             .then(() => {
-                console.log('Database connected successfully');
+                logger.info('Database connected successfully');
             })
             .catch((error) => {
-                console.log(error);
+                logger.error(error);
             });
         mongoose.set('toJSON', {
             virtuals: true,
