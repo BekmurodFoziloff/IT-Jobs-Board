@@ -42,97 +42,124 @@ export class AuthenticationController {
     }
 
     private register = async (req: Request, res: Response, next: NextFunction) => {
-        const userData: RegisterDto = req.body;
-        const candidate = await this.usersService.getUserByEmail(userData.email);
-        if (candidate) {
-            next(new UserWithThatEmailAlreadyExistsException(userData.email));
-        } else {
-            const hashedPassword = await this.usersService.hashPassword(userData.password);
-            const emailConfirmToken = await this.usersService.createConfirmToken();
-            const user = await this.usersService.createUser({
-                ...userData,
-                password: hashedPassword,
-                emailConfirmToken,
-                emailConfirmTokenExpire: Date.now() + 60 * 60 * 24 * 5 * 1000
-            });
-            await transporter.sendMail(await emailConfirm(user.email, emailConfirmToken, user.firstName, user.lastName));
-            res.send(user);
+        try {
+            const userData: RegisterDto = req.body;
+            const candidate = await this.usersService.getUserByEmail(userData.email);
+            if (candidate) {
+                next(new UserWithThatEmailAlreadyExistsException(userData.email));
+            } else {
+                const hashedPassword = await this.usersService.hashPassword(userData.password);
+                const emailConfirmToken = await this.usersService.createConfirmToken();
+                const user = await this.usersService.createUser({
+                    ...userData,
+                    password: hashedPassword,
+                    emailConfirmToken,
+                    emailConfirmTokenExpire: Date.now() + 60 * 60 * 24 * 5 * 1000
+                });
+                await transporter.sendMail(await emailConfirm(user.email, emailConfirmToken, user.firstName, user.lastName));
+                res.send(user);
+            }
+        } catch (error) {
+            next(error);
         }
     }
 
     private emailConfirm = async (req: Request, res: Response, next: NextFunction) => {
-        const { token } = req.params;
-        const candidate = await this.usersService.getUserByEmailConfirmToken(token);
-        if (candidate) {
-            await this.usersService.removeEmailConfirmTokenAndExpire(candidate.id);
-            const user = await this.usersService.activate(candidate.id);
-            return res.send(user);
+        try {
+            const { token } = req.params;
+            const candidate = await this.usersService.getUserByEmailConfirmToken(token);
+            if (candidate) {
+                await this.usersService.removeEmailConfirmTokenAndExpire(candidate.id);
+                const user = await this.usersService.activate(candidate.id);
+                return res.send(user);
+            }
+            next(new AuthenticationTokenMissingException());
+        } catch (error) {
+            next(error);
         }
-        next(new AuthenticationTokenMissingException());
-
     }
 
     private logIn = async (req: Request, res: Response, next: NextFunction) => {
-        const logInData: LogInDto = req.body;
-        const user = await this.usersService.getUserByEmail(logInData.email);
-        if (user) {
-            const isPasswordMatching = await this.usersService.verifyPassword(logInData.password, user.password);
-            if (isPasswordMatching) {
-                const accessTokenCookie = await this.authenticationService.getCookieWithJwtAccessToken(user.id);
-                const {
-                    cookie: refreshTokenCookie,
-                    token: refreshToken
-                } = this.authenticationService.getCookieWithJwtRefreshToken(user.id);
-                await this.usersService.setCurrentRefreshToken(refreshToken, user.id);
-                res.setHeader('Set-Cookie', [accessTokenCookie, refreshTokenCookie]);
-                return res.send(user);
+        try {
+            const logInData: LogInDto = req.body;
+            const user = await this.usersService.getUserByEmail(logInData.email);
+            if (user) {
+                const isPasswordMatching = await this.usersService.verifyPassword(logInData.password, user.password);
+                if (isPasswordMatching) {
+                    const accessTokenCookie = await this.authenticationService.getCookieWithJwtAccessToken(user.id);
+                    const {
+                        cookie: refreshTokenCookie,
+                        token: refreshToken
+                    } = this.authenticationService.getCookieWithJwtRefreshToken(user.id);
+                    await this.usersService.setCurrentRefreshToken(refreshToken, user.id);
+                    res.setHeader('Set-Cookie', [accessTokenCookie, refreshTokenCookie]);
+                    return res.send(user);
+                } else {
+                    next(new WrongCredentialsException());
+                }
             } else {
                 next(new WrongCredentialsException());
             }
-        } else {
-            next(new WrongCredentialsException());
+        } catch (error) {
+            next(error);
         }
     }
 
-    private logOut = async (req: Request, res: Response) => {
-        const { user } = (req as RequestWithUser);
-        await this.usersService.removeCurrentRefreshToken(user.id);
-        res
-            .setHeader('Set-Cookie', this.authenticationService.getCookiesForLogOut())
-            .sendStatus(200);
+    private logOut = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const { user } = (req as RequestWithUser);
+            await this.usersService.removeCurrentRefreshToken(user.id);
+            res
+                .setHeader('Set-Cookie', this.authenticationService.getCookiesForLogOut())
+                .sendStatus(200);
+        } catch (error) {
+            next(error);
+        }
     }
 
-    private refresh = async (req: Request, res: Response) => {
-        const { user } = (req as RequestWithUser);
-        const accessTokenCookie = await this.authenticationService.getCookieWithJwtAccessToken(user.id);
-        res
-            .setHeader('Set-Cookie', accessTokenCookie)
-            .sendStatus(200);
+    private refresh = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const { user } = (req as RequestWithUser);
+            const accessTokenCookie = await this.authenticationService.getCookieWithJwtAccessToken(user.id);
+            res
+                .setHeader('Set-Cookie', accessTokenCookie)
+                .sendStatus(200);
+        } catch (error) {
+            next(error);
+        }
     }
 
     private resetPassword = async (req: Request, res: Response, next: NextFunction) => {
-        const { email } = req.body;
-        const candidate = await this.usersService.getUserByEmail(email);
-        if (candidate) {
-            const resetPasswordConfirmToken = await this.usersService.createConfirmToken();
-            const resetPasswordConfirmTokenExpire = Date.now() + 60 * 60 * 5 * 1000;
-            const user = await this.usersService.setResetPasswordConfirmTokenAndExpire(candidate.id, resetPasswordConfirmToken, resetPasswordConfirmTokenExpire);
-            await transporter.sendMail(await resetPassword(candidate.email, resetPasswordConfirmToken, candidate.firstName, candidate.lastName));
-            return res.send(user);
+        try {
+            const { email } = req.body;
+            const candidate = await this.usersService.getUserByEmail(email);
+            if (candidate) {
+                const resetPasswordConfirmToken = await this.usersService.createConfirmToken();
+                const resetPasswordConfirmTokenExpire = Date.now() + 60 * 60 * 5 * 1000;
+                const user = await this.usersService.setResetPasswordConfirmTokenAndExpire(candidate.id, resetPasswordConfirmToken, resetPasswordConfirmTokenExpire);
+                await transporter.sendMail(await resetPassword(candidate.email, resetPasswordConfirmToken, candidate.firstName, candidate.lastName));
+                return res.send(user);
+            }
+            next(new WrongCredentialsException());
+        } catch (error) {
+            next(error);
         }
-        next(new WrongCredentialsException());
     }
 
     private resetPasswordConfirm = async (req: Request, res: Response, next: NextFunction) => {
-        const { token } = req.params;
-        const resetPasswordData: ResetPassword = req.body;
-        const candidate = await this.usersService.getUserByResetPasswordConfirmToken(token);
-        if (candidate) {
-            await this.usersService.removeResetPasswordConfirmTokenAndExpire(candidate.id);
-            const hashedPassword = await this.usersService.hashPassword(resetPasswordData.newPassword);
-            const user = await this.usersService.changePassword(candidate.id, hashedPassword);
-            return res.send(user);
+        try {
+            const { token } = req.params;
+            const resetPasswordData: ResetPassword = req.body;
+            const candidate = await this.usersService.getUserByResetPasswordConfirmToken(token);
+            if (candidate) {
+                await this.usersService.removeResetPasswordConfirmTokenAndExpire(candidate.id);
+                const hashedPassword = await this.usersService.hashPassword(resetPasswordData.newPassword);
+                const user = await this.usersService.changePassword(candidate.id, hashedPassword);
+                return res.send(user);
+            }
+            next(new AuthenticationTokenMissingException());
+        } catch (error) {
+            next(error);
         }
-        next(new AuthenticationTokenMissingException());
     }
 }

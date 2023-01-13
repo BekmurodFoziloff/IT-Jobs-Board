@@ -27,47 +27,67 @@ export class SpecializationsController {
     }
 
     private findSpecializationById = async (req: Request, res: Response, next: NextFunction) => {
-        const { id } = req.params;
-        const specialization = await this.specializationsService.findSpecializationById(id);
-        if (specialization) {
-            return res.send(specialization);
+        try {
+            const { id } = req.params;
+            const specialization = await this.specializationsService.findSpecializationById(id);
+            if (specialization) {
+                return res.send(specialization);
+            }
+            next(new SpecializationNotFoundException(id));
+        } catch (error) {
+            next(error);
         }
-        next(new SpecializationNotFoundException(id));
     }
 
-    private findAllSpecializations = async (req: Request, res: Response) => {
-        const specializations = await this.specializationsService.findAllSpecializations();
-        res.send(specializations);
+    private findAllSpecializations = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const specializations = await this.specializationsService.findAllSpecializations();
+            res.send(specializations);
+        } catch (error) {
+            next(error);
+        }
     }
 
-    private createSpecialization = async (req: Request, res: Response) => {
-        const specializationData: CreateSpecializationDto = req.body;
-        const newSpecializationResult = await this.specializationsService.createSpecialization(
-            specializationData,
-            (req as RequestWithUser).user
-        );
-        res.send(newSpecializationResult);
+    private createSpecialization = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const specializationData: CreateSpecializationDto = req.body;
+            const newSpecializationResult = await this.specializationsService.createSpecialization(
+                specializationData,
+                (req as RequestWithUser).user
+            );
+            res.send(newSpecializationResult);
+        } catch (error) {
+            next(error);
+        }
     }
 
     private deleteSpecialization = async (req: Request, res: Response, next: NextFunction) => {
-        const { id } = req.params;
-        const deleteSpecializationResult = await this.specializationsService.deleteSpecialization(id);
-        if (deleteSpecializationResult) {
-            return res.send(deleteSpecializationResult);
+        try {
+            const { id } = req.params;
+            const deleteSpecializationResult = await this.specializationsService.deleteSpecialization(id);
+            if (deleteSpecializationResult) {
+                return res.send(deleteSpecializationResult);
+            }
+            next(new SpecializationNotFoundException(id));
+        } catch (error) {
+            next(error);
         }
-        next(new SpecializationNotFoundException(id));
     }
 
     private updateSpecialization = async (req: Request, res: Response, next: NextFunction) => {
-        const specializationData: UpdateSpecializationDto = req.body;
-        const { id } = req.params;
-        const updateSpecializationResult = await this.specializationsService.updateSpecialization(
-            id,
-            specializationData
-        );
-        if (updateSpecializationResult) {
-            return res.send(updateSpecializationResult);
+        try {
+            const specializationData: UpdateSpecializationDto = req.body;
+            const { id } = req.params;
+            const updateSpecializationResult = await this.specializationsService.updateSpecialization(
+                id,
+                specializationData
+            );
+            if (updateSpecializationResult) {
+                return res.send(updateSpecializationResult);
+            }
+            next(new SpecializationNotFoundException(id));
+        } catch (error) {
+            next(error);
         }
-        next(new SpecializationNotFoundException(id));
     }
 }

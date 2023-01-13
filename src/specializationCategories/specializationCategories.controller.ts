@@ -27,47 +27,67 @@ export class SpecializationCategoriesController {
     }
 
     private findSpecializationCategoryById = async (req: Request, res: Response, next: NextFunction) => {
-        const { id } = req.params;
-        const specializationCategory = await this.specializationCategoriesService.findSpecializationCategoryById(id);
-        if (specializationCategory) {
-            return res.send(specializationCategory);
+        try {
+            const { id } = req.params;
+            const specializationCategory = await this.specializationCategoriesService.findSpecializationCategoryById(id);
+            if (specializationCategory) {
+                return res.send(specializationCategory);
+            }
+            next(new SpecializationCategoryNotFoundException(id));
+        } catch (error) {
+            next(error);
         }
-        next(new SpecializationCategoryNotFoundException(id));
     }
 
-    private findAllSpecializationCategories = async (req: Request, res: Response) => {
-        const specializationCategories = await this.specializationCategoriesService.findAllSpecializationCategories();
-        res.send(specializationCategories);
+    private findAllSpecializationCategories = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const specializationCategories = await this.specializationCategoriesService.findAllSpecializationCategories();
+            res.send(specializationCategories);
+        } catch (error) {
+            next(error);
+        }
     }
 
-    private createSpecializationCategory = async (req: Request, res: Response) => {
-        const specializationCategoryData: CreateSpecializationCategoryDto = req.body;
-        const newSpecializationCategoryResult = await this.specializationCategoriesService.createSpecializationCategory(
-            specializationCategoryData,
-            (req as RequestWithUser).user
-        );
-        res.send(newSpecializationCategoryResult);
+    private createSpecializationCategory = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const specializationCategoryData: CreateSpecializationCategoryDto = req.body;
+            const newSpecializationCategoryResult = await this.specializationCategoriesService.createSpecializationCategory(
+                specializationCategoryData,
+                (req as RequestWithUser).user
+            );
+            res.send(newSpecializationCategoryResult);
+        } catch (error) {
+            next(error);
+        }
     }
 
     private deleteSpecializationCategory = async (req: Request, res: Response, next: NextFunction) => {
-        const { id } = req.params;
-        const deleteSpecializationCategoryResult = await this.specializationCategoriesService.deleteSpecializationCategory(id);
-        if (deleteSpecializationCategoryResult) {
-            return res.send(deleteSpecializationCategoryResult);
+        try {
+            const { id } = req.params;
+            const deleteSpecializationCategoryResult = await this.specializationCategoriesService.deleteSpecializationCategory(id);
+            if (deleteSpecializationCategoryResult) {
+                return res.send(deleteSpecializationCategoryResult);
+            }
+            next(new SpecializationCategoryNotFoundException(id));
+        } catch (error) {
+            next(error);
         }
-        next(new SpecializationCategoryNotFoundException(id));
     }
 
     private updateSpecializationCategory = async (req: Request, res: Response, next: NextFunction) => {
-        const specializationCategoryData: UpdateSpecializationCategoryDto = req.body;
-        const { id } = req.params;
-        const updateSpecializationCategoryResult = await this.specializationCategoriesService.updateSpecializationCategory(
-            id,
-            specializationCategoryData
-        );
-        if (updateSpecializationCategoryResult) {
-            return res.send(updateSpecializationCategoryResult);
+        try {
+            const specializationCategoryData: UpdateSpecializationCategoryDto = req.body;
+            const { id } = req.params;
+            const updateSpecializationCategoryResult = await this.specializationCategoriesService.updateSpecializationCategory(
+                id,
+                specializationCategoryData
+            );
+            if (updateSpecializationCategoryResult) {
+                return res.send(updateSpecializationCategoryResult);
+            }
+            next(new SpecializationCategoryNotFoundException(id));
+        } catch (error) {
+            next(error);
         }
-        next(new SpecializationCategoryNotFoundException(id));
     }
 }

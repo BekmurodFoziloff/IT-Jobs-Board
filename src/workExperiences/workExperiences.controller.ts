@@ -27,47 +27,67 @@ export class WorkExperiencesController {
     }
 
     private findWorkExperienceById = async (req: Request, res: Response, next: NextFunction) => {
-        const { id } = req.params;
-        const workExperience = await this.workExperiencesService.findWorkExperienceById(id);
-        if (workExperience) {
-            return res.send(workExperience);
+        try {
+            const { id } = req.params;
+            const workExperience = await this.workExperiencesService.findWorkExperienceById(id);
+            if (workExperience) {
+                return res.send(workExperience);
+            }
+            next(new WorkExperienceNotFoundException(id));
+        } catch (error) {
+            next(error);
         }
-        next(new WorkExperienceNotFoundException(id));
     }
 
-    private findAllWorkExperiences = async (req: Request, res: Response) => {
-        const workExperiences = await this.workExperiencesService.findAllWorkExperiences();
-        res.send(workExperiences);
+    private findAllWorkExperiences = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const workExperiences = await this.workExperiencesService.findAllWorkExperiences();
+            res.send(workExperiences);
+        } catch (error) {
+            next(error);
+        }
     }
 
-    private createWorkExperience = async (req: Request, res: Response) => {
-        const workExperienceData: CreateWorkExperienceDto = req.body;
-        const newWorkExperienceResult = await this.workExperiencesService.createWorkExperience(
-            workExperienceData,
-            (req as RequestWithUser).user
-        );
-        res.send(newWorkExperienceResult);
+    private createWorkExperience = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const workExperienceData: CreateWorkExperienceDto = req.body;
+            const newWorkExperienceResult = await this.workExperiencesService.createWorkExperience(
+                workExperienceData,
+                (req as RequestWithUser).user
+            );
+            res.send(newWorkExperienceResult);
+        } catch (error) {
+            next(error);
+        }
     }
 
     private deleteWorkExperience = async (req: Request, res: Response, next: NextFunction) => {
-        const { id } = req.params;
-        const deleteWorkExperienceResult = await this.workExperiencesService.deleteWorkExperience(id);
-        if (deleteWorkExperienceResult) {
-            return res.send(deleteWorkExperienceResult);
+        try {
+            const { id } = req.params;
+            const deleteWorkExperienceResult = await this.workExperiencesService.deleteWorkExperience(id);
+            if (deleteWorkExperienceResult) {
+                return res.send(deleteWorkExperienceResult);
+            }
+            next(new WorkExperienceNotFoundException(id));
+        } catch (error) {
+            next(error);
         }
-        next(new WorkExperienceNotFoundException(id));
     }
 
     private updateWorkExperience = async (req: Request, res: Response, next: NextFunction) => {
-        const workExperienceData: UpdateWorkExperienceDto = req.body;
-        const { id } = req.params;
-        const updateWorkExperienceResult = await this.workExperiencesService.updateWorkExperience(
-            id,
-            workExperienceData
-        );
-        if (updateWorkExperienceResult) {
-            return res.send(updateWorkExperienceResult);
+        try {
+            const workExperienceData: UpdateWorkExperienceDto = req.body;
+            const { id } = req.params;
+            const updateWorkExperienceResult = await this.workExperiencesService.updateWorkExperience(
+                id,
+                workExperienceData
+            );
+            if (updateWorkExperienceResult) {
+                return res.send(updateWorkExperienceResult);
+            }
+            next(new WorkExperienceNotFoundException(id));
+        } catch (error) {
+            next(error);
         }
-        next(new WorkExperienceNotFoundException(id));
     }
 }

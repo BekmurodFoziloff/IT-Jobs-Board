@@ -83,178 +83,242 @@ export class CompaniesController {
     }
 
     private findCompanyById = async (req: Request, res: Response, next: NextFunction) => {
-        const { id } = req.params;
-        const company = await this.companiesService.findCompanyById(id);
-        if (company) {
-            return res.send(company);
+        try {
+            const { id } = req.params;
+            const company = await this.companiesService.findCompanyById(id);
+            if (company) {
+                return res.send(company);
+            }
+            next(new CompanyNotFoundException(id));
+        } catch (error) {
+            next(error);
         }
-        next(new CompanyNotFoundException(id));
     }
 
-    private findAllCompanies = async (req: Request, res: Response) => {
-        const { query } = req;
-        const companies = await this.companiesService.findAllCompanies(query);
-        res.send(companies);
+    private findAllCompanies = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const { query } = req;
+            const companies = await this.companiesService.findAllCompanies(query);
+            res.send(companies);
+        } catch (error) {
+            next(error);
+        }
     }
 
-    private createCompany = async (req: Request, res: Response) => {
-        const companyData: CreateCompanyDto = req.body;
-        const { file } = req;
-        const newCompanyResult = await this.companiesService.createCompany(
-            companyData,
-            (req as RequestWithUser).user,
-            file?.path
-        );
-        res.send(newCompanyResult);
+    private createCompany = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const companyData: CreateCompanyDto = req.body;
+            const { file } = req;
+            const newCompanyResult = await this.companiesService.createCompany(
+                companyData,
+                (req as RequestWithUser).user,
+                file?.path
+            );
+            res.send(newCompanyResult);
+        } catch (error) {
+            next(error);
+        }
     }
 
     private deleteCompany = async (req: Request, res: Response, next: NextFunction) => {
-        const { id } = req.params;
-        const deleteCompanyResult = await this.companiesService.deleteCompany(id);
-        if (deleteCompanyResult) {
-            return res.send(deleteCompanyResult);
+        try {
+            const { id } = req.params;
+            const deleteCompanyResult = await this.companiesService.deleteCompany(id);
+            if (deleteCompanyResult) {
+                return res.send(deleteCompanyResult);
+            }
+            next(new CompanyNotFoundException(id));
+        } catch (error) {
+            next(error);
         }
-        next(new CompanyNotFoundException(id));
     }
 
     private updateCompany = async (req: Request, res: Response, next: NextFunction) => {
-        const companyData: UpdateCompanyDto = req.body;
-        const { id } = req.params;
-        const { file } = req;
-        const updateCompanyResult = await this.companiesService.updateCompany(
-            id,
-            companyData,
-            file?.path
-        );
-        if (updateCompanyResult) {
-            return res.send(updateCompanyResult);
+        try {
+            const companyData: UpdateCompanyDto = req.body;
+            const { id } = req.params;
+            const { file } = req;
+            const updateCompanyResult = await this.companiesService.updateCompany(
+                id,
+                companyData,
+                file?.path
+            );
+            if (updateCompanyResult) {
+                return res.send(updateCompanyResult);
+            }
+            next(new CompanyNotFoundException(id));
+        } catch (error) {
+            next(error);
         }
-        next(new CompanyNotFoundException(id));
     }
 
     private updateContacts = async (req: Request, res: Response, next: NextFunction) => {
-        const companyContactsData: UpdateContactsDto = req.body;
-        const { id } = req.params;
-        const updateCompanyResult = await this.companiesService.updateContacts(
-            id,
-            companyContactsData
-        );
-        if (updateCompanyResult) {
-            return res.send(updateCompanyResult);
+        try {
+            const companyContactsData: UpdateContactsDto = req.body;
+            const { id } = req.params;
+            const updateCompanyResult = await this.companiesService.updateContacts(
+                id,
+                companyContactsData
+            );
+            if (updateCompanyResult) {
+                return res.send(updateCompanyResult);
+            }
+            next(new CompanyNotFoundException(id));
+        } catch (error) {
+            next(error);
         }
-        next(new CompanyNotFoundException(id));
     }
 
     private updateBPO = async (req: Request, res: Response, next: NextFunction) => {
-        const companyBPOData: UpdateBPODto = req.body;
-        const { id } = req.params;
-        const updateCompanyResult = await this.companiesService.updateBPO(
-            id,
-            companyBPOData
-        );
-        if (updateCompanyResult) {
-            return res.send(updateCompanyResult);
+        try {
+            const companyBPOData: UpdateBPODto = req.body;
+            const { id } = req.params;
+            const updateCompanyResult = await this.companiesService.updateBPO(
+                id,
+                companyBPOData
+            );
+            if (updateCompanyResult) {
+                return res.send(updateCompanyResult);
+            }
+            next(new CompanyNotFoundException(id));
+        } catch (error) {
+            next(error);
         }
-        next(new CompanyNotFoundException(id));
     }
 
     private updateCompanyCreatePortfolio = async (req: Request, res: Response, next: NextFunction) => {
-        const companyPortfolio: UpdateCompanyPortfolioDto = req.body;
-        const { id } = req.params;
-        const { files } = req;
-        const updateCompanyResult = await this.companiesService.updateCompanyCreatePortfolio(
-            id,
-            companyPortfolio,
-            files
-        );
-        if (updateCompanyResult) {
-            return res.send(updateCompanyResult);
+        try {
+            const companyPortfolio: UpdateCompanyPortfolioDto = req.body;
+            const { id } = req.params;
+            const { files } = req;
+            const updateCompanyResult = await this.companiesService.updateCompanyCreatePortfolio(
+                id,
+                companyPortfolio,
+                files
+            );
+            if (updateCompanyResult) {
+                return res.send(updateCompanyResult);
+            }
+            next(new CompanyNotFoundException(id));
+        } catch (error) {
+            next(error);
         }
-        next(new CompanyNotFoundException(id));
     }
 
     private updateCompanyUpdatePortfolio = async (req: Request, res: Response, next: NextFunction) => {
-        const companyPortfolio: UpdateCompanyPortfolioDto = req.body;
-        const { id } = req.params;
-        const { files } = req;
-        const updateCompanyResult = await this.companiesService.updateCompanyUpdatePortfolio(
-            id,
-            companyPortfolio,
-            files
-        );
-        if (updateCompanyResult) {
-            return res.send(updateCompanyResult);
+        try {
+            const companyPortfolio: UpdateCompanyPortfolioDto = req.body;
+            const { id } = req.params;
+            const { files } = req;
+            const updateCompanyResult = await this.companiesService.updateCompanyUpdatePortfolio(
+                id,
+                companyPortfolio,
+                files
+            );
+            if (updateCompanyResult) {
+                return res.send(updateCompanyResult);
+            }
+            next(new PortfolioOfCompanyNotFoundException(id));
+        } catch (error) {
+            next(error);
         }
-        next(new PortfolioOfCompanyNotFoundException(id));
     }
 
     private updateCompanyDeletePortfolio = async (req: Request, res: Response, next: NextFunction) => {
-        const { id } = req.params;
-        const updateCompanyResult = await this.companiesService.updateCompanyDeletePortfolio(id);
-        if (updateCompanyResult) {
-            return res.send(updateCompanyResult);
+        try {
+            const { id } = req.params;
+            const updateCompanyResult = await this.companiesService.updateCompanyDeletePortfolio(id);
+            if (updateCompanyResult) {
+                return res.send(updateCompanyResult);
+            }
+            next(new PortfolioOfCompanyNotFoundException(id));
+        } catch (error) {
+            next(error);
         }
-        next(new PortfolioOfCompanyNotFoundException(id));
     }
 
     private updateCompanyCreateTeam = async (req: Request, res: Response, next: NextFunction) => {
-        const companyTeam: UpdateCompanyTeamDto = req.body;
-        const { id } = req.params;
-        const updateCompanyResult = await this.companiesService.updateCompanyCreateTeam(
-            id,
-            companyTeam
-        );
-        if (updateCompanyResult) {
-            return res.send(updateCompanyResult);
+        try {
+            const companyTeam: UpdateCompanyTeamDto = req.body;
+            const { id } = req.params;
+            const updateCompanyResult = await this.companiesService.updateCompanyCreateTeam(
+                id,
+                companyTeam
+            );
+            if (updateCompanyResult) {
+                return res.send(updateCompanyResult);
+            }
+            next(new CompanyNotFoundException(id));
+        } catch (error) {
+            next(error);
         }
-        next(new CompanyNotFoundException(id));
     }
 
     private updateCompanyUpdateTeam = async (req: Request, res: Response, next: NextFunction) => {
-        const companyTeam: UpdateCompanyTeamDto = req.body;
-        const { id } = req.params;
-        const updateCompanyResult = await this.companiesService.updateCompanyUpdateTeam(
-            id,
-            companyTeam
-        );
-        if (updateCompanyResult) {
-            return res.send(updateCompanyResult);
+        try {
+            const companyTeam: UpdateCompanyTeamDto = req.body;
+            const { id } = req.params;
+            const updateCompanyResult = await this.companiesService.updateCompanyUpdateTeam(
+                id,
+                companyTeam
+            );
+            if (updateCompanyResult) {
+                return res.send(updateCompanyResult);
+            }
+            next(new TeamOfTeamNotFoundException(id));
+        } catch (error) {
+            next(error);
         }
-        next(new TeamOfTeamNotFoundException(id));
     }
 
     private updateCompanyDeleteTeam = async (req: Request, res: Response, next: NextFunction) => {
-        const { id } = req.params;
-        const updateCompanyResult = await this.companiesService.updateCompanyDeleteTeam(
-            id
-        );
-        if (updateCompanyResult) {
-            return res.send(updateCompanyResult);
+        try {
+            const { id } = req.params;
+            const updateCompanyResult = await this.companiesService.updateCompanyDeleteTeam(
+                id
+            );
+            if (updateCompanyResult) {
+                return res.send(updateCompanyResult);
+            }
+            next(new TeamOfTeamNotFoundException(id));
+        } catch (error) {
+            next(error);
         }
-        next(new TeamOfTeamNotFoundException(id));
     }
 
     private publish = async (req: Request, res: Response, next: NextFunction) => {
-        const { id } = req.params;
-        const publishCompanyResult = await this.companiesService.publish(id);
-        if (publishCompanyResult) {
-            return res.send(publishCompanyResult);
+        try {
+            const { id } = req.params;
+            const publishCompanyResult = await this.companiesService.publish(id);
+            if (publishCompanyResult) {
+                return res.send(publishCompanyResult);
+            }
+            next(new CompanyNotFoundException(id));
+        } catch (error) {
+            next(error);
         }
-        next(new CompanyNotFoundException(id));
     }
 
     private publishCancel = async (req: Request, res: Response, next: NextFunction) => {
-        const { id } = req.params;
-        const publishCancelCompanyResult = await this.companiesService.publishCancel(id);
-        if (publishCancelCompanyResult) {
-            return res.send(publishCancelCompanyResult);
+        try {
+            const { id } = req.params;
+            const publishCancelCompanyResult = await this.companiesService.publishCancel(id);
+            if (publishCancelCompanyResult) {
+                return res.send(publishCancelCompanyResult);
+            }
+            next(new CompanyNotFoundException(id));
+        } catch (error) {
+            next(error);
         }
-        next(new CompanyNotFoundException(id));
     }
 
-    private getAllCompaniesOfUser = async (req: Request, res: Response) => {
-        const userId = (req as RequestWithUser).user.id;
-        const companies = await this.companiesService.getAllCompaniesOfUser(userId);
-        return res.send(companies);
+    private getAllCompaniesOfUser = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const userId = (req as RequestWithUser).user.id;
+            const companies = await this.companiesService.getAllCompaniesOfUser(userId);
+            return res.send(companies);
+        } catch (error) {
+            next(error);
+        }
     }
 }

@@ -49,113 +49,157 @@ export class OrdersController {
     }
 
     private findOrderById = async (req: Request, res: Response, next: NextFunction) => {
-        const { id } = req.params;
-        const order = await this.ordersService.findOrderById(id);
-        if (order) {
-            return res.send(order);
+        try {
+            const { id } = req.params;
+            const order = await this.ordersService.findOrderById(id);
+            if (order) {
+                return res.send(order);
+            }
+            next(new OrderNotFoundException(id));
+        } catch (error) {
+            next(error);
         }
-        next(new OrderNotFoundException(id));
     }
 
-    private findAllOrders = async (req: Request, res: Response) => {
-        const { query } = req;
-        const orders = await this.ordersService.findAllOrders(query);
-        res.send(orders);
+    private findAllOrders = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const { query } = req;
+            const orders = await this.ordersService.findAllOrders(query);
+            res.send(orders);
+        } catch (error) {
+            next(error);
+        }
     }
 
-    private createOrder = async (req: Request, res: Response) => {
-        const orderData: CreateOrderDto = req.body;
-        const newOrderResult = await this.ordersService.createOrder(
-            orderData,
-            (req as RequestWithUser).user
-        );
-        res.send(newOrderResult);
+    private createOrder = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const orderData: CreateOrderDto = req.body;
+            const newOrderResult = await this.ordersService.createOrder(
+                orderData,
+                (req as RequestWithUser).user
+            );
+            res.send(newOrderResult);
+        } catch (error) {
+            next(error);
+        }
     }
 
     private deleteOrder = async (req: Request, res: Response, next: NextFunction) => {
-        const { id } = req.params;
-        const deleteOrderResult = await this.ordersService.deleteOrder(id);
-        if (deleteOrderResult) {
-            return res.send(deleteOrderResult);
+        try {
+            const { id } = req.params;
+            const deleteOrderResult = await this.ordersService.deleteOrder(id);
+            if (deleteOrderResult) {
+                return res.send(deleteOrderResult);
+            }
+            next(new OrderNotFoundException(id));
+        } catch (error) {
+            next(error);
         }
-        next(new OrderNotFoundException(id));
     }
 
     private updateOrder = async (req: Request, res: Response, next: NextFunction) => {
-        const orderData: UpdateOrderDto = req.body;
-        const { id } = req.params;
-        const updateOrderResult = await this.ordersService.updateOrder(
-            id,
-            orderData
-        );
-        if (updateOrderResult) {
-            return res.send(updateOrderResult);
+        try {
+            const orderData: UpdateOrderDto = req.body;
+            const { id } = req.params;
+            const updateOrderResult = await this.ordersService.updateOrder(
+                id,
+                orderData
+            );
+            if (updateOrderResult) {
+                return res.send(updateOrderResult);
+            }
+            next(new OrderNotFoundException(id));
+        } catch (error) {
+            next(error);
         }
-        next(new OrderNotFoundException(id));
     }
 
     private updateProject = async (req: Request, res: Response, next: NextFunction) => {
-        const orderData: UpdateProjectDto = req.body;
-        const { id } = req.params;
-        const { file } = req;
-        const updateOrderResult = await this.ordersService.updateProject(
-            id,
-            orderData,
-            file?.path
-        );
-        if (updateOrderResult) {
-            return res.send(updateOrderResult);
+        try {
+            const orderData: UpdateProjectDto = req.body;
+            const { id } = req.params;
+            const { file } = req;
+            const updateOrderResult = await this.ordersService.updateProject(
+                id,
+                orderData,
+                file?.path
+            );
+            if (updateOrderResult) {
+                return res.send(updateOrderResult);
+            }
+            next(new OrderNotFoundException(id));
+        } catch (error) {
+            next(error);
         }
-        next(new OrderNotFoundException(id));
     }
 
     private updateRequirements = async (req: Request, res: Response, next: NextFunction) => {
-        const orderData: UpdateRequirementsDto = req.body;
-        const { id } = req.params;
-        const updateOrderResult = await this.ordersService.updateRequirements(
-            id,
-            orderData
-        );
-        if (updateOrderResult) {
-            return res.send(updateOrderResult);
+        try {
+            const orderData: UpdateRequirementsDto = req.body;
+            const { id } = req.params;
+            const updateOrderResult = await this.ordersService.updateRequirements(
+                id,
+                orderData
+            );
+            if (updateOrderResult) {
+                return res.send(updateOrderResult);
+            }
+            next(new OrderNotFoundException(id));
+        } catch (error) {
+            next(error);
         }
-        next(new OrderNotFoundException(id));
     }
 
     private updateContacts = async (req: Request, res: Response, next: NextFunction) => {
-        const orderData: UpdateContactsDto = req.body;
-        const { id } = req.params;
-        const updateOrderResult = await this.ordersService.updateContacts(
-            id,
-            orderData
-        );
-        if (updateOrderResult) {
-            return res.send(updateOrderResult);
+        try {
+            const orderData: UpdateContactsDto = req.body;
+            const { id } = req.params;
+            const updateOrderResult = await this.ordersService.updateContacts(
+                id,
+                orderData
+            );
+            if (updateOrderResult) {
+                return res.send(updateOrderResult);
+            }
+            next(new OrderNotFoundException(id));
+        } catch (error) {
+            next(error);
         }
-        next(new OrderNotFoundException(id));
     }
 
     private publish = async (req: Request, res: Response, next: NextFunction) => {
-        const { id } = req.params;
-        const publishOrderResult = await this.ordersService.publish(id);
-        if (publishOrderResult) {
-            return res.send(publishOrderResult);
+        try {
+            const { id } = req.params;
+            const publishOrderResult = await this.ordersService.publish(id);
+            if (publishOrderResult) {
+                return res.send(publishOrderResult);
+            }
+            next(new OrderNotFoundException(id));
+        } catch (error) {
+            next(error);
         }
-        next(new OrderNotFoundException(id));
     }
 
     private publishCancel = async (req: Request, res: Response, next: NextFunction) => {
-        const { id } = req.params;
-        const publishCancelOrderResult = await this.ordersService.publishCancel(id);
-        if (publishCancelOrderResult) {
-            return res.send(publishCancelOrderResult);
+        try {
+            const { id } = req.params;
+            const publishCancelOrderResult = await this.ordersService.publishCancel(id);
+            if (publishCancelOrderResult) {
+                return res.send(publishCancelOrderResult);
+            }
+            next(new OrderNotFoundException(id));
+        } catch (error) {
+            next(error);
         }
-        next(new OrderNotFoundException(id));
     }
 
-    private getAllOrdersOfUser = async (req: Request, res: Response) => {
-        const userId = (req as RequestWithUser).user.id;
-        const orders = await this.ordersService.getAllOrdersOfUser(userId);
-        return res.send(orders);
+    private getAllOrdersOfUser = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const userId = (req as RequestWithUser).user.id;
+            const orders = await this.ordersService.getAllOrdersOfUser(userId);
+            return res.send(orders);
+        } catch (error) {
+            next(error);
+        }
     }
 }

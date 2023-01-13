@@ -27,47 +27,67 @@ export class SkillsController {
     }
 
     private findSkillById = async (req: Request, res: Response, next: NextFunction) => {
-        const { id } = req.params;
-        const skill = await this.skillsService.findSkillById(id);
-        if (skill) {
-            return res.send(skill);
+        try {
+            const { id } = req.params;
+            const skill = await this.skillsService.findSkillById(id);
+            if (skill) {
+                return res.send(skill);
+            }
+            next(new SkillNotFoundException(id));
+        } catch (error) {
+            next(error);
         }
-        next(new SkillNotFoundException(id));
     }
 
-    private findAllSkills = async (req: Request, res: Response) => {
-        const skills = await this.skillsService.findAllSkills();
-        res.send(skills);
+    private findAllSkills = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const skills = await this.skillsService.findAllSkills();
+            res.send(skills);
+        } catch (error) {
+            next(error);
+        }
     }
 
-    private createSkill = async (req: Request, res: Response) => {
-        const skillData: CreateSkillDto = req.body;
-        const newSkillResult = await this.skillsService.createSkill(
-            skillData,
-            (req as RequestWithUser).user
-        );
-        res.send(newSkillResult);
+    private createSkill = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const skillData: CreateSkillDto = req.body;
+            const newSkillResult = await this.skillsService.createSkill(
+                skillData,
+                (req as RequestWithUser).user
+            );
+            res.send(newSkillResult);
+        } catch (error) {
+            next(error);
+        }
     }
 
     private deleteSkill = async (req: Request, res: Response, next: NextFunction) => {
-        const { id } = req.params;
-        const deleteSkillResult = await this.skillsService.deleteSkill(id);
-        if (deleteSkillResult) {
-            return res.send(deleteSkillResult);
+        try {
+            const { id } = req.params;
+            const deleteSkillResult = await this.skillsService.deleteSkill(id);
+            if (deleteSkillResult) {
+                return res.send(deleteSkillResult);
+            }
+            next(new SkillNotFoundException(id));
+        } catch (error) {
+            next(error);
         }
-        next(new SkillNotFoundException(id));
     }
 
     private updateSkill = async (req: Request, res: Response, next: NextFunction) => {
-        const skillData: UpdateSkillDto = req.body;
-        const { id } = req.params;
-        const updateSkillResult = await this.skillsService.updateSkill(
-            id,
-            skillData
-        );
-        if (updateSkillResult) {
-            return res.send(updateSkillResult);
+        try {
+            const skillData: UpdateSkillDto = req.body;
+            const { id } = req.params;
+            const updateSkillResult = await this.skillsService.updateSkill(
+                id,
+                skillData
+            );
+            if (updateSkillResult) {
+                return res.send(updateSkillResult);
+            }
+            next(new SkillNotFoundException(id));
+        } catch (error) {
+            next(error);
         }
-        next(new SkillNotFoundException(id));
     }
 }

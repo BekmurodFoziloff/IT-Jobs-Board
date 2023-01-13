@@ -27,47 +27,67 @@ export class EmploymentTypesController {
     }
 
     private findEmploymentTypeById = async (req: Request, res: Response, next: NextFunction) => {
-        const { id } = req.params;
-        const employmentType = await this.employmentTypesService.findEmploymentTypeById(id);
-        if (employmentType) {
-            return res.send(employmentType);
+        try {
+            const { id } = req.params;
+            const employmentType = await this.employmentTypesService.findEmploymentTypeById(id);
+            if (employmentType) {
+                return res.send(employmentType);
+            }
+            next(new EmploymentTypeNotFoundException(id));
+        } catch (error) {
+            next(error);
         }
-        next(new EmploymentTypeNotFoundException(id));
     }
 
-    private findAllEmploymentTypes = async (req: Request, res: Response) => {
-        const employmentTypes = await this.employmentTypesService.findAllEmploymentTypes();
-        res.send(employmentTypes);
+    private findAllEmploymentTypes = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const employmentTypes = await this.employmentTypesService.findAllEmploymentTypes();
+            res.send(employmentTypes);
+        } catch (error) {
+            next(error);
+        }
     }
 
-    private createEmploymentType = async (req: Request, res: Response) => {
-        const employmentTypeData: CreateEmploymentTypeDto = req.body;
-        const newEmploymentTypeResult = await this.employmentTypesService.createEmploymentType(
-            employmentTypeData,
-            (req as RequestWithUser).user
-        );
-        res.send(newEmploymentTypeResult);
+    private createEmploymentType = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const employmentTypeData: CreateEmploymentTypeDto = req.body;
+            const newEmploymentTypeResult = await this.employmentTypesService.createEmploymentType(
+                employmentTypeData,
+                (req as RequestWithUser).user
+            );
+            res.send(newEmploymentTypeResult);
+        } catch (error) {
+            next(error);
+        }
     }
 
     private deleteEmploymentType = async (req: Request, res: Response, next: NextFunction) => {
-        const { id } = req.params;
-        const deleteEmploymentTypeResult = await this.employmentTypesService.deleteEmploymentType(id);
-        if (deleteEmploymentTypeResult) {
-            return res.send(deleteEmploymentTypeResult);
+        try {
+            const { id } = req.params;
+            const deleteEmploymentTypeResult = await this.employmentTypesService.deleteEmploymentType(id);
+            if (deleteEmploymentTypeResult) {
+                return res.send(deleteEmploymentTypeResult);
+            }
+            next(new EmploymentTypeNotFoundException(id));
+        } catch (error) {
+            next(error);
         }
-        next(new EmploymentTypeNotFoundException(id));
     }
 
     private updateEmploymentType = async (req: Request, res: Response, next: NextFunction) => {
-        const employmentTypeData: UpdateEmploymentTypeDto = req.body;
-        const { id } = req.params;
-        const updateEmploymentTypeResult = await this.employmentTypesService.updateEmploymentType(
-            id,
-            employmentTypeData
-        );
-        if (updateEmploymentTypeResult) {
-            return res.send(updateEmploymentTypeResult);
+        try {
+            const employmentTypeData: UpdateEmploymentTypeDto = req.body;
+            const { id } = req.params;
+            const updateEmploymentTypeResult = await this.employmentTypesService.updateEmploymentType(
+                id,
+                employmentTypeData
+            );
+            if (updateEmploymentTypeResult) {
+                return res.send(updateEmploymentTypeResult);
+            }
+            next(new EmploymentTypeNotFoundException(id));
+        } catch (error) {
+            next(error);
         }
-        next(new EmploymentTypeNotFoundException(id));
     }
 }

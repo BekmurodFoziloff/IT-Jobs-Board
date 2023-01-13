@@ -27,47 +27,67 @@ export class RegionsController {
     }
 
     private findRegionById = async (req: Request, res: Response, next: NextFunction) => {
-        const { id } = req.params;
-        const region = await this.regionsService.findRegionById(id);
-        if (region) {
-            return res.send(region);
+        try {
+            const { id } = req.params;
+            const region = await this.regionsService.findRegionById(id);
+            if (region) {
+                return res.send(region);
+            }
+            next(new RegionNotFoundException(id));
+        } catch (error) {
+            next(error);
         }
-        next(new RegionNotFoundException(id));
     }
 
-    private findAllRegions = async (req: Request, res: Response) => {
-        const regions = await this.regionsService.findAllRegions();
-        res.send(regions);
+    private findAllRegions = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const regions = await this.regionsService.findAllRegions();
+            res.send(regions);
+        } catch (error) {
+            next(error);
+        }
     }
 
-    private createRegion = async (req: Request, res: Response) => {
-        const regionData: CreateRegionDto = req.body;
-        const newRegionResult = await this.regionsService.createRegion(
-            regionData,
-            (req as RequestWithUser).user
-        );
-        res.send(newRegionResult);
+    private createRegion = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const regionData: CreateRegionDto = req.body;
+            const newRegionResult = await this.regionsService.createRegion(
+                regionData,
+                (req as RequestWithUser).user
+            );
+            res.send(newRegionResult);
+        } catch (error) {
+            next(error);
+        }
     }
 
     private deleteRegion = async (req: Request, res: Response, next: NextFunction) => {
-        const { id } = req.params;
-        const deleteRegionResult = await this.regionsService.deleteRegion(id);
-        if (deleteRegionResult) {
-            return res.send(deleteRegionResult);
+        try {
+            const { id } = req.params;
+            const deleteRegionResult = await this.regionsService.deleteRegion(id);
+            if (deleteRegionResult) {
+                return res.send(deleteRegionResult);
+            }
+            next(new RegionNotFoundException(id));
+        } catch (error) {
+            next(error);
         }
-        next(new RegionNotFoundException(id));
     }
 
     private updateRegion = async (req: Request, res: Response, next: NextFunction) => {
-        const regionData: UpdateRegionDto = req.body;
-        const { id } = req.params;
-        const updateRegionResult = await this.regionsService.updateRegion(
-            id,
-            regionData
-        );
-        if (updateRegionResult) {
-            return res.send(updateRegionResult);
+        try {
+            const regionData: UpdateRegionDto = req.body;
+            const { id } = req.params;
+            const updateRegionResult = await this.regionsService.updateRegion(
+                id,
+                regionData
+            );
+            if (updateRegionResult) {
+                return res.send(updateRegionResult);
+            }
+            next(new RegionNotFoundException(id));
+        } catch (error) {
+            next(error);
         }
-        next(new RegionNotFoundException(id));
     }
 }

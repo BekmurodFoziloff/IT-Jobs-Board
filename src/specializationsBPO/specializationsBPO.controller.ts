@@ -27,47 +27,67 @@ export class SpecializationsBPOController {
     }
 
     private findSpecializationBPOById = async (req: Request, res: Response, next: NextFunction) => {
-        const { id } = req.params;
-        const specializationBPO = await this.specializationsBPOService.findSpecializationBPOById(id);
-        if (specializationBPO) {
-            return res.send(specializationBPO);
+        try {
+            const { id } = req.params;
+            const specializationBPO = await this.specializationsBPOService.findSpecializationBPOById(id);
+            if (specializationBPO) {
+                return res.send(specializationBPO);
+            }
+            next(new SpecializationBPONotFoundException(id));
+        } catch (error) {
+            next(error);
         }
-        next(new SpecializationBPONotFoundException(id));
     }
 
-    private findAllSpecializationsBPO = async (req: Request, res: Response) => {
-        const specializationsBPO = await this.specializationsBPOService.findAllSpecializationsBPO();
-        res.send(specializationsBPO);
+    private findAllSpecializationsBPO = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const specializationsBPO = await this.specializationsBPOService.findAllSpecializationsBPO();
+            res.send(specializationsBPO);
+        } catch (error) {
+            next(error);
+        }
     }
 
-    private createSpecializationBPO = async (req: Request, res: Response) => {
-        const specializationBPOData: CreateSpecializationBPODto = req.body;
-        const newSpecializationBPOResult = await this.specializationsBPOService.createSpecializationBPO(
-            specializationBPOData,
-            (req as RequestWithUser).user
-        );
-        res.send(newSpecializationBPOResult);
+    private createSpecializationBPO = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const specializationBPOData: CreateSpecializationBPODto = req.body;
+            const newSpecializationBPOResult = await this.specializationsBPOService.createSpecializationBPO(
+                specializationBPOData,
+                (req as RequestWithUser).user
+            );
+            res.send(newSpecializationBPOResult);
+        } catch (error) {
+            next(error);
+        }
     }
 
     private deleteSpecializationBPO = async (req: Request, res: Response, next: NextFunction) => {
-        const { id } = req.params;
-        const deleteSpecializationBPOResult = await this.specializationsBPOService.deleteSpecializationBPO(id);
-        if (deleteSpecializationBPOResult) {
-            return res.send(deleteSpecializationBPOResult);
+        try {
+            const { id } = req.params;
+            const deleteSpecializationBPOResult = await this.specializationsBPOService.deleteSpecializationBPO(id);
+            if (deleteSpecializationBPOResult) {
+                return res.send(deleteSpecializationBPOResult);
+            }
+            next(new SpecializationBPONotFoundException(id));
+        } catch (error) {
+            next(error);
         }
-        next(new SpecializationBPONotFoundException(id));
     }
 
     private updateSpecializationBPO = async (req: Request, res: Response, next: NextFunction) => {
-        const specializationBPOData: UpdateSpecializationBPODto = req.body;
-        const { id } = req.params;
-        const updateSpecializationBPOResult = await this.specializationsBPOService.updateSpecializationBPO(
-            id,
-            specializationBPOData
-        );
-        if (updateSpecializationBPOResult) {
-            return res.send(updateSpecializationBPOResult);
+        try {
+            const specializationBPOData: UpdateSpecializationBPODto = req.body;
+            const { id } = req.params;
+            const updateSpecializationBPOResult = await this.specializationsBPOService.updateSpecializationBPO(
+                id,
+                specializationBPOData
+            );
+            if (updateSpecializationBPOResult) {
+                return res.send(updateSpecializationBPOResult);
+            }
+            next(new SpecializationBPONotFoundException(id));
+        } catch (error) {
+            next(error);
         }
-        next(new SpecializationBPONotFoundException(id));
     }
 }

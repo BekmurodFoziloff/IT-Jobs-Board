@@ -27,47 +27,67 @@ export class LegalFormsController {
     }
 
     private findLegalFormById = async (req: Request, res: Response, next: NextFunction) => {
-        const { id } = req.params;
-        const legalForm = await this.legalFormsService.findLegalFormById(id);
-        if (legalForm) {
-            return res.send(legalForm);
+        try {
+            const { id } = req.params;
+            const legalForm = await this.legalFormsService.findLegalFormById(id);
+            if (legalForm) {
+                return res.send(legalForm);
+            }
+            next(new LegalFormNotFoundException(id));
+        } catch (error) {
+            next(error);
         }
-        next(new LegalFormNotFoundException(id));
     }
 
-    private findAllLegalForms = async (req: Request, res: Response) => {
-        const legalForms = await this.legalFormsService.findAllLegalForms();
-        res.send(legalForms);
+    private findAllLegalForms = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const legalForms = await this.legalFormsService.findAllLegalForms();
+            res.send(legalForms);
+        } catch (error) {
+            next(error);
+        }
     }
 
-    private createLegalForm = async (req: Request, res: Response) => {
-        const legalFormData: CreateLegalFormDto = req.body;
-        const newLegalFormResult = await this.legalFormsService.createLegalForm(
-            legalFormData,
-            (req as RequestWithUser).user
-        );
-        res.send(newLegalFormResult);
+    private createLegalForm = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const legalFormData: CreateLegalFormDto = req.body;
+            const newLegalFormResult = await this.legalFormsService.createLegalForm(
+                legalFormData,
+                (req as RequestWithUser).user
+            );
+            res.send(newLegalFormResult);
+        } catch (error) {
+            next(error);
+        }
     }
 
     private deleteLegalForm = async (req: Request, res: Response, next: NextFunction) => {
-        const { id } = req.params;
-        const deleteLegalFormResult = await this.legalFormsService.deleteLegalForm(id);
-        if (deleteLegalFormResult) {
-            return res.send(deleteLegalFormResult);
+        try {
+            const { id } = req.params;
+            const deleteLegalFormResult = await this.legalFormsService.deleteLegalForm(id);
+            if (deleteLegalFormResult) {
+                return res.send(deleteLegalFormResult);
+            }
+            next(new LegalFormNotFoundException(id));
+        } catch (error) {
+            next(error);
         }
-        next(new LegalFormNotFoundException(id));
     }
 
     private updateLegalForm = async (req: Request, res: Response, next: NextFunction) => {
-        const legalFormData: UpdateLegalFormDto = req.body;
-        const { id } = req.params;
-        const updateLegalFormResult = await this.legalFormsService.updateLegalForm(
-            id,
-            legalFormData
-        );
-        if (updateLegalFormResult) {
-            return res.send(updateLegalFormResult);
+        try {
+            const legalFormData: UpdateLegalFormDto = req.body;
+            const { id } = req.params;
+            const updateLegalFormResult = await this.legalFormsService.updateLegalForm(
+                id,
+                legalFormData
+            );
+            if (updateLegalFormResult) {
+                return res.send(updateLegalFormResult);
+            }
+            next(new LegalFormNotFoundException(id));
+        } catch (error) {
+            next(error);
         }
-        next(new LegalFormNotFoundException(id));
     }
 }

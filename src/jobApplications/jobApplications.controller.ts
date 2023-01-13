@@ -39,33 +39,45 @@ export class JobApplicationsController {
             const jobApplicationData: CreateJobApplicationDto = req.body;
             const newJobApplicationResult = await this.jobApplicationsService.createJobApplication(
                 jobApplicationData,
-                job.owner, 
+                job.owner,
                 file?.path
-                );
+            );
             return res.send(newJobApplicationResult);
         }
         next(new JobNotFoundException(id));
     }
 
-    private getAllJobsApllicationsOfUser = async (req: Request, res: Response) => {
-        const jobOwnerId = (req as RequestWithUser).user.id;
-        const { query } = req;
-        const jobApplications = await this.jobApplicationsService.getAllJobApllicationsOfUser(jobOwnerId, query);
-        return res.send(jobApplications);
+    private getAllJobsApllicationsOfUser = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const jobOwnerId = (req as RequestWithUser).user.id;
+            const { query } = req;
+            const jobApplications = await this.jobApplicationsService.getAllJobApllicationsOfUser(jobOwnerId, query);
+            return res.send(jobApplications);
+        } catch (error) {
+            next(error);
+        }
     }
 
     private deleteJobApplication = async (req: Request, res: Response, next: NextFunction) => {
-        const { id } = req.params;
-        const deleteJobApplicationResult = await this.jobApplicationsService.deleteJobApplication(id);
-        if (deleteJobApplicationResult) {
-            return res.send(deleteJobApplicationResult);
+        try {
+            const { id } = req.params;
+            const deleteJobApplicationResult = await this.jobApplicationsService.deleteJobApplication(id);
+            if (deleteJobApplicationResult) {
+                return res.send(deleteJobApplicationResult);
+            }
+            next(new JobApplicationNotFoundException(id));
+        } catch (error) {
+            next(error);
         }
-        next(new JobApplicationNotFoundException(id));
     }
 
-    private deleteAllJobsApllications = async (req: Request, res: Response) => {
-        const jobOwnerId = (req as RequestWithUser).user.id;
-        const deleteAllJobApplicationsResult = await this.jobApplicationsService.deleteAllJobApplications(jobOwnerId);
-        return res.send(deleteAllJobApplicationsResult);
+    private deleteAllJobsApllications = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const jobOwnerId = (req as RequestWithUser).user.id;
+            const deleteAllJobApplicationsResult = await this.jobApplicationsService.deleteAllJobApplications(jobOwnerId);
+            return res.send(deleteAllJobApplicationsResult);
+        } catch (error) {
+            next(error);
+        }
     }
 }
