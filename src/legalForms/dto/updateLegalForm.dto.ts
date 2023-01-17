@@ -1,16 +1,16 @@
 import { IsString, IsNotEmpty, IsOptional } from 'class-validator';
 import { Trim } from 'class-sanitizer';
-import { IsUniqueName } from '../../utils/validators/IsUniqueNameLegalForm.validator';
+import { IsUniqueName } from '../../validators/IsUniqueNameLegalForm.validator';
 
 export class UpdateLegalFormDto {
-    @IsString()
-    @IsOptional()
-    id: string;
+  @IsString()
+  @IsOptional()
+  id: string;
 
-    @IsOptional()
-    @IsString()
-    @Trim()
-    @IsNotEmpty()
-    @IsUniqueName()
-    name: string;
+  @IsOptional()
+  @IsString()
+  @Trim()
+  @IsNotEmpty()
+  @IsUniqueName()
+  name: string;
 }

@@ -1,31 +1,6 @@
-import { Schema, model } from 'mongoose';
+import { model } from 'mongoose';
 import { Specialization } from './specialization.interface';
-
-const SpecializationSchema = new Schema(
-    {
-        name: {
-            type: String,
-            unique: true,
-            required: true
-        },
-        owner: {
-            type: Schema.Types.ObjectId,
-            ref: 'User',
-            required: true
-        },
-        specializationCategory: {
-            type: Schema.Types.ObjectId,
-            ref: 'SpecializationCategory',
-            required: true
-        },
-        createdAt: {
-            type: String
-        },
-        updatedAt: {
-            type: String
-        }
-    }
-);
+import SpecializationSchema from './specialization.schema';
 
 const SpecializationModel = model<Specialization>('Specialization', SpecializationSchema);
 

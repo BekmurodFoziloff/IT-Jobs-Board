@@ -1,26 +1,6 @@
-import { Schema, model } from 'mongoose';
+import { model } from 'mongoose';
 import { EmploymentType } from './employmentType.interface';
-
-const EmploymentTypeSchema = new Schema(
-    {
-        name: {
-            type: String,
-            unique: true,
-            required: true
-        },
-        owner: {
-            type: Schema.Types.ObjectId,
-            ref: 'User',
-            required: true
-        },
-        createdAt: {
-            type: String
-        },
-        updatedAt: {
-            type: String
-        }
-    }
-);
+import EmploymentTypeSchema from './employmentType.schema';
 
 const EmploymentTypeModel = model<EmploymentType>('EmploymentType', EmploymentTypeSchema);
 

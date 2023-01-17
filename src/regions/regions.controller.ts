@@ -9,85 +9,81 @@ import RequestWithUser from '../interfaces/requestWithUser.interface';
 import adminAuthMiddleware from '../middlewares/adminAuth.middleware';
 
 export class RegionsController {
-    public path = '/region';
-    public router = Router();
+  public path = '/region';
+  public router = Router();
 
-    constructor(private regionsService: RegionsService) {
-        this.setRoutes();
-    }
+  constructor(private regionsService: RegionsService) {
+    this.setRoutes();
+  }
 
-    public setRoutes() {
-        this.router.route(this.path)
-            .get(this.findAllRegions)
-            .post(authMiddleware, adminAuthMiddleware, dtoValidationMiddleware(CreateRegionDto), this.createRegion);
-        this.router.route(`${this.path}/:id`)
-            .get(this.findRegionById)
-            .delete(authMiddleware, adminAuthMiddleware, this.deleteRegion)
-            .put(authMiddleware, adminAuthMiddleware, dtoValidationMiddleware(UpdateRegionDto, true), this.updateRegion);
-    }
+  public setRoutes() {
+    this.router.route(`${this.path}`).get(authMiddleware, this.findAllRegions);
+    this.router
+      .route(`${this.path}/new`)
+      .post(authMiddleware, adminAuthMiddleware, dtoValidationMiddleware(CreateRegionDto), this.createRegion);
+    this.router.route(`${this.path}/:id`).get(authMiddleware, this.findRegionById);
+    this.router
+      .route(`${this.path}/:id/edit`)
+      .put(authMiddleware, adminAuthMiddleware, dtoValidationMiddleware(UpdateRegionDto, true), this.updateRegion);
+    this.router.route(`${this.path}/:id/delete`).delete(authMiddleware, adminAuthMiddleware, this.deleteRegion);
+  }
 
-    private findRegionById = async (req: Request, res: Response, next: NextFunction) => {
-        try {
-            const { id } = req.params;
-            const region = await this.regionsService.findRegionById(id);
-            if (region) {
-                return res.send(region);
-            }
-            next(new RegionNotFoundException(id));
-        } catch (error) {
-            next(error);
-        }
+  private findRegionById = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { id } = req.params;
+      const region = await this.regionsService.findRegionById(id);
+      if (region) {
+        return res.status(200).json(region);
+      }
+      next(new RegionNotFoundException(id));
+    } catch (error) {
+      return res.status(error.status || 500).json(error.message);
     }
+  };
 
-    private findAllRegions = async (req: Request, res: Response, next: NextFunction) => {
-        try {
-            const regions = await this.regionsService.findAllRegions();
-            res.send(regions);
-        } catch (error) {
-            next(error);
-        }
+  private findAllRegions = async (req: Request, res: Response) => {
+    try {
+      const regions = await this.regionsService.findAllRegions();
+      return res.status(200).json(regions);
+    } catch (error) {
+      return res.status(error.status || 500).json(error.message);
     }
+  };
 
-    private createRegion = async (req: Request, res: Response, next: NextFunction) => {
-        try {
-            const regionData: CreateRegionDto = req.body;
-            const newRegionResult = await this.regionsService.createRegion(
-                regionData,
-                (req as RequestWithUser).user
-            );
-            res.send(newRegionResult);
-        } catch (error) {
-            next(error);
-        }
+  private createRegion = async (req: Request, res: Response) => {
+    try {
+      const regionData: CreateRegionDto = req.body;
+      const newRegion = await this.regionsService.createRegion(regionData, (req as RequestWithUser).user);
+      return res.status(201).json(newRegion);
+    } catch (error) {
+      return res.status(error.status || 500).json(error.message);
     }
+  };
 
-    private deleteRegion = async (req: Request, res: Response, next: NextFunction) => {
-        try {
-            const { id } = req.params;
-            const deleteRegionResult = await this.regionsService.deleteRegion(id);
-            if (deleteRegionResult) {
-                return res.send(deleteRegionResult);
-            }
-            next(new RegionNotFoundException(id));
-        } catch (error) {
-            next(error);
-        }
+  private updateRegion = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const regionData: UpdateRegionDto = req.body;
+      const { id } = req.params;
+      const updateRegion = await this.regionsService.updateRegion(id, regionData);
+      if (updateRegion) {
+        return res.status(200).json(regionData);
+      }
+      next(new RegionNotFoundException(id));
+    } catch (error) {
+      return res.status(error.status || 500).json(error.message);
     }
+  };
 
-    private updateRegion = async (req: Request, res: Response, next: NextFunction) => {
-        try {
-            const regionData: UpdateRegionDto = req.body;
-            const { id } = req.params;
-            const updateRegionResult = await this.regionsService.updateRegion(
-                id,
-                regionData
-            );
-            if (updateRegionResult) {
-                return res.send(updateRegionResult);
-            }
-            next(new RegionNotFoundException(id));
-        } catch (error) {
-            next(error);
-        }
+  private deleteRegion = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { id } = req.params;
+      const deleteRegion = await this.regionsService.deleteRegion(id);
+      if (deleteRegion) {
+        return res.status(200).json(deleteRegion);
+      }
+      next(new RegionNotFoundException(id));
+    } catch (error) {
+      return res.status(error.status || 500).json(error.message);
     }
+  };
 }

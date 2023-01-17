@@ -1,1 +1,1 @@
-# IT-Jobs-Board
+# IT-Jobs-Platform

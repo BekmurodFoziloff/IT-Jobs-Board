@@ -2,23 +2,30 @@ import nodemailer from 'nodemailer';
 import smtpTransport from 'nodemailer-smtp-transport';
 import { emailOptions } from '../interfaces/emailOptions.interface';
 
-export const transporter = nodemailer.createTransport(smtpTransport({
+export const transporter = nodemailer.createTransport(
+  smtpTransport({
     host: 'smtp.gmail.com',
     service: 'gmail',
     port: 587,
     secure: false,
     auth: {
-        user: process.env.SMTP_EMAIL as string,
-        pass: process.env.SMTP_PASSWORD as string
+      user: process.env.SMTP_EMAIL as string,
+      pass: process.env.SMTP_PASSWORD as string
     }
-}))
+  })
+);
 
-export const emailConfirm = async (email: string, emailConfirmToken: string, firstName: string, lastName: string): Promise<emailOptions> => {
-    return {
-        from: process.env.SMTP_EMAIL as string,
-        to: email,
-        subject: 'Activate your account at IT Jobs',
-        html: `
+export const emailConfirm = async (
+  email: string,
+  emailConfirmToken: string,
+  firstName: string,
+  lastName: string
+): Promise<emailOptions> => {
+  return {
+    from: process.env.SMTP_EMAIL as string,
+    to: email,
+    subject: 'Activate your account at IT Jobs',
+    html: `
             <h3>Dear ${firstName} ${lastName}!</h3>
             
             <p>To complete your registration at the IT Jobs, please follow this link:</p>
@@ -30,15 +37,20 @@ export const emailConfirm = async (email: string, emailConfirmToken: string, fir
             <h3>Best regards,</h3>
             <h3>IT Jobs</h3>
         `
-    }
-}
+  };
+};
 
-export const resetPassword = async (email: string, resetPasswordConfirmToken: string, firstName: string, lastName: string): Promise<emailOptions> => {
-    return {
-        from: process.env.SMTP_EMAIL as string,
-        to: email,
-        subject: 'Reset your account password at IT Jobs',
-        html: `
+export const resetPassword = async (
+  email: string,
+  resetPasswordConfirmToken: string,
+  firstName: string,
+  lastName: string
+): Promise<emailOptions> => {
+  return {
+    from: process.env.SMTP_EMAIL as string,
+    to: email,
+    subject: 'Reset your account password at IT Jobs',
+    html: `
             <h3>Dear ${firstName} ${lastName}!</h3>
             
             <p>To reset your password at the IT Jobs, please follow this link:</p>
@@ -50,5 +62,5 @@ export const resetPassword = async (email: string, resetPasswordConfirmToken: st
             <h3>Best regards,</h3>
             <h3>IT Jobs</h3>
         `
-    }
-}
+  };
+};

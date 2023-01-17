@@ -1,26 +1,6 @@
-import { Schema, model } from 'mongoose';
+import { model } from 'mongoose';
 import { Industry } from './industry.interface';
-
-const IndustrySchema = new Schema(
-    {
-        name: {
-            type: String,
-            unique: true,
-            required: true
-        },
-        owner: {
-            type: Schema.Types.ObjectId,
-            ref: 'User',
-            required: true
-        },
-        createdAt: {
-            type: String
-        },
-        updatedAt: {
-            type: String
-        }
-    }
-);
+import IndustrySchema from './industry.schema';
 
 const IndustryModel = model<Industry>('Industry', IndustrySchema);
 

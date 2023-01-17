@@ -1,16 +1,16 @@
 import { IsString, IsNotEmpty, IsOptional } from 'class-validator';
 import { Trim } from 'class-sanitizer';
-import { IsUniqueName } from '../../utils/validators/IsUniqueNameIndustry.validator';
+import { IsUniqueName } from '../../validators/IsUniqueNameIndustry.validator';
 
 export class UpdateIndustryDto {
-    @IsString()
-    @IsOptional()
-    id: string;
+  @IsString()
+  @IsOptional()
+  id: string;
 
-    @IsOptional()
-    @IsString()
-    @Trim()
-    @IsNotEmpty()
-    @IsUniqueName()
-    name: string;
+  @IsOptional()
+  @IsString()
+  @Trim()
+  @IsNotEmpty()
+  @IsUniqueName()
+  name: string;
 }

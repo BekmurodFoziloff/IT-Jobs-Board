@@ -9,85 +9,94 @@ import RequestWithUser from '../interfaces/requestWithUser.interface';
 import adminAuthMiddleware from '../middlewares/adminAuth.middleware';
 
 export class WorkExperiencesController {
-    public path = '/work-experience';
-    public router = Router();
+  public path = '/work/experience';
+  public router = Router();
 
-    constructor(private workExperiencesService: WorkExperiencesService) {
-        this.setRoutes();
-    }
+  constructor(private workExperiencesService: WorkExperiencesService) {
+    this.setRoutes();
+  }
 
-    public setRoutes() {
-        this.router.route(this.path)
-            .get(this.findAllWorkExperiences)
-            .post(authMiddleware, adminAuthMiddleware, dtoValidationMiddleware(CreateWorkExperienceDto), this.createWorkExperience);
-        this.router.route(`${this.path}/:id`)
-            .get(this.findWorkExperienceById)
-            .delete(authMiddleware, adminAuthMiddleware, this.deleteWorkExperience)
-            .put(authMiddleware, adminAuthMiddleware, dtoValidationMiddleware(UpdateWorkExperienceDto, true), this.updateWorkExperience);
-    }
+  public setRoutes() {
+    this.router.route(`${this.path}`).get(authMiddleware, this.findAllWorkExperiences);
+    this.router
+      .route(`${this.path}/new`)
+      .post(
+        authMiddleware,
+        adminAuthMiddleware,
+        dtoValidationMiddleware(CreateWorkExperienceDto),
+        this.createWorkExperience
+      );
+    this.router.route(`${this.path}/:id`).get(authMiddleware, this.findWorkExperienceById);
+    this.router
+      .route(`${this.path}/:id/edit`)
+      .put(
+        authMiddleware,
+        adminAuthMiddleware,
+        dtoValidationMiddleware(UpdateWorkExperienceDto, true),
+        this.updateWorkExperience
+      );
+    this.router.route(`${this.path}/:id/delete`).delete(authMiddleware, adminAuthMiddleware, this.deleteWorkExperience);
+  }
 
-    private findWorkExperienceById = async (req: Request, res: Response, next: NextFunction) => {
-        try {
-            const { id } = req.params;
-            const workExperience = await this.workExperiencesService.findWorkExperienceById(id);
-            if (workExperience) {
-                return res.send(workExperience);
-            }
-            next(new WorkExperienceNotFoundException(id));
-        } catch (error) {
-            next(error);
-        }
+  private findWorkExperienceById = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { id } = req.params;
+      const workExperience = await this.workExperiencesService.findWorkExperienceById(id);
+      if (workExperience) {
+        return res.status(200).json(workExperience);
+      }
+      next(new WorkExperienceNotFoundException(id));
+    } catch (error) {
+      return res.status(error.status || 500).json(error.message);
     }
+  };
 
-    private findAllWorkExperiences = async (req: Request, res: Response, next: NextFunction) => {
-        try {
-            const workExperiences = await this.workExperiencesService.findAllWorkExperiences();
-            res.send(workExperiences);
-        } catch (error) {
-            next(error);
-        }
+  private findAllWorkExperiences = async (req: Request, res: Response) => {
+    try {
+      const workExperiences = await this.workExperiencesService.findAllWorkExperiences();
+      return res.status(200).json(workExperiences);
+    } catch (error) {
+      return res.status(error.status || 500).json(error.message);
     }
+  };
 
-    private createWorkExperience = async (req: Request, res: Response, next: NextFunction) => {
-        try {
-            const workExperienceData: CreateWorkExperienceDto = req.body;
-            const newWorkExperienceResult = await this.workExperiencesService.createWorkExperience(
-                workExperienceData,
-                (req as RequestWithUser).user
-            );
-            res.send(newWorkExperienceResult);
-        } catch (error) {
-            next(error);
-        }
+  private createWorkExperience = async (req: Request, res: Response) => {
+    try {
+      const workExperienceData: CreateWorkExperienceDto = req.body;
+      const newWorkExperience = await this.workExperiencesService.createWorkExperience(
+        workExperienceData,
+        (req as RequestWithUser).user
+      );
+      return res.status(201).json(newWorkExperience);
+    } catch (error) {
+      return res.status(error.status || 500).json(error.message);
     }
+  };
 
-    private deleteWorkExperience = async (req: Request, res: Response, next: NextFunction) => {
-        try {
-            const { id } = req.params;
-            const deleteWorkExperienceResult = await this.workExperiencesService.deleteWorkExperience(id);
-            if (deleteWorkExperienceResult) {
-                return res.send(deleteWorkExperienceResult);
-            }
-            next(new WorkExperienceNotFoundException(id));
-        } catch (error) {
-            next(error);
-        }
+  private updateWorkExperience = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const workExperienceData: UpdateWorkExperienceDto = req.body;
+      const { id } = req.params;
+      const updateWorkExperience = await this.workExperiencesService.updateWorkExperience(id, workExperienceData);
+      if (updateWorkExperience) {
+        return res.status(200).json(updateWorkExperience);
+      }
+      next(new WorkExperienceNotFoundException(id));
+    } catch (error) {
+      return res.status(error.status || 500).json(error.message);
     }
+  };
 
-    private updateWorkExperience = async (req: Request, res: Response, next: NextFunction) => {
-        try {
-            const workExperienceData: UpdateWorkExperienceDto = req.body;
-            const { id } = req.params;
-            const updateWorkExperienceResult = await this.workExperiencesService.updateWorkExperience(
-                id,
-                workExperienceData
-            );
-            if (updateWorkExperienceResult) {
-                return res.send(updateWorkExperienceResult);
-            }
-            next(new WorkExperienceNotFoundException(id));
-        } catch (error) {
-            next(error);
-        }
+  private deleteWorkExperience = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { id } = req.params;
+      const deleteWorkExperience = await this.workExperiencesService.deleteWorkExperience(id);
+      if (deleteWorkExperience) {
+        return res.status(200).json(deleteWorkExperience);
+      }
+      next(new WorkExperienceNotFoundException(id));
+    } catch (error) {
+      return res.status(error.status || 500).json(error.message);
     }
+  };
 }

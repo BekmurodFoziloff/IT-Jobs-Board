@@ -9,85 +9,86 @@ import RequestWithUser from '../interfaces/requestWithUser.interface';
 import adminAuthMiddleware from '../middlewares/adminAuth.middleware';
 
 export class LegalFormsController {
-    public path = '/legal-form';
-    public router = Router();
+  public path = '/legal/form';
+  public router = Router();
 
-    constructor(private legalFormsService: LegalFormsService) {
-        this.setRoutes();
-    }
+  constructor(private legalFormsService: LegalFormsService) {
+    this.setRoutes();
+  }
 
-    public setRoutes() {
-        this.router.route(this.path)
-            .get(this.findAllLegalForms)
-            .post(authMiddleware, adminAuthMiddleware, dtoValidationMiddleware(CreateLegalFormDto), this.createLegalForm);
-        this.router.route(`${this.path}/:id`)
-            .get(this.findLegalFormById)
-            .delete(authMiddleware, adminAuthMiddleware, this.deleteLegalForm)
-            .put(authMiddleware, adminAuthMiddleware, dtoValidationMiddleware(UpdateLegalFormDto, true), this.updateLegalForm);
-    }
+  public setRoutes() {
+    this.router.route(`${this.path}`).get(authMiddleware, this.findAllLegalForms);
+    this.router
+      .route(`${this.path}/new`)
+      .post(authMiddleware, adminAuthMiddleware, dtoValidationMiddleware(CreateLegalFormDto), this.createLegalForm);
+    this.router.route(`${this.path}/:id`).get(authMiddleware, this.findLegalFormById);
+    this.router
+      .route(`${this.path}/:id/edit`)
+      .put(
+        authMiddleware,
+        adminAuthMiddleware,
+        dtoValidationMiddleware(UpdateLegalFormDto, true),
+        this.updateLegalForm
+      );
+    this.router.route(`${this.path}/:id/delete`).delete(authMiddleware, adminAuthMiddleware, this.deleteLegalForm);
+  }
 
-    private findLegalFormById = async (req: Request, res: Response, next: NextFunction) => {
-        try {
-            const { id } = req.params;
-            const legalForm = await this.legalFormsService.findLegalFormById(id);
-            if (legalForm) {
-                return res.send(legalForm);
-            }
-            next(new LegalFormNotFoundException(id));
-        } catch (error) {
-            next(error);
-        }
+  private findLegalFormById = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { id } = req.params;
+      const legalForm = await this.legalFormsService.findLegalFormById(id);
+      if (legalForm) {
+        return res.status(200).json(legalForm);
+      }
+      next(new LegalFormNotFoundException(id));
+    } catch (error) {
+      return res.status(error.status || 500).json(error.message);
     }
+  };
 
-    private findAllLegalForms = async (req: Request, res: Response, next: NextFunction) => {
-        try {
-            const legalForms = await this.legalFormsService.findAllLegalForms();
-            res.send(legalForms);
-        } catch (error) {
-            next(error);
-        }
+  private findAllLegalForms = async (req: Request, res: Response) => {
+    try {
+      const legalForms = await this.legalFormsService.findAllLegalForms();
+      return res.status(200).json(legalForms);
+    } catch (error) {
+      return res.status(error.status || 500).json(error.message);
     }
+  };
 
-    private createLegalForm = async (req: Request, res: Response, next: NextFunction) => {
-        try {
-            const legalFormData: CreateLegalFormDto = req.body;
-            const newLegalFormResult = await this.legalFormsService.createLegalForm(
-                legalFormData,
-                (req as RequestWithUser).user
-            );
-            res.send(newLegalFormResult);
-        } catch (error) {
-            next(error);
-        }
+  private createLegalForm = async (req: Request, res: Response) => {
+    try {
+      const legalFormData: CreateLegalFormDto = req.body;
+      const newLegalForm = await this.legalFormsService.createLegalForm(legalFormData, (req as RequestWithUser).user);
+      return res.status(201).json(newLegalForm);
+    } catch (error) {
+      return res.status(error.status || 500).json(error.message);
     }
+  };
 
-    private deleteLegalForm = async (req: Request, res: Response, next: NextFunction) => {
-        try {
-            const { id } = req.params;
-            const deleteLegalFormResult = await this.legalFormsService.deleteLegalForm(id);
-            if (deleteLegalFormResult) {
-                return res.send(deleteLegalFormResult);
-            }
-            next(new LegalFormNotFoundException(id));
-        } catch (error) {
-            next(error);
-        }
+  private updateLegalForm = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const legalFormData: UpdateLegalFormDto = req.body;
+      const { id } = req.params;
+      const updateLegalForm = await this.legalFormsService.updateLegalForm(id, legalFormData);
+      if (updateLegalForm) {
+        return res.status(200).json(updateLegalForm);
+      }
+      next(new LegalFormNotFoundException(id));
+    } catch (error) {
+      return res.status(error.status || 500).json(error.message);
     }
+  };
 
-    private updateLegalForm = async (req: Request, res: Response, next: NextFunction) => {
-        try {
-            const legalFormData: UpdateLegalFormDto = req.body;
-            const { id } = req.params;
-            const updateLegalFormResult = await this.legalFormsService.updateLegalForm(
-                id,
-                legalFormData
-            );
-            if (updateLegalFormResult) {
-                return res.send(updateLegalFormResult);
-            }
-            next(new LegalFormNotFoundException(id));
-        } catch (error) {
-            next(error);
-        }
+  private deleteLegalForm = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { id } = req.params;
+      const deleteLegalForm = await this.legalFormsService.deleteLegalForm(id);
+      if (deleteLegalForm) {
+        return res.status(200).json(deleteLegalForm);
+      }
+      next(new LegalFormNotFoundException(id));
+    } catch (error) {
+      return res.status(error.status || 500).json(error.message);
     }
+  };
 }

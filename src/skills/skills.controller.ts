@@ -9,85 +9,81 @@ import RequestWithUser from '../interfaces/requestWithUser.interface';
 import adminAuthMiddleware from '../middlewares/adminAuth.middleware';
 
 export class SkillsController {
-    public path = '/skill';
-    public router = Router();
+  public path = '/skill';
+  public router = Router();
 
-    constructor(private skillsService: SkillsService) {
-        this.setRoutes();
-    }
+  constructor(private skillsService: SkillsService) {
+    this.setRoutes();
+  }
 
-    public setRoutes() {
-        this.router.route(this.path)
-            .get(this.findAllSkills)
-            .post(authMiddleware, adminAuthMiddleware, dtoValidationMiddleware(CreateSkillDto), this.createSkill);
-        this.router.route(`${this.path}/:id`)
-            .get(this.findSkillById)
-            .delete(authMiddleware, adminAuthMiddleware, this.deleteSkill)
-            .put(authMiddleware, adminAuthMiddleware, dtoValidationMiddleware(UpdateSkillDto, true), this.updateSkill);
-    }
+  public setRoutes() {
+    this.router.route(`${this.path}`).get(authMiddleware, this.findAllSkills);
+    this.router
+      .route(`${this.path}/new`)
+      .post(authMiddleware, adminAuthMiddleware, dtoValidationMiddleware(CreateSkillDto), this.createSkill);
+    this.router.route(`${this.path}/:id`).get(authMiddleware, this.findSkillById);
+    this.router
+      .route(`${this.path}/:id/edit`)
+      .put(authMiddleware, adminAuthMiddleware, dtoValidationMiddleware(UpdateSkillDto, true), this.updateSkill);
+    this.router.route(`${this.path}/:id/delete`).delete(authMiddleware, adminAuthMiddleware, this.deleteSkill);
+  }
 
-    private findSkillById = async (req: Request, res: Response, next: NextFunction) => {
-        try {
-            const { id } = req.params;
-            const skill = await this.skillsService.findSkillById(id);
-            if (skill) {
-                return res.send(skill);
-            }
-            next(new SkillNotFoundException(id));
-        } catch (error) {
-            next(error);
-        }
+  private findSkillById = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { id } = req.params;
+      const skill = await this.skillsService.findSkillById(id);
+      if (skill) {
+        return res.status(200).json(skill);
+      }
+      next(new SkillNotFoundException(id));
+    } catch (error) {
+      return res.status(error.status || 500).json(error.message);
     }
+  };
 
-    private findAllSkills = async (req: Request, res: Response, next: NextFunction) => {
-        try {
-            const skills = await this.skillsService.findAllSkills();
-            res.send(skills);
-        } catch (error) {
-            next(error);
-        }
+  private findAllSkills = async (req: Request, res: Response) => {
+    try {
+      const skills = await this.skillsService.findAllSkills();
+      return res.status(200).json(skills);
+    } catch (error) {
+      return res.status(error.status || 500).json(error.message);
     }
+  };
 
-    private createSkill = async (req: Request, res: Response, next: NextFunction) => {
-        try {
-            const skillData: CreateSkillDto = req.body;
-            const newSkillResult = await this.skillsService.createSkill(
-                skillData,
-                (req as RequestWithUser).user
-            );
-            res.send(newSkillResult);
-        } catch (error) {
-            next(error);
-        }
+  private createSkill = async (req: Request, res: Response) => {
+    try {
+      const skillData: CreateSkillDto = req.body;
+      const newSkill = await this.skillsService.createSkill(skillData, (req as RequestWithUser).user);
+      return res.status(201).json(newSkill);
+    } catch (error) {
+      return res.status(error.status || 500).json(error.message);
     }
+  };
 
-    private deleteSkill = async (req: Request, res: Response, next: NextFunction) => {
-        try {
-            const { id } = req.params;
-            const deleteSkillResult = await this.skillsService.deleteSkill(id);
-            if (deleteSkillResult) {
-                return res.send(deleteSkillResult);
-            }
-            next(new SkillNotFoundException(id));
-        } catch (error) {
-            next(error);
-        }
+  private updateSkill = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const skillData: UpdateSkillDto = req.body;
+      const { id } = req.params;
+      const updateSkill = await this.skillsService.updateSkill(id, skillData);
+      if (updateSkill) {
+        return res.status(200).json(updateSkill);
+      }
+      next(new SkillNotFoundException(id));
+    } catch (error) {
+      return res.status(error.status || 500).json(error.message);
     }
+  };
 
-    private updateSkill = async (req: Request, res: Response, next: NextFunction) => {
-        try {
-            const skillData: UpdateSkillDto = req.body;
-            const { id } = req.params;
-            const updateSkillResult = await this.skillsService.updateSkill(
-                id,
-                skillData
-            );
-            if (updateSkillResult) {
-                return res.send(updateSkillResult);
-            }
-            next(new SkillNotFoundException(id));
-        } catch (error) {
-            next(error);
-        }
+  private deleteSkill = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { id } = req.params;
+      const deleteSkill = await this.skillsService.deleteSkill(id);
+      if (deleteSkill) {
+        return res.status(200).json(deleteSkill);
+      }
+      next(new SkillNotFoundException(id));
+    } catch (error) {
+      return res.status(error.status || 500).json(error.message);
     }
+  };
 }

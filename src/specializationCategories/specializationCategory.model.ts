@@ -1,27 +1,10 @@
-import { Schema, model } from 'mongoose';
+import { model } from 'mongoose';
 import { SpecializationCategory } from './specializationCategory.interface';
+import SpecializationCategorySchema from './SpecializationCategory.schema';
 
-const SpecializationCategorySchema = new Schema(
-    {
-        name: {
-            type: String,
-            unique: true,
-            required: true
-        },
-        owner: {
-            type: Schema.Types.ObjectId,
-            ref: 'User',
-            required: true
-        },
-        createdAt: {
-            type: String
-        },
-        updatedAt: {
-            type: String
-        }
-    }
+const SpecializationCategoryModel = model<SpecializationCategory>(
+  'SpecializationCategory',
+  SpecializationCategorySchema
 );
-
-const SpecializationCategoryModel = model<SpecializationCategory>('SpecializationCategory', SpecializationCategorySchema);
 
 export default SpecializationCategoryModel;

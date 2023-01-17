@@ -40,101 +40,104 @@ import morganMiddleware from './middlewares/morgan.middleware';
 import errorHandler from './middlewares/errorHandler.middleware';
 
 class App {
-    public app: express.Application;
+  public app: express.Application;
 
-    constructor() {
-        this.app = express();
-        this.setConfig();
-        this.setControllers();
-        this.setMongoConfig();
-        this.setErrorHandlingMiddleware();
-    }
+  constructor() {
+    this.app = express();
+    this.setConfig();
+    this.setControllers();
+    this.setMongoConfig();
+    this.setErrorHandlingMiddleware();
+  }
 
-    private setConfig() {
-        // Allows us to receive requests with data in json format
-        this.app.use(bodyParser.json({ limit: '50mb' }));
-        // Allows us to receive requests with data in x-www-form-urlencoded format
-        this.app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
-        // Enables cookieParser
-        this.app.use(cookieParser());
-        // Enables cors
-        this.app.use(cors());
-        // morgan middleware
-        this.app.use(morganMiddleware);
-    }
+  private setConfig() {
+    // Allows us to receive requests with data in json format
+    this.app.use(bodyParser.json({ limit: '50mb' }));
+    // Allows us to receive requests with data in x-www-form-urlencoded format
+    this.app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
+    // Enables cookieParser
+    this.app.use(cookieParser());
+    // Enables cors
+    this.app.use(cors());
+    // morgan middleware
+    this.app.use(morganMiddleware);
+  }
 
-    private setMongoConfig() {
-        mongoose.Promise = global.Promise;
-        const MONGO_URI = process.env.MONGO_URI as string;
-        mongoose.connect(MONGO_URI)
-            .then(() => {
-                logger.info('Database connected successfully');
-            })
-            .catch((error) => {
-                logger.error(error);
-            });
-        mongoose.set('toJSON', {
-            virtuals: true,
-            transform: (doc: any, converted: any) => {
-                delete converted._id;
-                delete converted.__v;
-            }
-        });
-    }
+  private setMongoConfig() {
+    mongoose.Promise = global.Promise;
+    const MONGO_URI = process.env.MONGO_URI as string;
+    mongoose
+      .connect(MONGO_URI)
+      .then(() => {
+        logger.info('Database connected successfully');
+      })
+      .catch((error) => {
+        logger.error(error);
+      });
+    mongoose.set('toJSON', {
+      virtuals: true,
+      transform: (doc: any, converted: any) => {
+        delete converted._id;
+        delete converted.__v;
+      }
+    });
+  }
 
-    private setControllers() {
-        const jobsController = new JobsController(new JobsService());
-        this.app.use('/api/v1', jobsController.router);
+  private setControllers() {
+    const jobsController = new JobsController(new JobsService());
+    this.app.use('/api/v1', jobsController.router);
 
-        const authenticationController = new AuthenticationController(new AuthenticationService(), new UsersService());
-        this.app.use('/api/v1', authenticationController.router);
+    const authenticationController = new AuthenticationController(new AuthenticationService(), new UsersService());
+    this.app.use('/api/v1', authenticationController.router);
 
-        const usersController = new UsersController(new UsersService());
-        this.app.use('/api/v1', usersController.router);
+    const usersController = new UsersController(new UsersService());
+    this.app.use('/api/v1', usersController.router);
 
-        const specializationCategoriesController = new SpecializationCategoriesController(new SpecializationCategoriesService());
-        this.app.use('/api/v1', specializationCategoriesController.router);
+    const specializationCategoriesController = new SpecializationCategoriesController(
+      new SpecializationCategoriesService()
+    );
+    this.app.use('/api/v1', specializationCategoriesController.router);
 
-        const employmentTypesController = new EmploymentTypesController(new EmploymentTypesService());
-        this.app.use('/api/v1', employmentTypesController.router);
+    const employmentTypesController = new EmploymentTypesController(new EmploymentTypesService());
+    this.app.use('/api/v1', employmentTypesController.router);
 
-        const legalFormsController = new LegalFormsController(new LegalFormsService());
-        this.app.use('/api/v1', legalFormsController.router);
+    const legalFormsController = new LegalFormsController(new LegalFormsService());
+    this.app.use('/api/v1', legalFormsController.router);
 
-        const skillsController = new SkillsController(new SkillsService());
-        this.app.use('/api/v1', skillsController.router);
+    const skillsController = new SkillsController(new SkillsService());
+    this.app.use('/api/v1', skillsController.router);
 
-        const workExperiencesController = new WorkExperiencesController(new WorkExperiencesService());
-        this.app.use('/api/v1', workExperiencesController.router);
+    const workExperiencesController = new WorkExperiencesController(new WorkExperiencesService());
+    this.app.use('/api/v1', workExperiencesController.router);
 
-        const workStylesController = new WorkStylesController(new WorkStylesService());
-        this.app.use('/api/v1', workStylesController.router);
+    const workStylesController = new WorkStylesController(new WorkStylesService());
+    this.app.use('/api/v1', workStylesController.router);
 
-        const regionsController = new RegionsController(new RegionsService());
-        this.app.use('/api/v1', regionsController.router);
+    const regionsController = new RegionsController(new RegionsService());
+    this.app.use('/api/v1', regionsController.router);
 
-        const companiesController = new CompaniesController(new CompaniesService());
-        this.app.use('/api/v1', companiesController.router);
+    const companiesController = new CompaniesController(new CompaniesService());
+    this.app.use('/api/v1', companiesController.router);
 
-        const specializationsController = new SpecializationsController(new SpecializationsService());
-        this.app.use('/api/v1', specializationsController.router);
+    const specializationsController = new SpecializationsController(new SpecializationsService());
+    this.app.use('/api/v1', specializationsController.router);
 
-        const industriesController = new IndustriesController(new IndustriesService());
-        this.app.use('/api/v1', industriesController.router);
+    const industriesController = new IndustriesController(new IndustriesService());
+    this.app.use('/api/v1', industriesController.router);
 
-        const specializationsBPOController = new SpecializationsBPOController(new SpecializationsBPOService());
-        this.app.use('/api/v1', specializationsBPOController.router);
+    const specializationsBPOController = new SpecializationsBPOController(new SpecializationsBPOService());
+    this.app.use('/api/v1', specializationsBPOController.router);
 
-        const jobApplicationsController = new JobApplicationsController(new JobApplicationsService(), new JobsService());
-        this.app.use('/api/v1', jobApplicationsController.router);
+    const jobApplicationsController = new JobApplicationsController(new JobApplicationsService(), new JobsService());
+    this.app.use('/api/v1', jobApplicationsController.router);
 
-        const ordersController = new OrdersController(new OrdersService());
-        this.app.use('/api/v1', ordersController.router);
-    }
+    const ordersController = new OrdersController(new OrdersService());
+    this.app.use('/api/v1', ordersController.router);
+  }
 
-    private setErrorHandlingMiddleware() {
-        this.app.use(errorHandler);
-    }
+  private setErrorHandlingMiddleware() {
+    this.app.use(errorHandler);
+  }
 }
 
 export default new App().app;

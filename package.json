@@ -1,14 +1,14 @@
 {
-  "name": "it-jobs-board",
+  "name": "it-jobs-platform",
   "version": "1.0.0",
   "author": "",
-  "description": "",
+  "description": "IT jobs platform",
   "main": "server.ts",
   "license": "ISC",
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "tsc",
-    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
+    "format": "prettier --write \"src/**/*.ts\"",
     "start": "ts-node ./src/server.ts",
     "start:dev": "nodemon",
     "start:prod": "node dist/server",

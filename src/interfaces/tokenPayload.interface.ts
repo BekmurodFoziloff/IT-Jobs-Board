@@ -1,5 +1,5 @@
 interface TokenPayload {
-    userId: string;
+  userId: string;
 }
 
 export default TokenPayload;
