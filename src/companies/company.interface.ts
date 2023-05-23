@@ -61,7 +61,7 @@ export interface Company extends Document {
   portfolios: CopmanyPortfolio[];
   teams: CompanyTeam[];
   owner: User;
-  condition: string;
+  isPublished: string;
   createdAt?: string;
   updatedAt?: string;
 }

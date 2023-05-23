@@ -86,13 +86,13 @@ export interface User extends Document {
   educations: Education[];
   achievements: Achievement[];
   portfolios: Portfolio[];
-  condition: string;
+  isPublished: string;
   currentHashedRefreshToken: string;
-  emailConfirmToken: string;
-  emailConfirmTokenExpire: Date;
-  resetPasswordConfirmToken: string;
-  resetPasswordConfirmTokenExpire: Date;
-  isActive: boolean;
+  emailConfirmationToken: string;
+  emailConfirmationTokenExpire: Date;
+  resetPasswordConfirmationToken: string;
+  resetPasswordConfirmationTokenExpire: Date;
+  isEmailConfirmed: boolean;
   createdAt: string;
   updatedAt: string;
 }

@@ -1,6 +1,6 @@
 import { IsString, IsNotEmpty, MinLength, MaxLength, Matches } from 'class-validator';
 import { Trim } from 'class-sanitizer';
-import { IsMatch } from '../../validators/IsMatchPasswordConfirmation.validator';
+import { IsPasswordMatchingConfirmation } from '../../validators/IsPasswordMatchingConfirmation.validator';
 
 export class ResetPassword {
   @IsString()
@@ -16,7 +16,7 @@ export class ResetPassword {
   @IsNotEmpty()
   @MinLength(8)
   @MaxLength(16)
-  @IsMatch('newPassword')
+  @IsPasswordMatchingConfirmation('newPassword')
   newPasswordConfirm: string;
 }
 

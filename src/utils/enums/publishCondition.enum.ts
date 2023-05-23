@@ -1,4 +1,4 @@
-export enum Conditions {
+export enum PublishConditions {
   PUBLIC = 'public',
   PRIVATE = 'private'
 }

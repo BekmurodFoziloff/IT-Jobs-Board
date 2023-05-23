@@ -6,8 +6,8 @@ import {
   ValidatorConstraintInterface
 } from 'class-validator';
 
-@ValidatorConstraint({ async: true, name: 'IsMatch' })
-export class IsMatchConstraint implements ValidatorConstraintInterface {
+@ValidatorConstraint({ async: true, name: 'IsPasswordMatchingConfirmation' })
+export class IsPasswordMatchingConfirmationConstraint implements ValidatorConstraintInterface {
   validate(value: any, args: ValidationArguments) {
     const [relatedPropertyName] = args.constraints;
     const relatedValue = (args.object as any)[relatedPropertyName];
@@ -21,14 +21,14 @@ export class IsMatchConstraint implements ValidatorConstraintInterface {
   }
 }
 
-export function IsMatch(property: string, validationOptions?: ValidationOptions) {
+export function IsPasswordMatchingConfirmation(property: string, validationOptions?: ValidationOptions) {
   return function (object: object, propertyName: string) {
     registerDecorator({
       target: object.constructor,
       propertyName: propertyName,
       options: validationOptions,
       constraints: [property],
-      validator: IsMatchConstraint
+      validator: IsPasswordMatchingConfirmationConstraint
     });
   };
 }

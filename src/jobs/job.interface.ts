@@ -46,5 +46,5 @@ export interface Job extends Document {
   updatedAt?: string;
   requirements: Requiremets;
   employer: Employer;
-  condition: string;
+  isPublished: string;
 }

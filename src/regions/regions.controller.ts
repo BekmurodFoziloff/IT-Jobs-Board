@@ -11,8 +11,9 @@ import adminAuthMiddleware from '../middlewares/adminAuth.middleware';
 export class RegionsController {
   public path = '/region';
   public router = Router();
+  private regionsService = new RegionsService();
 
-  constructor(private regionsService: RegionsService) {
+  constructor() {
     this.setRoutes();
   }
 
@@ -37,16 +38,17 @@ export class RegionsController {
       }
       next(new RegionNotFoundException(id));
     } catch (error) {
-      return res.status(error.status || 500).json(error.message);
+      return res.status(error.status || 500).json({ error: error.message });
     }
   };
 
   private findAllRegions = async (req: Request, res: Response) => {
     try {
-      const regions = await this.regionsService.findAllRegions();
+      const { page } = req.query;
+      const regions = await this.regionsService.findAllRegions(Number(page));
       return res.status(200).json(regions);
     } catch (error) {
-      return res.status(error.status || 500).json(error.message);
+      return res.status(error.status || 500).json({ error: error.message });
     }
   };
 
@@ -56,7 +58,7 @@ export class RegionsController {
       const newRegion = await this.regionsService.createRegion(regionData, (req as RequestWithUser).user);
       return res.status(201).json(newRegion);
     } catch (error) {
-      return res.status(error.status || 500).json(error.message);
+      return res.status(error.status || 500).json({ error: error.message });
     }
   };
 
@@ -70,7 +72,7 @@ export class RegionsController {
       }
       next(new RegionNotFoundException(id));
     } catch (error) {
-      return res.status(error.status || 500).json(error.message);
+      return res.status(error.status || 500).json({ error: error.message });
     }
   };
 
@@ -83,7 +85,7 @@ export class RegionsController {
       }
       next(new RegionNotFoundException(id));
     } catch (error) {
-      return res.status(error.status || 500).json(error.message);
+      return res.status(error.status || 500).json({ error: error.message });
     }
   };
 }

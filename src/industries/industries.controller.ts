@@ -11,8 +11,9 @@ import adminAuthMiddleware from '../middlewares/adminAuth.middleware';
 export class IndustriesController {
   public path = '/industry';
   public router = Router();
+  private industrysService = new IndustriesService();
 
-  constructor(private industrysService: IndustriesService) {
+  constructor() {
     this.setRoutes();
   }
 
@@ -37,16 +38,17 @@ export class IndustriesController {
       }
       next(new IndustryNotFoundException(id));
     } catch (error) {
-      return res.status(error.status || 500).json(error.message);
+      return res.status(error.status || 500).json({ error: error.message });
     }
   };
 
   private findAllIndustries = async (req: Request, res: Response) => {
     try {
-      const industries = await this.industrysService.findAllIndustries();
+      const { page } = req.query;
+      const industries = await this.industrysService.findAllIndustries(Number(page));
       return res.status(200).json(industries);
     } catch (error) {
-      return res.status(error.status || 500).json(error.message);
+      return res.status(error.status || 500).json({ error: error.message });
     }
   };
 
@@ -56,7 +58,7 @@ export class IndustriesController {
       const newIndustry = await this.industrysService.createIndustry(industryData, (req as RequestWithUser).user);
       return res.status(201).json(newIndustry);
     } catch (error) {
-      return res.status(error.status || 500).json(error.message);
+      return res.status(error.status || 500).json({ error: error.message });
     }
   };
 
@@ -70,7 +72,7 @@ export class IndustriesController {
       }
       next(new IndustryNotFoundException(id));
     } catch (error) {
-      return res.status(error.status || 500).json(error.message);
+      return res.status(error.status || 500).json({ error: error.message });
     }
   };
 
@@ -83,7 +85,7 @@ export class IndustriesController {
       }
       next(new IndustryNotFoundException(id));
     } catch (error) {
-      return res.status(error.status || 500).json(error.message);
+      return res.status(error.status || 500).json({ error: error.message });
     }
   };
 }

@@ -7,20 +7,27 @@ import JobNotFoundException from '../exceptions/JobNotFoundException';
 import authMiddleware from '../middlewares/auth.middleware';
 import RequestWithUser from '../interfaces/requestWithUser.interface';
 import { JobsService } from '../jobs/jobs.service';
-import { upload } from '../files/files.service';
+import { FilesService } from '../files/files.service';
 
 export class JobApplicationsController {
   public path = '/applicants';
   public router = Router();
+  private jobApplicationsService = new JobApplicationsService();
+  private jobsService = new JobsService();
+  private filesService = new FilesService();
 
-  constructor(private jobApplicationsService: JobApplicationsService, private jobsService: JobsService) {
+  constructor() {
     this.setRoutes();
   }
 
   public setRoutes() {
     this.router
       .route(`/job/:id/apply`)
-      .post(upload.single('resume'), dtoValidationMiddleware(CreateJobApplicationDto), this.createJobApplication);
+      .post(
+        this.filesService.upload.single('resume'),
+        dtoValidationMiddleware(CreateJobApplicationDto),
+        this.createJobApplication
+      );
     this.router.route(`/my/residents${this.path}/list`).get(authMiddleware, this.getAllJobsApllicationsOfUser);
     this.router.route(`/my/residents${this.path}/list/:id/delete`).delete(authMiddleware, this.deleteJobApplication);
     this.router
@@ -44,7 +51,7 @@ export class JobApplicationsController {
       }
       next(new JobNotFoundException(id));
     } catch (error) {
-      return res.status(error.status || 500).json(error.message);
+      return res.status(error.status || 500).json({ error: error.message });
     }
   };
 
@@ -55,7 +62,7 @@ export class JobApplicationsController {
       const jobApplications = await this.jobApplicationsService.getAllJobApllicationsOfUser(jobOwnerId, query);
       return res.status(200).json(jobApplications);
     } catch (error) {
-      return res.status(error.status || 500).json(error.message);
+      return res.status(error.status || 500).json({ error: error.message });
     }
   };
 
@@ -68,7 +75,7 @@ export class JobApplicationsController {
       }
       next(new JobApplicationNotFoundException(id));
     } catch (error) {
-      return res.status(error.status || 500).json(error.message);
+      return res.status(error.status || 500).json({ error: error.message });
     }
   };
 
@@ -78,7 +85,7 @@ export class JobApplicationsController {
       const deleteAllJobApplications = await this.jobApplicationsService.deleteAllJobApplications(jobOwnerId);
       return res.status(200).json(deleteAllJobApplications);
     } catch (error) {
-      return res.status(error.status || 500).json(error.message);
+      return res.status(error.status || 500).json({ error: error.message });
     }
   };
 }

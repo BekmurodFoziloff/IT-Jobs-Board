@@ -15,9 +15,17 @@ export class SpecializationsService {
       .populate('specializationCategory', 'id name');
   }
 
-  public async findAllSpecializations(): Promise<Specialization[]> {
+  public async findAllSpecializations(page: number): Promise<Specialization[]> {
+    let pageNumber = 1;
+    const pageSize = Number(process.env.PAGE_SIZE);
+    if (page) {
+      pageNumber = page;
+    }
     return await this.specializationModel
       .find({})
+      .sort({ createdAt: -1 })
+      .skip(pageNumber * pageSize - pageSize)
+      .limit(pageSize)
       .populate('owner', 'email firstName lastName id')
       .populate('specializationCategory', 'id name');
   }

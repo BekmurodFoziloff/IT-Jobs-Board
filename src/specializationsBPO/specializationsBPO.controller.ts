@@ -11,8 +11,9 @@ import adminAuthMiddleware from '../middlewares/adminAuth.middleware';
 export class SpecializationsBPOController {
   public path = '/specialization/bpo';
   public router = Router();
+  private specializationsBPOService = new SpecializationsBPOService();
 
-  constructor(private specializationsBPOService: SpecializationsBPOService) {
+  constructor() {
     this.setRoutes();
   }
 
@@ -49,16 +50,17 @@ export class SpecializationsBPOController {
       }
       next(new SpecializationBPONotFoundException(id));
     } catch (error) {
-      return res.status(error.status || 500).json(error.message);
+      return res.status(error.status || 500).json({ error: error.message });
     }
   };
 
   private findAllSpecializationsBPO = async (req: Request, res: Response) => {
     try {
-      const specializationsBPO = await this.specializationsBPOService.findAllSpecializationsBPO();
+      const { page } = req.query;
+      const specializationsBPO = await this.specializationsBPOService.findAllSpecializationsBPO(Number(page));
       return res.status(200).json(specializationsBPO);
     } catch (error) {
-      return res.status(error.status || 500).json(error.message);
+      return res.status(error.status || 500).json({ error: error.message });
     }
   };
 
@@ -71,7 +73,7 @@ export class SpecializationsBPOController {
       );
       return res.status(201).json(newSpecializationBPO);
     } catch (error) {
-      return res.status(error.status || 500).json(error.message);
+      return res.status(error.status || 500).json({ error: error.message });
     }
   };
 
@@ -88,7 +90,7 @@ export class SpecializationsBPOController {
       }
       next(new SpecializationBPONotFoundException(id));
     } catch (error) {
-      return res.status(error.status || 500).json(error.message);
+      return res.status(error.status || 500).json({ error: error.message });
     }
   };
 
@@ -101,7 +103,7 @@ export class SpecializationsBPOController {
       }
       next(new SpecializationBPONotFoundException(id));
     } catch (error) {
-      return res.status(error.status || 500).json(error.message);
+      return res.status(error.status || 500).json({ error: error.message });
     }
   };
 }

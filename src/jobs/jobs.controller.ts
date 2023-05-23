@@ -13,8 +13,9 @@ import isOwnerJob from '../middlewares/isOwnerJob.middleware';
 export class JobsController {
   public path = '/job';
   public router = Router();
+  private jobsService = new JobsService();
 
-  constructor(private jobsService: JobsService) {
+  constructor() {
     this.setRoutes();
   }
 
@@ -48,7 +49,7 @@ export class JobsController {
       }
       next(new JobNotFoundException(id));
     } catch (error) {
-      return res.status(error.status || 500).json(error.message);
+      return res.status(error.status || 500).json({ error: error.message });
     }
   };
 
@@ -58,7 +59,7 @@ export class JobsController {
       const jobs = await this.jobsService.findAllJobs(query);
       return res.status(200).json(jobs);
     } catch (error) {
-      return res.status(error.status || 500).json(error.message);
+      return res.status(error.status || 500).json({ error: error.message });
     }
   };
 
@@ -68,7 +69,7 @@ export class JobsController {
       const newJob = await this.jobsService.createJob(jobData, (req as RequestWithUser).user);
       return res.status(201).json(newJob);
     } catch (error) {
-      return res.status(error.status || 500).json(error.message);
+      return res.status(error.status || 500).json({ error: error.message });
     }
   };
 
@@ -82,7 +83,7 @@ export class JobsController {
       }
       next(new JobNotFoundException(id));
     } catch (error) {
-      return res.status(error.status || 500).json(error.message);
+      return res.status(error.status || 500).json({ error: error.message });
     }
   };
 
@@ -95,7 +96,7 @@ export class JobsController {
       }
       next(new JobNotFoundException(id));
     } catch (error) {
-      return res.status(error.status || 500).json(error.message);
+      return res.status(error.status || 500).json({ error: error.message });
     }
   };
 
@@ -109,7 +110,7 @@ export class JobsController {
       }
       next(new JobNotFoundException(id));
     } catch (error) {
-      return res.status(error.status || 500).json(error.message);
+      return res.status(error.status || 500).json({ error: error.message });
     }
   };
 
@@ -123,17 +124,18 @@ export class JobsController {
       }
       next(new JobNotFoundException(id));
     } catch (error) {
-      return res.status(error.status || 500).json(error.message);
+      return res.status(error.status || 500).json({ error: error.message });
     }
   };
 
   private getAllJobsOfUser = async (req: Request, res: Response) => {
     try {
       const userId = (req as RequestWithUser).user.id;
-      const jobs = await this.jobsService.getAllJobsOfUser(userId);
+      const { query } = req;
+      const jobs = await this.jobsService.getAllJobsOfUser(userId, query);
       return res.status(200).json(jobs);
     } catch (error) {
-      return res.status(error.status || 500).json(error.message);
+      return res.status(error.status || 500).json({ error: error.message });
     }
   };
 
@@ -146,7 +148,7 @@ export class JobsController {
       }
       next(new JobNotFoundException(id));
     } catch (error) {
-      return res.status(error.status || 500).json(error.message);
+      return res.status(error.status || 500).json({ error: error.message });
     }
   };
 
@@ -159,7 +161,7 @@ export class JobsController {
       }
       next(new JobNotFoundException(id));
     } catch (error) {
-      return res.status(error.status || 500).json(error.message);
+      return res.status(error.status || 500).json({ error: error.message });
     }
   };
 }

@@ -2,10 +2,14 @@ import { Schema } from 'mongoose';
 import ProjectSchema from './project.schema';
 import RequirementsSchema from './requirements.schema';
 import ContactsSchema from './contacts.schema';
-import { Conditions } from '../../utils/enums/condition.enum';
+import { PublishConditions } from '../../utils/enums/publishCondition.enum';
 
 export const OrderSchema = new Schema(
   {
+    title: {
+      type: String,
+      required: true
+    },
     customer: {
       type: String,
       required: true
@@ -54,10 +58,10 @@ export const OrderSchema = new Schema(
       ref: 'User',
       required: true
     },
-    condition: {
+    isPublished: {
       type: String,
-      enum: Conditions,
-      default: Conditions.PRIVATE,
+      enum: PublishConditions,
+      default: PublishConditions.PRIVATE,
       required: true
     },
     createdAt: {

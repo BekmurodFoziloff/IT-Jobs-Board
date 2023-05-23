@@ -11,8 +11,9 @@ import adminAuthMiddleware from '../middlewares/adminAuth.middleware';
 export class SpecializationsController {
   public path = '/specialization';
   public router = Router();
+  private specializationsService = new SpecializationsService();
 
-  constructor(private specializationsService: SpecializationsService) {
+  constructor() {
     this.setRoutes();
   }
 
@@ -47,16 +48,17 @@ export class SpecializationsController {
       }
       next(new SpecializationNotFoundException(id));
     } catch (error) {
-      return res.status(error.status || 500).json(error.message);
+      return res.status(error.status || 500).json({ error: error.message });
     }
   };
 
   private findAllSpecializations = async (req: Request, res: Response) => {
     try {
-      const specializations = await this.specializationsService.findAllSpecializations();
+      const { page } = req.query;
+      const specializations = await this.specializationsService.findAllSpecializations(Number(page));
       return res.status(200).json(specializations);
     } catch (error) {
-      return res.status(error.status || 500).json(error.message);
+      return res.status(error.status || 500).json({ error: error.message });
     }
   };
 
@@ -69,7 +71,7 @@ export class SpecializationsController {
       );
       return res.status(201).json(newSpecialization);
     } catch (error) {
-      return res.status(error.status || 500).json(error.message);
+      return res.status(error.status || 500).json({ error: error.message });
     }
   };
 
@@ -83,7 +85,7 @@ export class SpecializationsController {
       }
       next(new SpecializationNotFoundException(id));
     } catch (error) {
-      return res.status(error.status || 500).json(error.message);
+      return res.status(error.status || 500).json({ error: error.message });
     }
   };
 
@@ -96,7 +98,7 @@ export class SpecializationsController {
       }
       next(new SpecializationNotFoundException(id));
     } catch (error) {
-      return res.status(error.status || 500).json(error.message);
+      return res.status(error.status || 500).json({ error: error.message });
     }
   };
 }

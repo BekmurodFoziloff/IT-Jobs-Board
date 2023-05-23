@@ -1,6 +1,6 @@
 import { IsEmail, IsString, IsNotEmpty, MinLength, IsAlpha, MaxLength, Matches, IsLowercase } from 'class-validator';
 import { Trim } from 'class-sanitizer';
-import { IsMatch } from '../../validators/IsMatchPasswordConfirmation.validator';
+import { IsPasswordMatchingConfirmation } from '../../validators/IsPasswordMatchingConfirmation.validator';
 
 export class RegisterDto {
   @IsString()
@@ -34,7 +34,7 @@ export class RegisterDto {
   @IsNotEmpty()
   @MinLength(8)
   @MaxLength(16)
-  @IsMatch('password')
+  @IsPasswordMatchingConfirmation('password')
   passwordConfirm: string;
 }
 

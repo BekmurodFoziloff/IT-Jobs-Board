@@ -12,8 +12,18 @@ export class IndustriesService {
     return await this.industryModel.findById(id).populate('owner', 'email firstName lastName id');
   }
 
-  public async findAllIndustries(): Promise<Industry[]> {
-    return await this.industryModel.find({}).populate('owner', 'email firstName lastName id');
+  public async findAllIndustries(page: number): Promise<Industry[]> {
+    let pageNumber = 1;
+    const pageSize = Number(process.env.PAGE_SIZE);
+    if (page) {
+      pageNumber = page;
+    }
+    return await this.industryModel
+      .find()
+      .sort({ createdAt: -1 })
+      .skip(pageNumber * pageSize - pageSize)
+      .limit(pageSize)
+      .populate('owner', 'email firstName lastName id');
   }
 
   public async createIndustry(industry: CreateIndustryDto, owner: User): Promise<Industry> {

@@ -1,4 +1,5 @@
 interface OrderFilterQuery {
+  $or?: [{ title: { $regex: string; $options: string } }];
   specializations?: {
     $in: Array<string>;
   };
@@ -17,6 +18,7 @@ interface OrderFilterQuery {
   archived?: {
     $in: string;
   };
+  owner?: string;
 }
 
 export default OrderFilterQuery;

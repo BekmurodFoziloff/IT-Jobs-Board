@@ -8,7 +8,7 @@ import UpdateCompanyTeamDto from './dto/updateCompanyTeam.dto';
 import { Company } from './company.interface';
 import moment from 'moment';
 import { User } from '../users/user.interface';
-import { Conditions } from '../utils/enums/condition.enum';
+import { PublishConditions } from '../utils/enums/publishCondition.enum';
 import CompanyFilterQuery from '../interfaces/companyFilterQuery.interface';
 
 export class CompaniesService {
@@ -17,8 +17,8 @@ export class CompaniesService {
   public async findCompanyById(id: string): Promise<Company | null> {
     return await this.companyModel
       .findById(id)
-      .where('condition')
-      .equals(Conditions.PUBLIC)
+      .where('isPublished')
+      .equals(PublishConditions.PUBLIC)
       .populate('owner', 'email firstName lastName id')
       .populate('legalForm', 'id name')
       .populate('industries', 'id name')
@@ -29,13 +29,25 @@ export class CompaniesService {
 
   public async findAllCompanies(queryObj: any): Promise<Company[] | null> {
     const query: CompanyFilterQuery = {};
-    if (queryObj.specializations && queryObj.specializations.length > 0) {
+    let pageNumber = 1;
+    const pageSize = Number(process.env.PAGE_SIZE);
+    if (queryObj.page) {
+      pageNumber = Number(queryObj.page);
+    } else if (queryObj.search) {
+      query['$or'] = [
+        { name: { $regex: queryObj.search, $options: 'i' } },
+        { aboutCompany: { $regex: queryObj.search, $options: 'i' } }
+      ];
+    } else if (queryObj.specializations && queryObj.specializations.length > 0) {
       query['specializations'] = { $in: queryObj.specializations };
     }
     return await this.companyModel
       .find(query)
-      .where('condition')
-      .equals(Conditions.PUBLIC)
+      .sort({ createdAt: -1 })
+      .skip(pageNumber * pageSize - pageSize)
+      .limit(pageSize)
+      .where('isPublished')
+      .equals(PublishConditions.PUBLIC)
       .populate('owner', 'email firstName lastName id')
       .populate('legalForm', 'id name')
       .populate('industries', 'id name')
@@ -315,9 +327,25 @@ export class CompaniesService {
       .populate('bpo.specializationsBPO', 'id name');
   }
 
-  public async getAllCompaniesOfUser(userId: string): Promise<Company[] | null> {
+  public async getAllCompaniesOfUser(userId: string, queryObj: any): Promise<Company[] | null> {
+    const query: CompanyFilterQuery = {};
+    let pageNumber = 1;
+    const pageSize = Number(process.env.PAGE_SIZE);
+    if (userId) {
+      query['owner'] = userId;
+    } else if (queryObj.page) {
+      pageNumber = Number(queryObj.page);
+    } else if (queryObj.search) {
+      query['$or'] = [
+        { name: { $regex: queryObj.search, $options: 'i' } },
+        { aboutCompany: { $regex: queryObj.search, $options: 'i' } }
+      ];
+    }
     return await this.companyModel
-      .find({ owner: userId })
+      .find(query)
+      .sort({ createdAt: -1 })
+      .skip(pageNumber * pageSize - pageSize)
+      .limit(pageSize)
       .populate('owner', 'email firstName lastName id')
       .populate('legalForm', 'id name')
       .populate('industries', 'id name')
@@ -337,13 +365,13 @@ export class CompaniesService {
       .populate('bpo.specializationsBPO', 'id name');
   }
 
-  public async publish(id: string, condition = Conditions.PUBLIC): Promise<Company | null> {
+  public async publish(id: string, publishCondition = PublishConditions.PUBLIC): Promise<Company | null> {
     return await this.companyModel
       .findByIdAndUpdate(
         id,
         {
           $set: {
-            condition: condition
+            isPublished: publishCondition
           }
         },
         { returnDocument: 'after' }
@@ -356,13 +384,13 @@ export class CompaniesService {
       .populate('bpo.specializationsBPO', 'id name');
   }
 
-  public async publishCancel(id: string, condition = Conditions.PRIVATE): Promise<Company | null> {
+  public async publishCancel(id: string, publishCondition = PublishConditions.PRIVATE): Promise<Company | null> {
     return await this.companyModel
       .findByIdAndUpdate(
         id,
         {
           $set: {
-            condition: condition
+            isPublished: publishCondition
           }
         },
         { returnDocument: 'after' }

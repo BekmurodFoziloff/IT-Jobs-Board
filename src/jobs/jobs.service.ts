@@ -6,7 +6,7 @@ import UpdateEmployerDto from './dto/updateEmployer.dto';
 import { Job } from './job.interface';
 import moment from 'moment';
 import { User } from '../users/user.interface';
-import { Conditions } from '../utils/enums/condition.enum';
+import { PublishConditions } from '../utils/enums/publishCondition.enum';
 import JobFilterQuery from '../interfaces/jobFilterQuery.interface';
 
 export class JobsService {
@@ -15,8 +15,8 @@ export class JobsService {
   public async findJobById(id: string): Promise<Job | null> {
     return await this.jobModel
       .findById(id)
-      .where('condition')
-      .equals(Conditions.PUBLIC)
+      .where('isPublished')
+      .equals(PublishConditions.PUBLIC)
       .populate('owner', 'email firstName lastName id')
       .populate('employmentTypes', 'id name')
       .populate('specializationCategories', 'id name')
@@ -28,7 +28,18 @@ export class JobsService {
 
   public async findAllJobs(queryObj: any): Promise<Job[] | null> {
     const query: JobFilterQuery = {};
-    if (queryObj.employmentTypes && queryObj.employmentTypes.length > 0) {
+    let pageNumber = 1;
+    const pageSize = Number(process.env.PAGE_SIZE);
+    if (queryObj.page) {
+      pageNumber = Number(queryObj.page);
+    } else if (queryObj.search) {
+      query['$or'] = [
+        { title: { $regex: queryObj.search, $options: 'i' } },
+        { description: { $regex: queryObj.search, $options: 'i' } },
+        { task: { $regex: queryObj.search, $options: 'i' } },
+        { schedule: { $regex: queryObj.search, $options: 'i' } }
+      ];
+    } else if (queryObj.employmentTypes && queryObj.employmentTypes.length > 0) {
       query['employmentTypes'] = { $in: queryObj.employmentTypes };
     } else if (queryObj.workExperience) {
       query['requirements.workExperience'] = { $in: queryObj.workExperience };
@@ -39,8 +50,11 @@ export class JobsService {
     }
     return await this.jobModel
       .find(query)
-      .where('condition')
-      .equals(Conditions.PUBLIC)
+      .sort({ createdAt: -1 })
+      .skip(pageNumber * pageSize - pageSize)
+      .limit(pageSize)
+      .where('isPublished')
+      .equals(PublishConditions.PUBLIC)
       .populate('owner', 'email firstName lastName id')
       .populate('employmentTypes', 'id name')
       .populate('specializationCategories', 'id name')
@@ -139,9 +153,27 @@ export class JobsService {
       .populate('employer.legalForm', 'id name');
   }
 
-  public async getAllJobsOfUser(userId: string): Promise<Job[] | null> {
+  public async getAllJobsOfUser(userId: string, queryObj: any): Promise<Job[] | null> {
+    const query: JobFilterQuery = {};
+    let pageNumber = 1;
+    const pageSize = Number(process.env.PAGE_SIZE);
+    if (userId) {
+      query['owner'] = userId;
+    } else if (queryObj.page) {
+      pageNumber = Number(queryObj.page);
+    } else if (queryObj.search) {
+      query['$or'] = [
+        { title: { $regex: queryObj.search, $options: 'i' } },
+        { description: { $regex: queryObj.search, $options: 'i' } },
+        { task: { $regex: queryObj.search, $options: 'i' } },
+        { schedule: { $regex: queryObj.search, $options: 'i' } }
+      ];
+    }
     return await this.jobModel
-      .find({ owner: userId })
+      .find(query)
+      .sort({ createdAt: -1 })
+      .skip(pageNumber * pageSize - pageSize)
+      .limit(pageSize)
       .populate('owner', 'email firstName lastName id')
       .populate('employmentTypes', 'id name')
       .populate('specializationCategories', 'id name')
@@ -163,13 +195,13 @@ export class JobsService {
       .populate('employer.legalForm', 'id name');
   }
 
-  public async publish(id: string, condition = Conditions.PUBLIC): Promise<Job | null> {
+  public async publish(id: string, publishCondition = PublishConditions.PUBLIC): Promise<Job | null> {
     return await this.jobModel
       .findByIdAndUpdate(
         id,
         {
           $set: {
-            condition: condition
+            isPublished: publishCondition
           }
         },
         { returnDocument: 'after' }
@@ -183,13 +215,13 @@ export class JobsService {
       .populate('employer.legalForm', 'id name');
   }
 
-  public async publishCancel(id: string, condition = Conditions.PRIVATE): Promise<Job | null> {
+  public async publishCancel(id: string, publishCondition = PublishConditions.PRIVATE): Promise<Job | null> {
     return await this.jobModel
       .findByIdAndUpdate(
         id,
         {
           $set: {
-            condition: condition
+            isPublished: publishCondition
           }
         },
         { returnDocument: 'after' }

@@ -11,8 +11,9 @@ import adminAuthMiddleware from '../middlewares/adminAuth.middleware';
 export class WorkStylesController {
   public path = '/work/style';
   public router = Router();
+  private workStylesService = new WorkStylesService();
 
-  constructor(private workStylesService: WorkStylesService) {
+  constructor() {
     this.setRoutes();
   }
 
@@ -42,16 +43,17 @@ export class WorkStylesController {
       }
       next(new WorkStyleNotFoundException(id));
     } catch (error) {
-      return res.status(error.status || 500).json(error.message);
+      return res.status(error.status || 500).json({ error: error.message });
     }
   };
 
   private findAllWorkStyles = async (req: Request, res: Response) => {
     try {
-      const workStyles = await this.workStylesService.findAllWorkStyles();
+      const { page } = req.query;
+      const workStyles = await this.workStylesService.findAllWorkStyles(Number(page));
       return res.status(200).json(workStyles);
     } catch (error) {
-      return res.status(error.status || 500).json(error.message);
+      return res.status(error.status || 500).json({ error: error.message });
     }
   };
 
@@ -61,7 +63,7 @@ export class WorkStylesController {
       const newWorkStyle = await this.workStylesService.createWorkStyle(workStyleData, (req as RequestWithUser).user);
       return res.status(201).json(newWorkStyle);
     } catch (error) {
-      return res.status(error.status || 500).json(error.message);
+      return res.status(error.status || 500).json({ error: error.message });
     }
   };
 
@@ -75,7 +77,7 @@ export class WorkStylesController {
       }
       next(new WorkStyleNotFoundException(id));
     } catch (error) {
-      return res.status(error.status || 500).json(error.message);
+      return res.status(error.status || 500).json({ error: error.message });
     }
   };
 
@@ -88,7 +90,7 @@ export class WorkStylesController {
       }
       next(new WorkStyleNotFoundException(id));
     } catch (error) {
-      return res.status(error.status || 500).json(error.message);
+      return res.status(error.status || 500).json({ error: error.message });
     }
   };
 }

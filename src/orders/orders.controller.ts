@@ -10,13 +10,15 @@ import OrderNotFoundException from '../exceptions/OrderNotFoundException';
 import authMiddleware from '../middlewares/auth.middleware';
 import RequestWithUser from '../interfaces/requestWithUser.interface';
 import isOwnerOrder from '../middlewares/isOwnenOrder.middleware';
-import { upload } from '../files/files.service';
+import { FilesService } from '../files/files.service';
 
 export class OrdersController {
   public path = '/order';
   public router = Router();
+  private ordersService = new OrdersService();
+  private filesService = new FilesService();
 
-  constructor(private ordersService: OrdersService) {
+  constructor() {
     this.setRoutes();
   }
 
@@ -35,7 +37,7 @@ export class OrdersController {
       .put(
         authMiddleware,
         isOwnerOrder,
-        upload.single('attachedFile'),
+        this.filesService.upload.single('attachedFile'),
         dtoValidationMiddleware(UpdateProjectDto, true),
         this.updateProject
       );
@@ -59,7 +61,7 @@ export class OrdersController {
       }
       next(new OrderNotFoundException(id));
     } catch (error) {
-      return res.status(error.status || 500).json(error.message);
+      return res.status(error.status || 500).json({ error: error.message });
     }
   };
 
@@ -69,7 +71,7 @@ export class OrdersController {
       const orders = await this.ordersService.findAllOrders(query);
       return res.status(200).json(orders);
     } catch (error) {
-      return res.status(error.status || 500).json(error.message);
+      return res.status(error.status || 500).json({ error: error.message });
     }
   };
 
@@ -79,7 +81,7 @@ export class OrdersController {
       const newOrder = await this.ordersService.createOrder(orderData, (req as RequestWithUser).user);
       return res.status(201).json(newOrder);
     } catch (error) {
-      return res.status(error.status || 500).json(error.message);
+      return res.status(error.status || 500).json({ error: error.message });
     }
   };
 
@@ -93,7 +95,7 @@ export class OrdersController {
       }
       next(new OrderNotFoundException(id));
     } catch (error) {
-      return res.status(error.status || 500).json(error.message);
+      return res.status(error.status || 500).json({ error: error.message });
     }
   };
 
@@ -106,7 +108,7 @@ export class OrdersController {
       }
       next(new OrderNotFoundException(id));
     } catch (error) {
-      return res.status(error.status || 500).json(error.message);
+      return res.status(error.status || 500).json({ error: error.message });
     }
   };
 
@@ -121,7 +123,7 @@ export class OrdersController {
       }
       next(new OrderNotFoundException(id));
     } catch (error) {
-      return res.status(error.status || 500).json(error.message);
+      return res.status(error.status || 500).json({ error: error.message });
     }
   };
 
@@ -135,7 +137,7 @@ export class OrdersController {
       }
       next(new OrderNotFoundException(id));
     } catch (error) {
-      return res.status(error.status || 500).json(error.message);
+      return res.status(error.status || 500).json({ error: error.message });
     }
   };
 
@@ -149,7 +151,7 @@ export class OrdersController {
       }
       next(new OrderNotFoundException(id));
     } catch (error) {
-      return res.status(error.status || 500).json(error.message);
+      return res.status(error.status || 500).json({ error: error.message });
     }
   };
 
@@ -162,7 +164,7 @@ export class OrdersController {
       }
       next(new OrderNotFoundException(id));
     } catch (error) {
-      return res.status(error.status || 500).json(error.message);
+      return res.status(error.status || 500).json({ error: error.message });
     }
   };
 
@@ -175,17 +177,18 @@ export class OrdersController {
       }
       next(new OrderNotFoundException(id));
     } catch (error) {
-      return res.status(error.status || 500).json(error.message);
+      return res.status(error.status || 500).json({ error: error.message });
     }
   };
 
   private getAllOrdersOfUser = async (req: Request, res: Response) => {
     try {
       const userId = (req as RequestWithUser).user.id;
-      const orders = await this.ordersService.getAllOrdersOfUser(userId);
+      const { query } = req;
+      const orders = await this.ordersService.getAllOrdersOfUser(userId, query);
       return res.status(200).json(orders);
     } catch (error) {
-      return res.status(error.status || 500).json(error.message);
+      return res.status(error.status || 500).json({ error: error.message });
     }
   };
 }

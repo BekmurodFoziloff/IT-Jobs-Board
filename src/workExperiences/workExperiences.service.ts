@@ -12,8 +12,18 @@ export class WorkExperiencesService {
     return await this.workExperienceModel.findById(id).populate('owner', 'email firstName lastName id');
   }
 
-  public async findAllWorkExperiences(): Promise<WorkExperience[]> {
-    return await this.workExperienceModel.find({}).populate('owner', 'email firstName lastName id');
+  public async findAllWorkExperiences(page: number): Promise<WorkExperience[]> {
+    let pageNumber = 1;
+    const pageSize = Number(process.env.PAGE_SIZE);
+    if (page) {
+      pageNumber = page;
+    }
+    return await this.workExperienceModel
+      .find()
+      .sort({ createdAt: -1 })
+      .skip(pageNumber * pageSize - pageSize)
+      .limit(pageSize)
+      .populate('owner', 'email firstName lastName id');
   }
 
   public async createWorkExperience(workExperience: CreateWorkExperienceDto, owner: User): Promise<WorkExperience> {

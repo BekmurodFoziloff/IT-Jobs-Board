@@ -12,8 +12,18 @@ export class SpecializationCategoriesService {
     return await this.specializationCategoryModel.findById(id).populate('owner', 'email firstName lastName id');
   }
 
-  public async findAllSpecializationCategories(): Promise<SpecializationCategory[]> {
-    return await this.specializationCategoryModel.find({}).populate('owner', 'email firstName lastName id');
+  public async findAllSpecializationCategories(page: number): Promise<SpecializationCategory[]> {
+    let pageNumber = 1;
+    const pageSize = Number(process.env.PAGE_SIZE);
+    if (page) {
+      pageNumber = page;
+    }
+    return await this.specializationCategoryModel
+      .find()
+      .sort({ createdAt: -1 })
+      .skip(pageNumber * pageSize - pageSize)
+      .limit(pageSize)
+      .populate('owner', 'email firstName lastName id');
   }
 
   public async createSpecializationCategory(

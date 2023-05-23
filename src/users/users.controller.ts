@@ -23,13 +23,15 @@ import {
   isCreatorPortfolio
 } from '../middlewares/isCreator.middleware';
 import RequestWithUser from '../interfaces/requestWithUser.interface';
-import { upload } from '../files/files.service';
+import { FilesService } from '../files/files.service';
 
 export class UsersController {
   public path = '/my';
   public router = Router();
+  private usersService = new UsersService();
+  private filesService = new FilesService();
 
-  constructor(private usersService: UsersService) {
+  constructor() {
     this.setRoutes();
   }
 
@@ -40,7 +42,7 @@ export class UsersController {
       .put(
         authMiddleware,
         isCreatorUser,
-        upload.single('avatar'),
+        this.filesService.upload.single('avatar'),
         dtoValidationMiddleware(UpdateProfileDto, true),
         this.updateProfile
       );
@@ -95,7 +97,7 @@ export class UsersController {
       .put(authMiddleware, isCreatorAchievement, this.updateUserDeleteAchievement);
     this.router.route(`${this.path}/profile/:id/portfolio/new`).put(
       authMiddleware,
-      upload.fields([
+      this.filesService.upload.fields([
         { name: 'image', maxCount: 1 },
         { name: 'image1', maxCount: 1 },
         { name: 'image2', maxCount: 1 }
@@ -105,7 +107,7 @@ export class UsersController {
     );
     this.router.route(`${this.path}/profile/portfolio/:id/edit`).put(
       authMiddleware,
-      upload.fields([
+      this.filesService.upload.fields([
         { name: 'image', maxCount: 1 },
         { name: 'image1', maxCount: 1 },
         { name: 'image2', maxCount: 1 }
@@ -134,7 +136,7 @@ export class UsersController {
       }
       next(new ProfessionalNotFoundException(id));
     } catch (error) {
-      return res.status(error.status || 500).json(error.message);
+      return res.status(error.status || 500).json({ error: error.message });
     }
   };
 
@@ -144,7 +146,7 @@ export class UsersController {
       const users = await this.usersService.findAllUsers(query);
       return res.status(200).json(users);
     } catch (error) {
-      return res.status(error.status || 500).json(error.message);
+      return res.status(error.status || 500).json({ error: error.message });
     }
   };
 
@@ -159,7 +161,7 @@ export class UsersController {
       }
       next(new NotAuthorizedException());
     } catch (error) {
-      return res.status(error.status || 500).json(error.message);
+      return res.status(error.status || 500).json({ error: error.message });
     }
   };
 
@@ -172,7 +174,7 @@ export class UsersController {
       }
       next(new NotAuthorizedException());
     } catch (error) {
-      return res.status(error.status || 500).json(error.message);
+      return res.status(error.status || 500).json({ error: error.message });
     }
   };
 
@@ -186,7 +188,7 @@ export class UsersController {
       }
       next(new NotAuthorizedException());
     } catch (error) {
-      return res.status(error.status || 500).json(error.message);
+      return res.status(error.status || 500).json({ error: error.message });
     }
   };
 
@@ -200,7 +202,7 @@ export class UsersController {
       }
       next(new NotAuthorizedException());
     } catch (error) {
-      return res.status(error.status || 500).json(error.message);
+      return res.status(error.status || 500).json({ error: error.message });
     }
   };
 
@@ -214,7 +216,7 @@ export class UsersController {
       }
       next(new WorkExperienceOfUserNotFoundException(id));
     } catch (error) {
-      return res.status(error.status || 500).json(error.message);
+      return res.status(error.status || 500).json({ error: error.message });
     }
   };
 
@@ -227,7 +229,7 @@ export class UsersController {
       }
       next(new WorkExperienceOfUserNotFoundException(id));
     } catch (error) {
-      return res.status(error.status || 500).json(error.message);
+      return res.status(error.status || 500).json({ error: error.message });
     }
   };
 
@@ -241,7 +243,7 @@ export class UsersController {
       }
       next(new NotAuthorizedException());
     } catch (error) {
-      return res.status(error.status || 500).json(error.message);
+      return res.status(error.status || 500).json({ error: error.message });
     }
   };
 
@@ -255,7 +257,7 @@ export class UsersController {
       }
       next(new EducationOfUserNotFoundException(id));
     } catch (error) {
-      return res.status(error.status || 500).json(error.message);
+      return res.status(error.status || 500).json({ error: error.message });
     }
   };
 
@@ -268,7 +270,7 @@ export class UsersController {
       }
       next(new EducationOfUserNotFoundException(id));
     } catch (error) {
-      return res.status(error.status || 500).json(error.message);
+      return res.status(error.status || 500).json({ error: error.message });
     }
   };
 
@@ -282,7 +284,7 @@ export class UsersController {
       }
       next(new NotAuthorizedException());
     } catch (error) {
-      return res.status(error.status || 500).json(error.message);
+      return res.status(error.status || 500).json({ error: error.message });
     }
   };
 
@@ -296,7 +298,7 @@ export class UsersController {
       }
       next(new AchievementOfUserNotFoundException(id));
     } catch (error) {
-      return res.status(error.status || 500).json(error.message);
+      return res.status(error.status || 500).json({ error: error.message });
     }
   };
 
@@ -309,7 +311,7 @@ export class UsersController {
       }
       next(new AchievementOfUserNotFoundException(id));
     } catch (error) {
-      return res.status(error.status || 500).json(error.message);
+      return res.status(error.status || 500).json({ error: error.message });
     }
   };
 
@@ -324,7 +326,7 @@ export class UsersController {
       }
       next(new NotAuthorizedException());
     } catch (error) {
-      return res.status(error.status || 500).json(error.message);
+      return res.status(error.status || 500).json({ error: error.message });
     }
   };
 
@@ -339,7 +341,7 @@ export class UsersController {
       }
       next(new PortfolioOfUserNotFoundException(id));
     } catch (error) {
-      return res.status(error.status || 500).json(error.message);
+      return res.status(error.status || 500).json({ error: error.message });
     }
   };
 
@@ -352,7 +354,7 @@ export class UsersController {
       }
       next(new PortfolioOfUserNotFoundException(id));
     } catch (error) {
-      return res.status(error.status || 500).json(error.message);
+      return res.status(error.status || 500).json({ error: error.message });
     }
   };
 
@@ -365,7 +367,7 @@ export class UsersController {
       }
       next(new NotAuthorizedException());
     } catch (error) {
-      return res.status(error.status || 500).json(error.message);
+      return res.status(error.status || 500).json({ error: error.message });
     }
   };
 
@@ -378,7 +380,7 @@ export class UsersController {
       }
       next(new NotAuthorizedException());
     } catch (error) {
-      return res.status(error.status || 500).json(error.message);
+      return res.status(error.status || 500).json({ error: error.message });
     }
   };
 
@@ -397,7 +399,7 @@ export class UsersController {
       }
       next(new NotAuthorizedException());
     } catch (error) {
-      return res.status(error.status || 500).json(error.message);
+      return res.status(error.status || 500).json({ error: error.message });
     }
   };
 }

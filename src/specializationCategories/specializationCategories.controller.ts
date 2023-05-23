@@ -11,8 +11,9 @@ import adminAuthMiddleware from '../middlewares/adminAuth.middleware';
 export class SpecializationCategoriesController {
   public path = '/specialization/category';
   public router = Router();
+  private specializationCategoriesService = new SpecializationCategoriesService();
 
-  constructor(private specializationCategoriesService: SpecializationCategoriesService) {
+  constructor() {
     this.setRoutes();
   }
 
@@ -49,16 +50,19 @@ export class SpecializationCategoriesController {
       }
       next(new SpecializationCategoryNotFoundException(id));
     } catch (error) {
-      return res.status(error.status || 500).json(error.message);
+      return res.status(error.status || 500).json({ error: error.message });
     }
   };
 
   private findAllSpecializationCategories = async (req: Request, res: Response) => {
     try {
-      const specializationCategories = await this.specializationCategoriesService.findAllSpecializationCategories();
+      const { page } = req.query;
+      const specializationCategories = await this.specializationCategoriesService.findAllSpecializationCategories(
+        Number(page)
+      );
       return res.status(200).json(specializationCategories);
     } catch (error) {
-      return res.status(error.status || 500).json(error.message);
+      return res.status(error.status || 500).json({ error: error.message });
     }
   };
 
@@ -71,7 +75,7 @@ export class SpecializationCategoriesController {
       );
       return res.status(201).json(newSpecializationCategory);
     } catch (error) {
-      return res.status(error.status || 500).json(error.message);
+      return res.status(error.status || 500).json({ error: error.message });
     }
   };
 
@@ -88,7 +92,7 @@ export class SpecializationCategoriesController {
       }
       next(new SpecializationCategoryNotFoundException(id));
     } catch (error) {
-      return res.status(error.status || 500).json(error.message);
+      return res.status(error.status || 500).json({ error: error.message });
     }
   };
 
@@ -101,7 +105,7 @@ export class SpecializationCategoriesController {
       }
       next(new SpecializationCategoryNotFoundException(id));
     } catch (error) {
-      return res.status(error.status || 500).json(error.message);
+      return res.status(error.status || 500).json({ error: error.message });
     }
   };
 }

@@ -12,8 +12,18 @@ export class SkillsService {
     return await this.skillModel.findById(id).populate('owner', 'email firstName lastName id');
   }
 
-  public async findAllSkills(): Promise<Skill[]> {
-    return await this.skillModel.find({}).populate('owner', 'email firstName lastName id');
+  public async findAllSkills(page: number): Promise<Skill[]> {
+    let pageNumber = 1;
+    const pageSize = Number(process.env.PAGE_SIZE);
+    if (page) {
+      pageNumber = page;
+    }
+    return await this.skillModel
+      .find()
+      .sort({ createdAt: -1 })
+      .skip(pageNumber * pageSize - pageSize)
+      .limit(pageSize)
+      .populate('owner', 'email firstName lastName id');
   }
 
   public async createSkill(skill: CreateSkillDto, owner: User): Promise<Skill> {

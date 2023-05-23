@@ -5,7 +5,7 @@ import WorkExperienceSchema from './workExperience.schema';
 import EducationSchema from './education.schema';
 import AchievementSchema from './achievement.schema';
 import PortfolioSchema from './portfolio.schema';
-import { Conditions } from '../../utils/enums/condition.enum';
+import { PublishConditions } from '../../utils/enums/publishCondition.enum';
 import { Roles } from '../../utils/enums/role.enum';
 
 export const UserSchema = new Schema(
@@ -39,31 +39,30 @@ export const UserSchema = new Schema(
     educations: [EducationSchema],
     achievements: [AchievementSchema],
     portfolios: [PortfolioSchema],
-    condition: {
+    isPublished: {
       type: String,
-      enum: Conditions,
+      enum: PublishConditions,
       required: true,
-      default: Conditions.PRIVATE
+      default: PublishConditions.PRIVATE
     },
     currentHashedRefreshToken: {
       type: String
     },
-    emailConfirmToken: {
+    emailConfirmationToken: {
       type: String
     },
-    emailConfirmTokenExpire: {
+    emailConfirmationTokenExpire: {
       type: Date
     },
-    resetPasswordConfirmToken: {
+    resetPasswordConfirmationToken: {
       type: String
     },
-    resetPasswordConfirmTokenExpire: {
+    resetPasswordConfirmationTokenExpire: {
       type: Date
     },
-    isActive: {
+    isEmailConfirmed: {
       type: Boolean,
-      default: false,
-      required: true
+      default: false
     },
     createdAt: {
       type: String

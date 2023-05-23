@@ -3,7 +3,7 @@ import ContactsSchema from './contacts.schema';
 import BPOSchema from './BPO.schema';
 import PortfolioSchema from './portfolio.schema';
 import TeamSchema from './team.schema';
-import { Conditions } from '../../utils/enums/condition.enum';
+import { PublishConditions } from '../../utils/enums/publishCondition.enum';
 
 export const CompanySchema = new Schema({
   name: {
@@ -62,11 +62,11 @@ export const CompanySchema = new Schema({
     ref: 'User',
     required: true
   },
-  condition: {
+  isPublished: {
     type: String,
-    enum: Conditions,
+    enum: PublishConditions,
     required: true,
-    default: Conditions.PRIVATE
+    default: PublishConditions.PRIVATE
   },
   createdAt: {
     type: String

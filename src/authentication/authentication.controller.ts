@@ -9,15 +9,18 @@ import WrongCredentialsException from '../exceptions/WrongCredentialsException';
 import RequestWithUser from '../interfaces/requestWithUser.interface';
 import authMiddleware from '../middlewares/auth.middleware';
 import refreshMiddleware from '../middlewares/refresh.middleware';
-import { transporter, emailConfirm, resetPassword } from '../emails/emails.service';
+import { EmailService } from '../email/email.service';
 import AuthenticationTokenMissingException from '../exceptions/AuthenticationTokenMissingException';
 import ResetPassword from '../users/dto/resetPassword.dto';
 
 export class AuthenticationController {
   public path = '/auth';
   public router = Router();
+  private authenticationService = new AuthenticationService();
+  private usersService = new UsersService();
+  private emailService = new EmailService();
 
-  constructor(private authenticationService: AuthenticationService, private usersService: UsersService) {
+  constructor() {
     this.setRoutes();
   }
 
@@ -26,11 +29,11 @@ export class AuthenticationController {
     this.router.route(`${this.path}/login`).post(dtoValidationMiddleware(LogInDto), this.logIn);
     this.router.route(`${this.path}/logout`).get(authMiddleware, this.logOut);
     this.router.route(`${this.path}/refresh`).get(refreshMiddleware, this.refresh);
-    this.router.route(`/activate/:token`).get(this.emailConfirm);
+    this.router.route(`/email/confirmation/:token`).get(this.emailConfirmation);
     this.router.route(`/reset/password`).put(this.resetPassword);
     this.router
       .route(`/reset/password/:token`)
-      .put(dtoValidationMiddleware(ResetPassword, true), this.resetPasswordConfirm);
+      .put(dtoValidationMiddleware(ResetPassword, true), this.resetPasswordConfirmation);
   }
 
   private register = async (req: Request, res: Response, next: NextFunction) => {
@@ -41,33 +44,33 @@ export class AuthenticationController {
         next(new UserWithThatEmailAlreadyExistsException(userData.email));
       } else {
         const hashedPassword = await this.usersService.hashPassword(userData.password);
-        const emailConfirmToken = await this.usersService.createConfirmToken();
+        const emailConfirmationToken = await this.usersService.createConfirmationToken();
         const user = await this.usersService.createUser({
           ...userData,
           password: hashedPassword,
-          emailConfirmToken,
-          emailConfirmTokenExpire: Date.now() + 60 * 60 * 24 * 5 * 1000
+          emailConfirmationToken,
+          emailConfirmationTokenExpire: Date.now() + Number(process.env.EMAIL_CONFIRMATION_TOKEN_EXPIRE)
         });
-        await transporter.sendMail(await emailConfirm(user.email, emailConfirmToken, user.firstName, user.lastName));
+        await this.emailService.emailConfirmation(user.email, emailConfirmationToken, user.firstName, user.lastName);
         return res.status(201).json(user);
       }
     } catch (error) {
-      return res.status(error.status || 500).json(error.message);
+      return res.status(error.status || 500).json({ error: error.message });
     }
   };
 
-  private emailConfirm = async (req: Request, res: Response, next: NextFunction) => {
+  private emailConfirmation = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { token } = req.params;
-      const candidate = await this.usersService.getUserByEmailConfirmToken(token);
-      if (candidate && candidate.isActive === false) {
-        await this.usersService.removeEmailConfirmTokenAndExpire(candidate.id);
-        const user = await this.usersService.activate(candidate.id);
+      const candidate = await this.usersService.getUserByEmailConfirmationToken(token);
+      if (candidate && candidate.isEmailConfirmed === false) {
+        await this.usersService.removeEmailConfirmationTokenAndExpire(candidate.id);
+        const user = await this.usersService.setEmailconfirmed(candidate.id);
         return res.status(200).json(user);
       }
       next(new AuthenticationTokenMissingException());
     } catch (error) {
-      return res.status(error.status || 500).json(error.message);
+      return res.status(error.status || 500).json({ error: error.message });
     }
   };
 
@@ -75,7 +78,7 @@ export class AuthenticationController {
     try {
       const logInData: LogInDto = req.body;
       const candidate = await this.usersService.getUserByEmail(logInData.email);
-      if (candidate && candidate.isActive === true) {
+      if (candidate && candidate.isEmailConfirmed === true) {
         const isPasswordMatching = await this.usersService.verifyPassword(logInData.password, candidate.password);
         if (isPasswordMatching) {
           const accessTokenCookie = this.authenticationService.getCookieWithJwtAccessToken(candidate.id);
@@ -91,7 +94,7 @@ export class AuthenticationController {
         next(new WrongCredentialsException());
       }
     } catch (error) {
-      return res.status(error.status || 500).json(error.message);
+      return res.status(error.status || 500).json({ error: error.message });
     }
   };
 
@@ -103,7 +106,7 @@ export class AuthenticationController {
       res.setHeader('Set-Cookie', cookiesForLogOut);
       return res.status(200).json(candidate);
     } catch (error) {
-      return res.status(error.status || 500).json(error.message);
+      return res.status(error.status || 500).json({ error: error.message });
     }
   };
 
@@ -114,7 +117,7 @@ export class AuthenticationController {
       res.setHeader('Set-Cookie', accessTokenCookie);
       return res.status(200).json(user);
     } catch (error) {
-      return res.status(error.status || 500).json(error.message);
+      return res.status(error.status || 500).json({ error: error.message });
     }
   };
 
@@ -122,39 +125,42 @@ export class AuthenticationController {
     try {
       const { email } = req.body;
       const candidate = await this.usersService.getUserByEmail(email);
-      if (candidate && candidate.isActive === true) {
-        const resetPasswordConfirmToken = await this.usersService.createConfirmToken();
-        const resetPasswordConfirmTokenExpire = Date.now() + 60 * 60 * 5 * 1000;
-        const user = await this.usersService.setResetPasswordConfirmTokenAndExpire(
+      if (candidate && candidate.isEmailConfirmed === true) {
+        const resetPasswordConfirmationToken = await this.usersService.createConfirmationToken();
+        const resetPasswordConfirmationTokenExpire = Date.now() + Number(process.env.RESET_PASSWORD_CONFIRMATION_TOKEN_EXPIRE);
+        const user = await this.usersService.setResetPasswordConfirmationTokenAndExpire(
           candidate.id,
-          resetPasswordConfirmToken,
-          resetPasswordConfirmTokenExpire
+          resetPasswordConfirmationToken,
+          resetPasswordConfirmationTokenExpire
         );
-        await transporter.sendMail(
-          await resetPassword(candidate.email, resetPasswordConfirmToken, candidate.firstName, candidate.lastName)
+        await this.emailService.resetPassword(
+          candidate.email,
+          resetPasswordConfirmationToken,
+          candidate.firstName,
+          candidate.lastName
         );
         return res.status(200).json(user);
       }
       next(new WrongCredentialsException());
     } catch (error) {
-      return res.status(error.status || 500).json(error.message);
+      return res.status(error.status || 500).json({ error: error.message });
     }
   };
 
-  private resetPasswordConfirm = async (req: Request, res: Response, next: NextFunction) => {
+  private resetPasswordConfirmation = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { token } = req.params;
       const resetPasswordData: ResetPassword = req.body;
-      const candidate = await this.usersService.getUserByResetPasswordConfirmToken(token);
-      if (candidate && candidate.isActive === true) {
-        await this.usersService.removeResetPasswordConfirmTokenAndExpire(candidate.id);
+      const candidate = await this.usersService.getUserByResetPasswordConfirmationToken(token);
+      if (candidate && candidate.isEmailConfirmed === true) {
+        await this.usersService.removeResetPasswordConfirmationTokenAndExpire(candidate.id);
         const hashedPassword = await this.usersService.hashPassword(resetPasswordData.newPassword);
         const user = await this.usersService.changePassword(candidate.id, hashedPassword);
         return res.status(200).json(user);
       }
       next(new AuthenticationTokenMissingException());
     } catch (error) {
-      return res.status(error.status || 500).json(error.message);
+      return res.status(error.status || 500).json({ error: error.message });
     }
   };
 }

@@ -12,8 +12,18 @@ export class LegalFormsService {
     return await this.legalFormModel.findById(id).populate('owner', 'email firstName lastName id');
   }
 
-  public async findAllLegalForms(): Promise<LegalForm[]> {
-    return await this.legalFormModel.find({}).populate('owner', 'email firstName lastName id');
+  public async findAllLegalForms(page: number): Promise<LegalForm[]> {
+    let pageNumber = 1;
+    const pageSize = Number(process.env.PAGE_SIZE);
+    if (page) {
+      pageNumber = page;
+    }
+    return await this.legalFormModel
+      .find()
+      .sort({ createdAt: -1 })
+      .skip(pageNumber * pageSize - pageSize)
+      .limit(pageSize)
+      .populate('owner', 'email firstName lastName id');
   }
 
   public async createLegalForm(legalForm: CreateLegalFormDto, owner: User): Promise<LegalForm> {

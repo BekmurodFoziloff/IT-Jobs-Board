@@ -12,8 +12,18 @@ export class SpecializationsBPOService {
     return await this.specializationBPOModel.findById(id).populate('owner', 'email firstName lastName id');
   }
 
-  public async findAllSpecializationsBPO(): Promise<SpecializationBPO[]> {
-    return await this.specializationBPOModel.find({}).populate('owner', 'email firstName lastName id');
+  public async findAllSpecializationsBPO(page: number): Promise<SpecializationBPO[]> {
+    let pageNumber = 1;
+    const pageSize = Number(process.env.PAGE_SIZE);
+    if (page) {
+      pageNumber = page;
+    }
+    return await this.specializationBPOModel
+      .find()
+      .sort({ createdAt: -1 })
+      .skip(pageNumber * pageSize - pageSize)
+      .limit(pageSize)
+      .populate('owner', 'email firstName lastName id');
   }
 
   public async createSpecializationBPO(

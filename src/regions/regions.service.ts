@@ -12,8 +12,18 @@ export class RegionsService {
     return await this.regionModel.findById(id).populate('owner', 'email firstName lastName id');
   }
 
-  public async findAllRegions(): Promise<Region[]> {
-    return await this.regionModel.find({}).populate('owner', 'email firstName lastName id');
+  public async findAllRegions(page: number): Promise<Region[]> {
+    let pageNumber = 1;
+    const pageSize = Number(process.env.PAGE_SIZE);
+    if (page) {
+      pageNumber = page;
+    }
+    return await this.regionModel
+      .find()
+      .sort({ createdAt: -1 })
+      .skip(pageNumber * pageSize - pageSize)
+      .limit(pageSize)
+      .populate('owner', 'email firstName lastName id');
   }
 
   public async createRegion(region: CreateRegionDto, owner: User): Promise<Region> {

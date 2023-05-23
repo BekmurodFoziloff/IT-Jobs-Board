@@ -29,12 +29,12 @@ export class CreateUserDto {
   @IsString()
   @Trim()
   @IsNotEmpty()
-  emailConfirmToken: string;
+  emailConfirmationToken: string;
 
   @IsNumber()
   @Trim()
   @IsNotEmpty()
-  emailConfirmTokenExpire: number;
+  emailConfirmationTokenExpire: number;
 }
 
 export default CreateUserDto;

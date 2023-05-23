@@ -8,7 +8,7 @@ import UpdateUserEducationDto from './dto/updateUserEducation.dto';
 import UpdateUserWorkExperienceDto from './dto/updateUserWorkExperience.dto';
 import UpdateUserAchievementDto from './dto/updateUserAchievement.dto';
 import UpdateUserPortfolioDto from './dto/updateUserPortfolio.dto';
-import { Conditions } from '../utils/enums/condition.enum';
+import { PublishConditions } from '../utils/enums/publishCondition.enum';
 import UserFilterQuery from '../interfaces/userFilterQuery.interface';
 import CompanyModel from '../companies/company.model';
 import JobModel from '../jobs/job.model';
@@ -27,8 +27,8 @@ export class UsersService {
   public async findUserById(id: string): Promise<User | null> {
     return await this.userModel
       .findById(id)
-      .where('condition')
-      .equals(Conditions.PUBLIC)
+      .where('isPublished')
+      .equals(PublishConditions.PUBLIC)
       .populate('profile.region', 'id name')
       .populate('profile.skills', 'id name')
       .populate('profile.specializationCategories', 'id name')
@@ -37,6 +37,16 @@ export class UsersService {
 
   public async findAllUsers(queryObj: any): Promise<User[] | null> {
     const query: UserFilterQuery = {};
+    let pageNumber = 1;
+    const pageSize = Number(process.env.PAGE_SIZE);
+    if (queryObj.page) {
+      pageNumber = Number(queryObj.page);
+    } else if (queryObj.search) {
+      query['$or'] = [
+        { 'profile?.position': { $regex: queryObj.search, $options: 'i' } },
+        { 'profile?.aboutMe': { $regex: queryObj.search, $options: 'i' } }
+      ];
+    }
     if (queryObj['profile.specializationCategories'] && queryObj['profile.specializationCategories'].length > 0) {
       query['profile.specializationCategories'] = { $in: queryObj['profile.specializationCategories'] };
     } else if (queryObj['profile.region'] && queryObj['profile.region'].length > 0) {
@@ -46,8 +56,11 @@ export class UsersService {
     }
     return await this.userModel
       .find(query)
-      .where('condition')
-      .equals(Conditions.PUBLIC)
+      .sort({ createdAt: -1 })
+      .skip(pageNumber * pageSize - pageSize)
+      .limit(pageSize)
+      .where('isPublished')
+      .equals(PublishConditions.PUBLIC)
       .populate('profile.region', 'id name')
       .populate('profile.skills', 'id name')
       .populate('profile.specializationCategories', 'id name')
@@ -456,13 +469,13 @@ export class UsersService {
       .populate('workExperiences.employmentTypes', 'id name');
   }
 
-  public async publish(id: string, condition = Conditions.PUBLIC): Promise<User | null> {
+  public async publish(id: string, publishCondition = PublishConditions.PUBLIC): Promise<User | null> {
     return await this.userModel
       .findByIdAndUpdate(
         id,
         {
           $set: {
-            condition: condition
+            isPublished: publishCondition
           }
         },
         { returnDocument: 'after' }
@@ -473,13 +486,13 @@ export class UsersService {
       .populate('workExperiences.employmentTypes', 'id name');
   }
 
-  public async publishCancel(id: string, condition = Conditions.PRIVATE): Promise<User | null> {
+  public async publishCancel(id: string, publishCondition = PublishConditions.PRIVATE): Promise<User | null> {
     return await this.userModel
       .findByIdAndUpdate(
         id,
         {
           $set: {
-            condition: condition
+            isPublished: publishCondition
           }
         },
         { returnDocument: 'after' }
@@ -545,69 +558,69 @@ export class UsersService {
     );
   }
 
-  public async createConfirmToken() {
+  public async createConfirmationToken() {
     return crypto.randomBytes(48).toString('base64url');
   }
 
-  public async getUserByEmailConfirmToken(emailConfirmToken: string) {
+  public async getUserByEmailConfirmationToken(emailConfirmationToken: string) {
     return await this.userModel.findOne({
-      emailConfirmToken,
-      emailConfirmTokenExpire: { $gt: Date.now() }
+      emailConfirmationToken,
+      emailConfirmationTokenExpire: { $gt: Date.now() }
     });
   }
 
-  public async removeEmailConfirmTokenAndExpire(id: string) {
+  public async removeEmailConfirmationTokenAndExpire(id: string) {
     return await this.userModel.findByIdAndUpdate(
       id,
       {
         $set: {
-          emailConfirmToken: null,
-          emailConfirmTokenExpire: null
+          emailConfirmationToken: null,
+          emailConfirmationTokenExpire: null
         }
       },
       { returnDocument: 'after' }
     );
   }
 
-  public async activate(id: string) {
+  public async setEmailconfirmed(id: string) {
     return await this.userModel.findByIdAndUpdate(
       id,
       {
         $set: {
-          isActive: true
+          isEmailConfirmed: true
         }
       },
       { returnDocument: 'after' }
     );
   }
 
-  public async getUserByResetPasswordConfirmToken(resetPasswordConfirmToken: string) {
+  public async getUserByResetPasswordConfirmationToken(resetPasswordConfirmationToken: string) {
     return await this.userModel.findOne({
-      resetPasswordConfirmToken,
-      resetPasswordConfirmTokenExpire: { $gt: Date.now() }
+      resetPasswordConfirmationToken,
+      resetPasswordConfirmationTokenExpire: { $gt: Date.now() }
     });
   }
 
-  public async setResetPasswordConfirmTokenAndExpire(id: string, token: string, tokenExpire: number) {
+  public async setResetPasswordConfirmationTokenAndExpire(id: string, token: string, tokenExpire: number) {
     return await this.userModel.findByIdAndUpdate(
       id,
       {
         $set: {
-          resetPasswordConfirmToken: token,
-          resetPasswordConfirmTokenExpire: tokenExpire
+          resetPasswordConfirmationToken: token,
+          resetPasswordConfirmationTokenExpire: tokenExpire
         }
       },
       { returnDocument: 'after' }
     );
   }
 
-  public async removeResetPasswordConfirmTokenAndExpire(id: string) {
+  public async removeResetPasswordConfirmationTokenAndExpire(id: string) {
     return await this.userModel.findByIdAndUpdate(
       id,
       {
         $set: {
-          resetPasswordConfirmToken: null,
-          resetPasswordConfirmTokenExpire: null
+          resetPasswordConfirmationToken: null,
+          resetPasswordConfirmationTokenExpire: null
         }
       },
       { returnDocument: 'after' }

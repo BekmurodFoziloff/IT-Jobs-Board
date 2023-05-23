@@ -1,7 +1,7 @@
 import { Schema } from 'mongoose';
 import RequirementsSchema from './requirements.schema';
 import EmployerSchema from './employer.schema';
-import { Conditions } from '../../utils/enums/condition.enum';
+import { PublishConditions } from '../../utils/enums/publishCondition.enum';
 
 export const JobSchema = new Schema({
   title: {
@@ -61,11 +61,11 @@ export const JobSchema = new Schema({
   },
   requirements: RequirementsSchema,
   employer: EmployerSchema,
-  condition: {
+  isPublished: {
     type: String,
-    enum: Conditions,
+    enum: PublishConditions,
     required: true,
-    default: Conditions.PRIVATE
+    default: PublishConditions.PRIVATE
   },
   createdAt: {
     type: String

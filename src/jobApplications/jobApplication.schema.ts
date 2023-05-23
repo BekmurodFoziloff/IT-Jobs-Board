@@ -17,7 +17,7 @@ export const JobApplicationSchema = new Schema({
     type: String,
     required: true
   },
-  experience: {
+  workExperience: {
     type: String,
     required: true
   },

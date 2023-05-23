@@ -12,8 +12,18 @@ export class WorkStylesService {
     return await this.workStyleModel.findById(id).populate('owner', 'email firstName lastName id');
   }
 
-  public async findAllWorkStyles(): Promise<WorkStyle[]> {
-    return await this.workStyleModel.find({}).populate('owner', 'email firstName lastName id');
+  public async findAllWorkStyles(page: number): Promise<WorkStyle[]> {
+    let pageNumber = 1;
+    const pageSize = Number(process.env.PAGE_SIZE);
+    if (page) {
+      pageNumber = page;
+    }
+    return await this.workStyleModel
+      .find()
+      .sort({ createdAt: -1 })
+      .skip(pageNumber * pageSize - pageSize)
+      .limit(pageSize)
+      .populate('owner', 'email firstName lastName id');
   }
 
   public async createWorkStyle(workStyle: CreateWorkStyleDto, owner: User): Promise<WorkStyle> {

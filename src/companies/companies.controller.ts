@@ -13,13 +13,15 @@ import RequestWithUser from '../interfaces/requestWithUser.interface';
 import PortfolioOfCompanyNotFoundException from '../exceptions/PortfolioOfCompanyNotFoundException';
 import TeamOfTeamNotFoundException from '../exceptions/TeamOfCompanyNotFoundException';
 import { isOwnerCompany, isOwnerCompanyPortfolio, isOwnerCompanyTeam } from '../middlewares/isOwnerCompany.middleware';
-import { upload } from '../files/files.service';
+import { FilesService } from '../files/files.service';
 
 export class CompaniesController {
   public path = '/company';
   public router = Router();
+  private companiesService = new CompaniesService();
+  private filesService = new FilesService();
 
-  constructor(private companiesService: CompaniesService) {
+  constructor() {
     this.setRoutes();
   }
 
@@ -28,14 +30,19 @@ export class CompaniesController {
     this.router.route(`/my${this.path}/list`).get(authMiddleware, this.getAllCompaniesOfUser);
     this.router
       .route(`/my${this.path}/new`)
-      .post(authMiddleware, upload.single('logo'), dtoValidationMiddleware(CreateCompanyDto), this.createCompany);
+      .post(
+        authMiddleware,
+        this.filesService.upload.single('logo'),
+        dtoValidationMiddleware(CreateCompanyDto),
+        this.createCompany
+      );
     this.router.route(`${this.path}/:id`).get(this.findCompanyById);
     this.router
       .route(`/my${this.path}/:id/edit`)
       .put(
         authMiddleware,
         isOwnerCompany,
-        upload.single('logo'),
+        this.filesService.upload.single('logo'),
         dtoValidationMiddleware(UpdateCompanyDto, true),
         this.updateCompany
       );
@@ -48,7 +55,7 @@ export class CompaniesController {
       .put(authMiddleware, isOwnerCompany, dtoValidationMiddleware(UpdateBPODto, true), this.updateBPO);
     this.router.route(`/my${this.path}/:id/portfolio/new`).put(
       authMiddleware,
-      upload.fields([
+      this.filesService.upload.fields([
         { name: 'image', maxCount: 1 },
         { name: 'image1', maxCount: 1 },
         { name: 'image2', maxCount: 1 }
@@ -58,7 +65,7 @@ export class CompaniesController {
     );
     this.router.route(`/my${this.path}/portfolio/:id/edit`).put(
       authMiddleware,
-      upload.fields([
+      this.filesService.upload.fields([
         { name: 'image', maxCount: 1 },
         { name: 'image1', maxCount: 1 },
         { name: 'image2', maxCount: 1 }
@@ -96,7 +103,7 @@ export class CompaniesController {
       }
       next(new CompanyNotFoundException(id));
     } catch (error) {
-      return res.status(error.status || 500).json(error.message);
+      return res.status(error.status || 500).json({ error: error.message });
     }
   };
 
@@ -106,7 +113,7 @@ export class CompaniesController {
       const companies = await this.companiesService.findAllCompanies(query);
       return res.status(200).json(companies);
     } catch (error) {
-      return res.status(error.status || 500).json(error.message);
+      return res.status(error.status || 500).json({ error: error.message });
     }
   };
 
@@ -114,14 +121,14 @@ export class CompaniesController {
     try {
       const companyData: CreateCompanyDto = req.body;
       const { file } = req;
-      const newCompanyResponse = await this.companiesService.createCompany(
+      const newCompany = await this.companiesService.createCompany(
         companyData,
         (req as RequestWithUser).user,
         file?.path
       );
-      return res.status(201).json(newCompanyResponse);
+      return res.status(201).json(newCompany);
     } catch (error) {
-      return res.status(error.status || 500).json(error.message);
+      return res.status(error.status || 500).json({ error: error.message });
     }
   };
 
@@ -136,7 +143,7 @@ export class CompaniesController {
       }
       next(new CompanyNotFoundException(id));
     } catch (error) {
-      return res.status(error.status || 500).json(error.message);
+      return res.status(error.status || 500).json({ error: error.message });
     }
   };
 
@@ -149,7 +156,7 @@ export class CompaniesController {
       }
       next(new CompanyNotFoundException(id));
     } catch (error) {
-      return res.status(error.status || 500).json(error.message);
+      return res.status(error.status || 500).json({ error: error.message });
     }
   };
 
@@ -163,7 +170,7 @@ export class CompaniesController {
       }
       next(new CompanyNotFoundException(id));
     } catch (error) {
-      return res.status(error.status || 500).json(error.message);
+      return res.status(error.status || 500).json({ error: error.message });
     }
   };
 
@@ -177,7 +184,7 @@ export class CompaniesController {
       }
       next(new CompanyNotFoundException(id));
     } catch (error) {
-      return res.status(error.status || 500).json(error.message);
+      return res.status(error.status || 500).json({ error: error.message });
     }
   };
 
@@ -192,7 +199,7 @@ export class CompaniesController {
       }
       next(new CompanyNotFoundException(id));
     } catch (error) {
-      return res.status(error.status || 500).json(error.message);
+      return res.status(error.status || 500).json({ error: error.message });
     }
   };
 
@@ -207,7 +214,7 @@ export class CompaniesController {
       }
       next(new PortfolioOfCompanyNotFoundException(id));
     } catch (error) {
-      return res.status(error.status || 500).json(error.message);
+      return res.status(error.status || 500).json({ error: error.message });
     }
   };
 
@@ -220,7 +227,7 @@ export class CompaniesController {
       }
       next(new PortfolioOfCompanyNotFoundException(id));
     } catch (error) {
-      return res.status(error.status || 500).json(error.message);
+      return res.status(error.status || 500).json({ error: error.message });
     }
   };
 
@@ -234,7 +241,7 @@ export class CompaniesController {
       }
       next(new CompanyNotFoundException(id));
     } catch (error) {
-      return res.status(error.status || 500).json(error.message);
+      return res.status(error.status || 500).json({ error: error.message });
     }
   };
 
@@ -248,7 +255,7 @@ export class CompaniesController {
       }
       next(new TeamOfTeamNotFoundException(id));
     } catch (error) {
-      return res.status(error.status || 500).json(error.message);
+      return res.status(error.status || 500).json({ error: error.message });
     }
   };
 
@@ -261,17 +268,18 @@ export class CompaniesController {
       }
       next(new TeamOfTeamNotFoundException(id));
     } catch (error) {
-      return res.status(error.status || 500).json(error.message);
+      return res.status(error.status || 500).json({ error: error.message });
     }
   };
 
   private getAllCompaniesOfUser = async (req: Request, res: Response) => {
     try {
       const userId = (req as RequestWithUser).user.id;
-      const companies = await this.companiesService.getAllCompaniesOfUser(userId);
+      const { query } = req;
+      const companies = await this.companiesService.getAllCompaniesOfUser(userId, query);
       return res.status(200).json(companies);
     } catch (error) {
-      return res.status(error.status || 500).json(error.message);
+      return res.status(error.status || 500).json({ error: error.message });
     }
   };
 
@@ -284,7 +292,7 @@ export class CompaniesController {
       }
       next(new CompanyNotFoundException(id));
     } catch (error) {
-      return res.status(error.status || 500).json(error.message);
+      return res.status(error.status || 500).json({ error: error.message });
     }
   };
 
@@ -297,7 +305,7 @@ export class CompaniesController {
       }
       next(new CompanyNotFoundException(id));
     } catch (error) {
-      return res.status(error.status || 500).json(error.message);
+      return res.status(error.status || 500).json({ error: error.message });
     }
   };
 }

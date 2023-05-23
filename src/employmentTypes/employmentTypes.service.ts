@@ -12,8 +12,18 @@ export class EmploymentTypesService {
     return await this.employmentTypeModel.findById(id).populate('owner', 'email firstName lastName id');
   }
 
-  public async findAllEmploymentTypes(): Promise<EmploymentType[]> {
-    return await this.employmentTypeModel.find({}).populate('owner', 'email firstName lastName id');
+  public async findAllEmploymentTypes(page: number): Promise<EmploymentType[]> {
+    let pageNumber = 1;
+    const pageSize = Number(process.env.PAGE_SIZE);
+    if (page) {
+      pageNumber = page;
+    }
+    return await this.employmentTypeModel
+      .find()
+      .sort({ createdAt: -1 })
+      .skip(pageNumber * pageSize - pageSize)
+      .limit(pageSize)
+      .populate('owner', 'email firstName lastName id');
   }
 
   public async createEmploymentType(employmentType: CreateEmploymentTypeDto, owner: User): Promise<EmploymentType> {

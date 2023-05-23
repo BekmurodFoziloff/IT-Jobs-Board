@@ -11,8 +11,9 @@ import adminAuthMiddleware from '../middlewares/adminAuth.middleware';
 export class SkillsController {
   public path = '/skill';
   public router = Router();
+  private skillsService = new SkillsService();
 
-  constructor(private skillsService: SkillsService) {
+  constructor() {
     this.setRoutes();
   }
 
@@ -37,16 +38,17 @@ export class SkillsController {
       }
       next(new SkillNotFoundException(id));
     } catch (error) {
-      return res.status(error.status || 500).json(error.message);
+      return res.status(error.status || 500).json({ error: error.message });
     }
   };
 
   private findAllSkills = async (req: Request, res: Response) => {
     try {
-      const skills = await this.skillsService.findAllSkills();
+      const { page } = req.query;
+      const skills = await this.skillsService.findAllSkills(Number(page));
       return res.status(200).json(skills);
     } catch (error) {
-      return res.status(error.status || 500).json(error.message);
+      return res.status(error.status || 500).json({ error: error.message });
     }
   };
 
@@ -56,7 +58,7 @@ export class SkillsController {
       const newSkill = await this.skillsService.createSkill(skillData, (req as RequestWithUser).user);
       return res.status(201).json(newSkill);
     } catch (error) {
-      return res.status(error.status || 500).json(error.message);
+      return res.status(error.status || 500).json({ error: error.message });
     }
   };
 
@@ -70,7 +72,7 @@ export class SkillsController {
       }
       next(new SkillNotFoundException(id));
     } catch (error) {
-      return res.status(error.status || 500).json(error.message);
+      return res.status(error.status || 500).json({ error: error.message });
     }
   };
 
@@ -83,7 +85,7 @@ export class SkillsController {
       }
       next(new SkillNotFoundException(id));
     } catch (error) {
-      return res.status(error.status || 500).json(error.message);
+      return res.status(error.status || 500).json({ error: error.message });
     }
   };
 }

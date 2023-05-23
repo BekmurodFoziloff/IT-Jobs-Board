@@ -7,7 +7,7 @@ import UpdateContactsDto from './dto/updateContacts.dto';
 import { Order } from './order.interface';
 import moment from 'moment';
 import { User } from '../users/user.interface';
-import { Conditions } from '../utils/enums/condition.enum';
+import { PublishConditions } from '../utils/enums/publishCondition.enum';
 import OrderFilterQuery from '../interfaces/orderFilterQuery.interface';
 
 export class OrdersService {
@@ -16,15 +16,21 @@ export class OrdersService {
   public async findOrderById(id: string): Promise<Order | null> {
     return await this.orderModel
       .findById(id)
-      .where('condition')
-      .equals(Conditions.PUBLIC)
+      .where('isPublished')
+      .equals(PublishConditions.PUBLIC)
       .populate('owner', 'email firstName lastName id')
       .populate('specializations', 'id name');
   }
 
   public async findAllOrders(queryObj: any): Promise<Order[] | null> {
     const query: OrderFilterQuery = {};
-    if (queryObj.specializations && queryObj.specializations.length > 0) {
+    let pageNumber = 1;
+    const pageSize = Number(process.env.PAGE_SIZE);
+    if (queryObj.page) {
+      pageNumber = Number(queryObj.page);
+    } else if (queryObj.search) {
+      query['$or'] = [{ title: { $regex: queryObj.search, $options: 'i' } }];
+    } else if (queryObj.specializations && queryObj.specializations.length > 0) {
       query['specializations'] = { $in: queryObj.specializations };
     } else if (queryObj.minBudget) {
       query['minBudget'] = { $gte: queryObj.minBudget };
@@ -39,8 +45,11 @@ export class OrdersService {
     }
     return await this.orderModel
       .find(query)
-      .where('condition')
-      .equals(Conditions.PUBLIC)
+      .sort({ createdAt: -1 })
+      .skip(pageNumber * pageSize - pageSize)
+      .limit(pageSize)
+      .where('isPublished')
+      .equals(PublishConditions.PUBLIC)
       .populate('owner', 'email firstName lastName id')
       .populate('specializations', 'id name');
   }
@@ -134,9 +143,22 @@ export class OrdersService {
       .populate('specializations', 'id name');
   }
 
-  public async getAllOrdersOfUser(userId: string): Promise<Order[] | null> {
+  public async getAllOrdersOfUser(userId: string, queryObj: any): Promise<Order[] | null> {
+    const query: OrderFilterQuery = {};
+    let pageNumber = 1;
+    const pageSize = Number(process.env.PAGE_SIZE);
+    if (userId) {
+      query['owner'] = userId;
+    } else if (queryObj.page) {
+      pageNumber = Number(queryObj.page);
+    } else if (queryObj.search) {
+      query['$or'] = [{ title: { $regex: queryObj.search, $options: 'i' } }];
+    }
     return await this.orderModel
-      .find({ owner: userId })
+      .find(query)
+      .sort({ createdAt: -1 })
+      .skip(pageNumber * pageSize - pageSize)
+      .limit(pageSize)
       .populate('owner', 'email firstName lastName id')
       .populate('specializations', 'id name');
   }
@@ -148,13 +170,13 @@ export class OrdersService {
       .populate('specializations', 'id name');
   }
 
-  public async publish(id: string, condition = Conditions.PUBLIC): Promise<Order | null> {
+  public async publish(id: string, publishCondition = PublishConditions.PUBLIC): Promise<Order | null> {
     return await this.orderModel
       .findByIdAndUpdate(
         id,
         {
           $set: {
-            condition: condition
+            isPublished: publishCondition
           }
         },
         { returnDocument: 'after' }
@@ -163,13 +185,13 @@ export class OrdersService {
       .populate('specializations', 'id name');
   }
 
-  public async publishCancel(id: string, condition = Conditions.PRIVATE): Promise<Order | null> {
+  public async publishCancel(id: string, publishCondition = PublishConditions.PRIVATE): Promise<Order | null> {
     return await this.orderModel
       .findByIdAndUpdate(
         id,
         {
           $set: {
-            condition: condition
+            isPublished: publishCondition
           }
         },
         { returnDocument: 'after' }

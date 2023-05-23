@@ -3,9 +3,10 @@ import RequestWithUser from '../interfaces/requestWithUser.interface';
 import { UsersService } from '../users/users.service';
 import YouAreNotAllowedException from '../exceptions/YouAreNotAllowedException';
 
+const usersService = new UsersService();
+
 export const isCreatorUser = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const usersService = new UsersService();
     const { id } = req.params;
     const user = await usersService.getUserById(id);
     if (!(user?.id.toString() === (req as RequestWithUser).user.id.toString())) {
@@ -19,7 +20,6 @@ export const isCreatorUser = async (req: Request, res: Response, next: NextFunct
 
 export const isCreatorWork = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const usersService = new UsersService();
     const { id } = req.params;
     const user = await usersService.getUserByWorkExperience(id);
     if (!(user?.id.toString() === (req as RequestWithUser).user.id.toString())) {
@@ -33,7 +33,6 @@ export const isCreatorWork = async (req: Request, res: Response, next: NextFunct
 
 export const isCreatorEducation = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const usersService = new UsersService();
     const { id } = req.params;
     const user = await usersService.getUserByEducation(id);
     if (!(user?.id.toString() === (req as RequestWithUser).user.id.toString())) {
@@ -47,7 +46,6 @@ export const isCreatorEducation = async (req: Request, res: Response, next: Next
 
 export const isCreatorAchievement = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const usersService = new UsersService();
     const { id } = req.params;
     const user = await usersService.getUserByAchievement(id);
     if (!(user?.id.toString() === (req as RequestWithUser).user.id.toString())) {
@@ -61,7 +59,6 @@ export const isCreatorAchievement = async (req: Request, res: Response, next: Ne
 
 export const isCreatorPortfolio = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const usersService = new UsersService();
     const { id } = req.params;
     const user = await usersService.getUserByPortfolio(id);
     if (!(user?.id.toString() === (req as RequestWithUser).user.id.toString())) {
